@@ -18,10 +18,25 @@
 
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
-
+require_once('modules/php/constants.inc.php');
+require_once('modules/php/utils.php');
+require_once('modules/php/states.php');
+require_once('modules/php/args.php');
+require_once('modules/php/actions.php');
+//require_once('modules/php/destination-deck.php');
+require_once('modules/php/debug-util.php');
+require_once('modules/php/expansion.php');
 
 class Nimalia extends Table
 {
+    use UtilTrait;
+    use ActionTrait;
+    use StateTrait;
+    use ArgsTrait;
+    //use DestinationDeckTrait;
+    use DebugUtilTrait;
+    use ExpansionTrait;
+
 	function __construct( )
 	{
         // Your global variables labels:
@@ -33,13 +48,16 @@ class Nimalia extends Table
         parent::__construct();
         
         self::initGameStateLabels( array( 
-            //    "my_first_global_variable" => 10,
+            LAST_TURN => 10, // last turn is the id of the last player, 0 if it's not last turn
             //    "my_second_global_variable" => 11,
             //      ...
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-        ) );        
+        ) );  
+        /*$this->destinations = $this->getNew("module.common.deck");
+        $this->destinations->init("destination");
+        $this->destinations->autoreshuffle = true;    */ 
 	}
 	
     protected function getGameName( )
@@ -72,7 +90,7 @@ class Nimalia extends Table
             $color = array_shift( $default_colors );
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        $sql .= implode( $values, ',' );
+        $sql .= implode( ',', $values );
         self::DbQuery( $sql );
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
@@ -81,14 +99,12 @@ class Nimalia extends Table
 
         // Init global values with their initial values
         //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
-        
-        // Init game statistics
-        // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+        //initialize everything to be compliant with undo framework
+        //foreach ($this->GAMESTATELABELS as $value_label => $ID) if ($ID >= 10 && $ID < 90) $this->setGameStateInitialValue($value_label, 0);
 
+        $this->initStats();
+        
         // TODO: setup the initial game situation here
-       
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -107,17 +123,30 @@ class Nimalia extends Table
     */
     protected function getAllDatas()
     {
-        $result = array();
+        $stateName = $this->gamestate->state()['name'];
+        $isEnd = $stateName === 'endScore' || $stateName === 'gameEnd' || $stateName === 'debugGameEnd';
+
+        $result = [];
     
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
+        $result['turnOrderClockwise'] = true;
   
+        foreach ($result['players'] as $playerId => &$player) {
+            $player['playerNo'] = intval($player['playerNo']);
+        }
+
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-  
+        $result['expansion'] = EXPANSION;
+        if ($isEnd) {
+            $result['bestScore'] = max(array_map(fn ($player) => intval($player['score']), $result['players']));
+        } else {
+            $result['lastTurn'] = $this->getGameStateValue(LAST_TURN) > 0;
+        }
         return $result;
     }
 
@@ -133,8 +162,12 @@ class Nimalia extends Table
     */
     function getGameProgression()
     {
-        // TODO: compute and return the game progression
-
+        $stateName = $this->gamestate->state()['name'];
+        if ($stateName === 'endScore' || $stateName === 'gameEnd') {
+            // game is over
+            return 100;
+        }
+        //return 100 * $this->getHighestCompletedDestinationsCount() / $this->getInitialDestinationCardNumber();
         return 0;
     }
 
@@ -145,93 +178,6 @@ class Nimalia extends Table
 
     /*
         In this space, you can put any utility methods useful for your game logic
-    */
-
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Player actions
-//////////// 
-
-    /*
-        Each time a player is doing some game action, one of the methods below is called.
-        (note: each method below must match an input method in nimalia.action.php)
-    */
-
-    /*
-    
-    Example:
-
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
-        
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
-    }
-    
-    */
-
-    
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state arguments
-////////////
-
-    /*
-        Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
-        These methods function is to return some additional information that is specific to the current
-        game state.
-    */
-
-    /*
-    
-    Example for game state "MyGameState":
-    
-    function argMyGameState()
-    {
-        // Get some values from the current game situation in database...
-    
-        // return values:
-        return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
-        );
-    }    
-    */
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state actions
-////////////
-
-    /*
-        Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
-        The action method of state X is called everytime the current game state is set to X.
-    */
-    
-    /*
-    
-    Example for game state "MyGameState":
-
-    function stMyGameState()
-    {
-        // Do some stuff ...
-        
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }    
     */
 
 //////////////////////////////////////////////////////////////////////////////
@@ -290,31 +236,27 @@ class Nimalia extends Table
     
     */
     
-    function upgradeTableDb( $from_version )
-    {
-        // $from_version is the current version of this game database, in numerical form.
-        // For example, if the game was running with a release of your game named "140430-1345",
-        // $from_version is equal to 1404301345
-        
-        // Example:
-//        if( $from_version <= 1404301345 )
-//        {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
-//        }
-//        if( $from_version <= 1405061421 )
-//        {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
-//        }
-//        // Please add your future database scheme changes here
-//
-//
+    function upgradeTableDb($from_version) {
+        $changes = [
+           // [2307071828, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (24, 0)"], 
+        ];
 
-
-    }    
+        foreach ($changes as [$version, $sql]) {
+            if ($from_version <= $version) {
+                try {
+                    self::warn("upgradeTableDb apply 1: from_version=$from_version, change=[ $version, $sql ]");
+                    self::applyDbUpgradeToAllDB($sql);
+                } catch (Exception $e) {
+                    // See https://studio.boardgamearena.com/bug?id=64
+                    // BGA framework can produce invalid SQL with non-existant tables when using DBPREFIX_.
+                    // The workaround is to retry the query on the base table only.
+                    self::error("upgradeTableDb apply 1 failed: from_version=$from_version, change=[ $version, $sql ]");
+                    $sql = str_replace("DBPREFIX_", "", $sql);
+                    self::warn("upgradeTableDb apply 2: from_version=$from_version, change=[ $version, $sql ]");
+                    self::applyDbUpgradeToAllDB($sql);
+                }
+            }
+        }
+        self::warn("upgradeTableDb complete: from_version=$from_version");
+    }
 }

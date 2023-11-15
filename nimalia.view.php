@@ -24,16 +24,13 @@
  *
  */
   
-require_once( APP_BASE_PATH."view/common/game.view.php" );
+  require_once( APP_BASE_PATH."view/common/game.view.php" );
   
-class view_nimalia_nimalia extends game_view
-{
-    protected function getGameName()
-    {
-        // Used for translations and stuff. Please do not modify.
+  class view_nimalia_nimalia extends game_view
+  {
+    function getGameName() {
         return "nimalia";
-    }
-    
+    }    
   	function build_page( $viewArgs )
   	{		
   	    // Get players & players number
@@ -83,4 +80,6 @@ class view_nimalia_nimalia extends game_view
 
         /*********** Do not change anything below this line  ************/
   	}
-}
+  }
+  
+
