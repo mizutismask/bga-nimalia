@@ -3,15 +3,20 @@
 /* 
  * Game constants 
  */
-//define('INITIAL_ARROW_COUNT', 45);
 const LAND_JUNGLE = 1;
 const LAND_WATER = 2;
 const LAND_SNOW = 3;
-const LAND_SAND = 4;
+const LAND_SAVANNAH = 4;
 
 const ANIMAL_FLAMINGO = 1;
 const ANIMAL_LION = 2;
 const ANIMAL_BEAR = 3;
+const ANIMAL_CROCODILE = 4;
+const ANIMAL_GIRAFFE = 5;
+const ANIMAL_GORILLA = 6;
+const ANIMAL_OTTER = 7;
+const ANIMAL_PANDA = 8;
+const ANIMAL_PINGUIN = 9;
 
 /**
  * Options
