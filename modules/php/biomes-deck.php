@@ -2,7 +2,7 @@
 
 require_once(__DIR__ . '/objects/BiomesCard.php');
 
-trait BiomesCard {
+trait BiomesCardTrait {
 
     /**
      * Create cards.

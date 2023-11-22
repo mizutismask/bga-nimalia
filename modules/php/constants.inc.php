@@ -18,6 +18,17 @@ const ANIMAL_OTTER = 7;
 const ANIMAL_PANDA = 8;
 const ANIMAL_PINGUIN = 9;
 
+const GOAL_GREEN = 1;
+const GOAL_BLUE = 2;
+const GOAL_RED = 3;
+const GOAL_YELLOW = 4;
+
+const LEVEL_EASY = 1;
+const LEVEL_MEDIUM = 2;
+const LEVEL_DIFFICULT = 3;
+const LEVEL_MIXED = 4;
+
+const GOAL_COLORS=[GOAL_RED, GOAL_BLUE, GOAL_GREEN, GOAL_YELLOW];
 /**
  * Options
  */

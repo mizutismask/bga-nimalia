@@ -3222,7 +3222,7 @@ var EndScore = /** @class */ (function () {
  */
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
-        var html = "\n\t\t\t<a id=\"anchor-player-".concat(player.id, "\"></a>\n            <div id=\"player-table-").concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(player.id === game.getCurrentPlayer().id ? 'own' : '', "\">\n\t\t\t<span class=\"player-name\">").concat(player.name, "</span>\n            </div>\n        ");
+        var html = "\n\t\t\t<a id=\"anchor-player-".concat(player.id, "\"></a>\n            <div id=\"player-table-").concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(player.id === game.getCurrentPlayer().id ? 'own' : '', "\">\n\t\t\t    <span class=\"player-name\">").concat(player.name, "</span>\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n                ").concat(player.id === game.getCurrentPlayer().id ? "<div id=\"hand-".concat(player.id, "\" class=\"nml-player-hand\"></div>") : '', "\"\n            </div>\n        ");
         dojo.place(html, 'player-tables');
     }
     return PlayerTable;

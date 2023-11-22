@@ -24,6 +24,7 @@ require_once('modules/php/states.php');
 require_once('modules/php/args.php');
 require_once('modules/php/actions.php');
 require_once('modules/php/biomes-deck.php');
+require_once('modules/php/goals.php');
 require_once('modules/php/debug-util.php');
 require_once('modules/php/expansion.php');
 
@@ -33,9 +34,10 @@ class Nimalia extends Table
     use ActionTrait;
     use StateTrait;
     use ArgsTrait;
-    use BiomesCard;
+    use BiomesCardTrait;
     use DebugUtilTrait;
     use ExpansionTrait;
+    use GoalTrait;
 
 	function __construct( )
 	{
@@ -105,6 +107,7 @@ class Nimalia extends Table
         $this->initStats();
         
         // TODO: setup the initial game situation here
+        $this->selectGoals();
         $this->createBiomes();
 
         // Activate first player (which is in general a good idea :) )
