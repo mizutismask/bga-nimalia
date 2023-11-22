@@ -51,6 +51,7 @@ class Nimalia extends Table
         
         self::initGameStateLabels( array( 
             LAST_TURN => 10, // last turn is the id of the last player, 0 if it's not last turn
+            ROUND => 11, // round number, from 1 to 5
             //    "my_second_global_variable" => 11,
             //      ...
             GOAL_LEVEL => 100,
@@ -100,7 +101,7 @@ class Nimalia extends Table
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+        self::setGameStateInitialValue( ROUND, 1 );
         //initialize everything to be compliant with undo framework
         //foreach ($this->GAMESTATELABELS as $value_label => $ID) if ($ID >= 10 && $ID < 90) $this->setGameStateInitialValue($value_label, 0);
 

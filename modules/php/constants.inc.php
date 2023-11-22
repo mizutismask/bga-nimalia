@@ -57,6 +57,7 @@ define('END_SCORE', 100);
  */
 
 define('LAST_TURN', 'LAST_TURN');
+define('ROUND', 'ROUND');
 define('GOAL_LEVEL', 'GOAL_LEVEL');
 
 
