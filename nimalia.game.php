@@ -23,7 +23,7 @@ require_once('modules/php/utils.php');
 require_once('modules/php/states.php');
 require_once('modules/php/args.php');
 require_once('modules/php/actions.php');
-//require_once('modules/php/destination-deck.php');
+require_once('modules/php/biomes-deck.php');
 require_once('modules/php/debug-util.php');
 require_once('modules/php/expansion.php');
 
@@ -33,7 +33,7 @@ class Nimalia extends Table
     use ActionTrait;
     use StateTrait;
     use ArgsTrait;
-    //use DestinationDeckTrait;
+    use BiomesCard;
     use DebugUtilTrait;
     use ExpansionTrait;
 
@@ -55,9 +55,9 @@ class Nimalia extends Table
             //    "my_second_game_variant" => 101,
             //      ...
         ) );  
-        /*$this->destinations = $this->getNew("module.common.deck");
-        $this->destinations->init("destination");
-        $this->destinations->autoreshuffle = true;    */ 
+        $this->biomesCards = $this->getNew("module.common.deck");
+        $this->biomesCards->init("card");
+        $this->biomesCards->autoreshuffle = true; 
 	}
 	
     protected function getGameName( )
@@ -105,6 +105,7 @@ class Nimalia extends Table
         $this->initStats();
         
         // TODO: setup the initial game situation here
+        $this->createBiomes();
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -167,7 +168,7 @@ class Nimalia extends Table
             // game is over
             return 100;
         }
-        //return 100 * $this->getHighestCompletedDestinationsCount() / $this->getInitialDestinationCardNumber();
+        //return 100 * $this->getHighestCompletedDestinationsCount() / $this->getInitialBiomesCardNumber();
         return 0;
     }
 

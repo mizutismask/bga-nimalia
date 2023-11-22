@@ -509,7 +509,7 @@ class Nimalia implements NimaliaGame {
         this.settings.forEach((setting) => {
             if (setting.type == 'pref') {
                 // Pref type => just move the user pref around
-                dojo.place($('preference_control_' + setting.prefId).parentNode.parentNode, container);
+                dojo.place($('preference_control_' + setting.prefId).parentNode?.parentNode, container); 
             }
         });
     }

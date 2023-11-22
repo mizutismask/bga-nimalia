@@ -12,7 +12,13 @@
             <tbody id="score-table-body">
             </tbody>
         </table>
+    
+    <div id="reserve" class="nml-reserve">
+        <div class="nml-card"></div>
+        <div class="nml-card"></div>
+        <div class="nml-card"></div>
     </div>
+    
 </div>
 
 <div id="map-zoom-wrapper">

@@ -1,5 +1,5 @@
 <?php
-//require_once(__DIR__ . '/objects/destination.php');
+require_once(__DIR__ . '/objects/BiomesCard.php');
 //require_once(__DIR__ . '/objects/route.php');
 
 trait UtilTrait {
@@ -84,23 +84,31 @@ trait UtilTrait {
     }
 
     /**
-     * Transforms a Destination Db object to Destination class.
+     * Transforms a BiomesCard Db object to BiomesCard class.
      */
-    /* function getDestinationFromDb($dbObject) {
+    function getBiomesCardFromDb($dbObject) {
         if (!$dbObject || !array_key_exists('id', $dbObject)) {
-            throw new BgaSystemException("Destination doesn't exists " . json_encode($dbObject));
+            throw new BgaSystemException("BiomesCard doesn't exists " . json_encode($dbObject));
         }
 
-        //self::dump('************type_arg*******', $dbObject["type_arg"]);
-        //self::dump('*******************', $this->DESTINATIONS[$dbObject["type"]][$dbObject["type_arg"]]);
-        return new Destination($dbObject, $this->DESTINATIONS);
-    }*/
+        self::dump('************type_arg*******', $dbObject["type_arg"]);
+        self::dump('*******************', $this->BIOMES_CARDS[$dbObject["type"]][$dbObject["type_arg"]]);
+        return new BiomeCard($dbObject, $this->BIOMES_CARDS);
+    }
 
     /**
-     * Transforms a Destination Db object array to Destination class array.
+     * Transforms a BiomesCard Db object array to BiomesCard class array.
      */
-    function getDestinationsFromDb(array $dbObjects) {
-        return array_map(fn ($dbObject) => $this->getDestinationFromDb($dbObject), array_values($dbObjects));
+    function getBiomesCardsFromDb(array $dbObjects) {
+        return array_map(fn ($dbObject) => $this->getBiomesCardFromDb($dbObject), array_values($dbObjects));
+    }
+
+    function getIds(array $biomeCards) {
+        $ids = [];
+        foreach ($biomeCards as $card) {
+            $ids[] = $card->id;
+        }
+        return $ids;
     }
 
     /**

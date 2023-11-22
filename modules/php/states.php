@@ -15,7 +15,7 @@ trait StateTrait {
         $playersIds = $this->getPlayersIds();
 
         foreach ($playersIds as $playerId) {
-            //$this->pickInitialDestinationCards($playerId);
+            $this->pickInitialCards($playerId);
         }
 
         $this->gamestate->nextState('');
@@ -77,7 +77,7 @@ trait StateTrait {
 
         //end of game points
 
-        // failed destinations 
+        // failed biomesCards 
         /* $destinationsResults = [];
         $completedDestinationsCount = [];
         foreach ($players as $playerId => $playerDb) {
@@ -85,9 +85,9 @@ trait StateTrait {
             $uncompletedDestinations = [];
             $completedDestinations = [];
 
-            $destinations = $this->getDestinationsFromDb($this->destinations->getCardsInLocation('hand', $playerId));
+            $biomesCards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId));
 
-            foreach ($destinations as &$destination) {
+            foreach ($biomesCards as &$destination) {
                 $completed = boolval(self::getUniqueValueFromDb("SELECT `completed` FROM `destination` WHERE `card_id` = $destination->id"));
                 if ($completed) {
                     $completedDestinationsCount[$playerId]++;

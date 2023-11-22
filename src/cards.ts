@@ -49,7 +49,7 @@ class CardsManager extends CardManager<NimaliaCard> {
     }
 
     private setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
-        const destinationsUrl = `${g_gamethemeurl}img/destinations.jpg`;
+        const destinationsUrl = `${g_gamethemeurl}img/biomesCards.jpg`
         cardDiv.style.backgroundImage = `url('${destinationsUrl}')`;
         const imagePosition = cardType - 1;
         const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW);

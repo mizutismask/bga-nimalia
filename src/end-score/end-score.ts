@@ -16,10 +16,10 @@ class EndScore {
             dojo.place(
                 `
                 <th></th>
-                <th id="th-destination-reached-score" class="">_("Destinations reached")</th>
-                <th id="th-revealed-tokens-back-score" class="">_("Revealed destinations reached")</th>
-                <th id="th-destination-unreached-score" class="">_("Destinations not reached")</th>
-                <th id="th-revelead-tokens-left-score" class="">$("Revealed destinations not reached")</th>
+                <th id="th-destination-reached-score" class="">_("biomesCards reached")</th>
+                <th id="th-revealed-tokens-back-score" class="">_("Revealed biomesCards reached")</th>
+                <th id="th-destination-unreached-score" class="">_("biomesCards not reached")</th>
+                <th id="th-revelead-tokens-left-score" class="">$("Revealed biomesCards not reached")</th>
                 <th id="th-total-score" class="">_("Total")</th>
             `,
                 headers

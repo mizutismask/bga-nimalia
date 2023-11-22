@@ -2315,7 +2315,7 @@ var CardsManager = /** @class */ (function (_super) {
         return tooltip;
     };
     CardsManager.prototype.setFrontBackground = function (cardDiv, cardType) {
-        var destinationsUrl = "".concat(g_gamethemeurl, "img/destinations.jpg");
+        var destinationsUrl = "".concat(g_gamethemeurl, "img/biomesCards.jpg");
         cardDiv.style.backgroundImage = "url('".concat(destinationsUrl, "')");
         var imagePosition = cardType - 1;
         var row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW);
@@ -2513,7 +2513,7 @@ var Nimalia = /** @class */ (function () {
         this.actionTimerId = null;
         this.isTouch = window.matchMedia('(hover: none)').matches;
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
-        this.settings = []; //[new Setting('customSounds', 'pref', 201)];
+        this.settings = [new Setting('customSounds', 'pref', 1)];
         console.log('nimalia constructor');
         // Here, you can init the global variables of your user interface
         // Example:
@@ -2824,9 +2824,10 @@ var Nimalia = /** @class */ (function () {
         this.setTooltip('show-settings', _('Display some settings about the game.'));
         var container = $('settings-controls-container');
         this.settings.forEach(function (setting) {
+            var _a;
             if (setting.type == 'pref') {
                 // Pref type => just move the user pref around
-                dojo.place($('preference_control_' + setting.prefId).parentNode.parentNode, container);
+                dojo.place((_a = $('preference_control_' + setting.prefId).parentNode) === null || _a === void 0 ? void 0 : _a.parentNode, container);
             }
         });
     };
@@ -3147,7 +3148,7 @@ var EndScore = /** @class */ (function () {
         this.bestScore = bestScore;
         var headers = document.getElementById("scoretr");
         if (!headers.childElementCount) {
-            dojo.place("\n                <th></th>\n                <th id=\"th-destination-reached-score\" class=\"\">_(\"Destinations reached\")</th>\n                <th id=\"th-revealed-tokens-back-score\" class=\"\">_(\"Revealed destinations reached\")</th>\n                <th id=\"th-destination-unreached-score\" class=\"\">_(\"Destinations not reached\")</th>\n                <th id=\"th-revelead-tokens-left-score\" class=\"\">$(\"Revealed destinations not reached\")</th>\n                <th id=\"th-total-score\" class=\"\">_(\"Total\")</th>\n            ", headers);
+            dojo.place("\n                <th></th>\n                <th id=\"th-destination-reached-score\" class=\"\">_(\"biomesCards reached\")</th>\n                <th id=\"th-revealed-tokens-back-score\" class=\"\">_(\"Revealed biomesCards reached\")</th>\n                <th id=\"th-destination-unreached-score\" class=\"\">_(\"biomesCards not reached\")</th>\n                <th id=\"th-revelead-tokens-left-score\" class=\"\">$(\"Revealed biomesCards not reached\")</th>\n                <th id=\"th-total-score\" class=\"\">_(\"Total\")</th>\n            ", headers);
         }
         players.forEach(function (player) {
             var playerId = Number(player.id);

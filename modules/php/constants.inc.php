@@ -4,7 +4,14 @@
  * Game constants 
  */
 //define('INITIAL_ARROW_COUNT', 45);
+const LAND_JUNGLE = 1;
+const LAND_WATER = 2;
+const LAND_SNOW = 3;
+const LAND_SAND = 4;
 
+const ANIMAL_FLAMINGO = 1;
+const ANIMAL_LION = 2;
+const ANIMAL_BEAR = 3;
 
 /**
  * Options

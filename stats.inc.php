@@ -65,7 +65,7 @@ $stats_type = [
 
        /* "game_pointsWithPlayerCompletedDestinations" => [
             "id" => 20,
-            "name" => totranslate("Completed player destinations"),
+            "name" => totranslate("Completed player biomesCards"),
             "type" => "int"
         ],
         */

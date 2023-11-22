@@ -1,36 +1,36 @@
 <?php
 
-//require_once(__DIR__ . '/objects/destination.php');
+require_once(__DIR__ . '/objects/BiomesCard.php');
 
-trait DestinationDeckTrait {
+trait BiomesCard {
 
     /**
-     * Create destination cards.
+     * Create cards.
      */
-   /* public function createDestinations() {
-        $destinations = $this->getDestinationToGenerate();
+    public function createBiomes() {
+        $biomesCards = $this->getBiomesToGenerate();
 
-        $this->destinations->createCards($destinations, 'deck');
-        $this->destinations->shuffle('deck');
-    }*/
+        $this->biomesCards->createCards($biomesCards, 'deck');
+        $this->biomesCards->shuffle('deck');
+    }
 
     /**
      * Pick destination cards for beginning choice.
      */
-   /* public function pickInitialDestinationCards(int $playerId) {
-        $cardsNumber = $this->getInitialDestinationCardNumber();
-        $cards = $this->pickDestinationCards($playerId, $cardsNumber);
-        $this->keepInitialDestinationCards($playerId, $this->getDestinationIds($cards), $this->getInitialDestinationCardNumber());
+    public function pickInitialCards(int $playerId) {
+        $cardsNumber = $this->getInitialBiomesCardNumber();
+        $cards = $this->pickCards($playerId, $cardsNumber);
+        $this->keepCards($playerId, $this->getIds($cards), $this->getInitialBiomesCardNumber());
         return $cards;
-    }*/
+    }
 
-   /* public function checkVisibleSharedCardsAreEnough() {
-        $visibleCardsCount = intval($this->destinations->countCardInLocation('shared'));
+    /* public function checkVisibleSharedCardsAreEnough() {
+        $visibleCardsCount = intval($this->biomesCards->countCardInLocation('shared'));
         if ($visibleCardsCount < NUMBER_OF_SHARED_DESTINATION_CARDS) {
             $spots = [];
             $citiesNames = [];
             for ($i = $visibleCardsCount; $i < NUMBER_OF_SHARED_DESTINATION_CARDS; $i++) {
-                $newCard = $this->getDestinationFromDb($this->destinations->pickCardForLocation('deck', 'shared', $i));
+                $newCard = $this->getBiomesCardFromDb($this->biomesCards->pickCardForLocation('deck', 'shared', $i));
                 $citiesNames[] = $this->CITIES[$newCard->to];
                 $spots[] = $newCard;
             }
@@ -45,7 +45,7 @@ trait DestinationDeckTrait {
      * Pick destination cards for pick destination action.
      */
     public function pickAdditionalDestinationCards(int $playerId) {
-        return $this->pickDestinationCards($playerId, $this->getAdditionalDestinationCardNumber());
+        return $this->pickCards($playerId, $this->getAdditionalDestinationCardNumber());
     }
 
     /**
@@ -60,36 +60,36 @@ trait DestinationDeckTrait {
      * Get destination picked cards (cards player can choose).
      */
     public function getPickedDestinationCards(int $playerId) {
-        $cards = $this->getDestinationsFromDb($this->destinations->getCardsInLocation("pick$playerId"));
+        $cards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("pick$playerId"));
         return $cards;
     }
 
     /**
-     * Get destination cards in player hand.
+     * Get cards in player hand.
      */
-    public function getPlayerDestinationCards(int $playerId) {
-        $cards = $this->getDestinationsFromDb($this->destinations->getCardsInLocation("hand", $playerId));
+    public function getPlayerCards(int $playerId) {
+        $cards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("hand", $playerId));
         return $cards;
     }
 
     /**
-     * get remaining destination cards in deck.
+     * get remaining cards in deck.
      */
-    public function getRemainingDestinationCardsInDeck() {
-        $remaining = intval($this->destinations->countCardInLocation('deck'));
+    public function getRemainingCardsInDeck() {
+        $remaining = intval($this->biomesCards->countCardInLocation('deck'));
 
         if ($remaining == 0) {
-            $remaining = intval($this->destinations->countCardInLocation('discard'));
+            $remaining = intval($this->biomesCards->countCardInLocation('discard'));
         }
 
         return $remaining;
     }
 
     /**
-     * place a number of destinations cards to pick$playerId.
+     * place a number of biomesCards cards to pick$playerId.
      */
-    private function pickDestinationCards($playerId, int $number) {
-        $cards = $this->getDestinationsFromDb($this->destinations->pickCardsForLocation($number, 'deck', "pick$playerId"));
+    private function pickCards($playerId, int $number) {
+        $cards = $this->getBiomesCardsFromDb($this->biomesCards->pickCardsForLocation($number, 'deck', "pick$playerId"));
         return $cards;
     }
 
@@ -108,25 +108,25 @@ trait DestinationDeckTrait {
             ) {
                 throw new BgaUserException("Selected cards are not available.");
             }
-            $this->destinations->moveCard($keptDestinationsId, 'hand', $playerId);
-            $this->destinations->moveCard($discardedDestinationId, 'discard');
+            $this->biomesCards->moveCard($keptDestinationsId, 'hand', $playerId);
+            $this->biomesCards->moveCard($discardedDestinationId, 'discard');
 
-            $remainingCardsInPick = intval($this->destinations->countCardInLocation("pick$playerId"));
+            $remainingCardsInPick = intval($this->biomesCards->countCardInLocation("pick$playerId"));
             if ($remainingCardsInPick > 0) {
                 // we discard remaining cards in pick
-                $this->destinations->moveAllCardsInLocationKeepOrder("pick$playerId", 'discard');
+                $this->biomesCards->moveAllCardsInLocationKeepOrder("pick$playerId", 'discard');
             }
         }
-        $this->notifyAllPlayers('destinationsPicked', clienttranslate('${player_name} trades ${count} destination'), [
+        $this->notifyAllPlayers('cardsPicked', clienttranslate('${player_name} trades ${count} destination'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'count' => intval($traded),
             'number' => 0, //1-1 or 0-0
-            'remainingDestinationsInDeck' => $this->getRemainingDestinationCardsInDeck(),
+            'remainingCardsInDeck' => $this->getRemainingCardsInDeck(),
             '_private' => [
                 $playerId => [
-                    'destinations' => $this->getDestinationsFromDb([$this->destinations->getCard($keptDestinationsId)]),
-                    'discardedDestination' => $this->getDestinationFromDb($this->destinations->getCard($discardedDestinationId)),
+                    'biomesCards' => $this->getBiomesCardsFromDb([$this->biomesCards->getCard($keptDestinationsId)]),
+                    'discardedDestination' => $this->getBiomesCardFromDb($this->biomesCards->getCard($discardedDestinationId)),
                 ],
             ],
         ]);
@@ -135,17 +135,17 @@ trait DestinationDeckTrait {
     /**
      * Move selected cards to player hand.
      */
-    private function keepInitialDestinationCards(int $playerId, array $ids) {
-        $this->destinations->moveCards($ids, 'hand', $playerId);
-        $this->notifyAllPlayers('destinationsPicked', clienttranslate('${player_name} keeps ${count} destinations'), [
+    private function  keepCards(int $playerId, array $ids) {
+        $this->biomesCards->moveCards($ids, 'hand', $playerId);
+        $this->notifyAllPlayers('cardsPicked', clienttranslate('${player_name} gets ${count} card(s)'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'count' => count($ids),
             'number' => count($ids),
-            'remainingDestinationsInDeck' => $this->getRemainingDestinationCardsInDeck(),
+            'remainingCardsInDeck' => $this->getRemainingCardsInDeck(),
             '_private' => [
                 $playerId => [
-                    'destinations' => $this->getDestinationsFromDb($this->destinations->getCards($ids)),
+                    'biomesCards' => $this->getBiomesCardsFromDb($this->biomesCards->getCards($ids)),
                 ],
             ],
         ]);
