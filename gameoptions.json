@@ -1,1 +1,20 @@
-{}
+{
+	"100": {
+		"name": "Goals level",
+		"values": {
+            "0": {
+				"name": "Random"
+			},
+			"1": {
+				"name": "Easy"
+			},
+			"2": {
+				"name": "Medium"
+			},
+			"3": {
+				"name": "Difficult"
+			}
+		},
+		"default": 0
+	}
+}

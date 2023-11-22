@@ -2,13 +2,13 @@
 
 class Goal̤{
     public int $id;
-    public int $difficulty;
+    public int $level;
     public int $color;
 
-    
-    public function __construct(int $id, int $difficulty, int $color) {
+
+    public function __construct(int $id, int $level, int $color) {
         $this->id = $id;
-        $this->difficulty = $difficulty;
+        $this->level = $level;
         $this->color = $color;
     }
 }

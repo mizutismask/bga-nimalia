@@ -34,9 +34,13 @@ $this->card_types = array(
 
 $this->GOALS = [
   new Goal̤(1, LEVEL_EASY, GOAL_RED),
-  new Goal̤(2, LEVEL_EASY, GOAL_BLUE),
-  new Goal̤(3, LEVEL_EASY, GOAL_GREEN),
-  new Goal̤(4, LEVEL_EASY, GOAL_YELLOW),
+  new Goal̤(2, LEVEL_MEDIUM, GOAL_RED),
+  new Goal̤(3, LEVEL_EASY, GOAL_BLUE),
+  new Goal̤(4, LEVEL_MEDIUM, GOAL_BLUE),
+  new Goal̤(5, LEVEL_MEDIUM, GOAL_GREEN),
+  new Goal̤(6, LEVEL_EASY, GOAL_GREEN),
+  new Goal̤(7, LEVEL_MEDIUM, GOAL_YELLOW),
+  new Goal̤(8, LEVEL_EASY, GOAL_YELLOW),
 ];
 
 

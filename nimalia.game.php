@@ -53,7 +53,7 @@ class Nimalia extends Table
             LAST_TURN => 10, // last turn is the id of the last player, 0 if it's not last turn
             //    "my_second_global_variable" => 11,
             //      ...
-            //    "my_first_game_variant" => 100,
+            GOAL_LEVEL => 100,
             //    "my_second_game_variant" => 101,
             //      ...
         ) );  
