@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
@@ -20,29 +21,24 @@
  * this.ajaxcall( "/nimalia/nimalia/myAction.html", ...)
  *
  */
-  
-  
-  class action_nimalia extends APP_GameAction
-  { 
+
+
+class action_nimalia extends APP_GameAction {
     // Constructor: please do not modify
-   	public function __default()
-  	{
-  	    if( self::isArg( 'notifwindow') )
-  	    {
+    public function __default() {
+        if (self::isArg('notifwindow')) {
             $this->view = "common_notifwindow";
-  	        $this->viewArgs['table'] = self::getArg( "table", AT_posint, true );
-  	    }
-  	    else
-  	    {
+            $this->viewArgs['table'] = self::getArg("table", AT_posint, true);
+        } else {
             $this->view = "nimalia_nimalia";
-            self::trace( "Complete reinitialization of board game" );
-      }
-  	} 
-  	
-  	// TODO: defines your action entry points there
+            self::trace("Complete reinitialization of board game");
+        }
+    }
+
+    // TODO: defines your action entry points there
 
 
-     /*
+    /*
     
     Example:
   	
@@ -63,6 +59,20 @@
     
     */
 
-  }
-  
+    public function placeCard() {
+        self::setAjaxMode();
 
+        $cardId = self::getArg("cardId", AT_posint, true);
+        $squareId = self::getArg("squareId", AT_posint, true);
+        $rotation = self::getArg("rotation", AT_posint, true);
+
+        $this->game->placeCard($cardId, $squareId, $rotation);
+        self::ajaxResponse();
+    }
+
+    public function undoPlaceCard() {
+        self::setAjaxMode();
+        $this->game->undoPlaceCard();
+        self::ajaxResponse();
+    }
+}

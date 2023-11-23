@@ -73,6 +73,18 @@ trait BiomesCardTrait {
     }
 
     /**
+     * Get cards in player grid.
+     */
+    public function getGridCards(int $playerId) {
+        $cards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid", $playerId));
+        return $cards;
+    }
+
+    public function getCard(int $cardId): BiomeCard {
+        return $this->getBiomesCardFromDb($this->biomesCards->getCard($cardId));
+    }
+
+    /**
      * get remaining cards in deck.
      */
     public function getRemainingCardsInDeck() {
@@ -135,7 +147,7 @@ trait BiomesCardTrait {
     /**
      * Move selected cards to player hand.
      */
-    private function  keepCards(int $playerId, array $ids) {
+    private function keepCards(int $playerId, array $ids) {
         $this->biomesCards->moveCards($ids, 'hand', $playerId);
         $this->notifyAllPlayers('cardsPicked', clienttranslate('${player_name} gets ${count} card(s)'), [
             'playerId' => $playerId,
@@ -149,5 +161,25 @@ trait BiomesCardTrait {
                 ],
             ],
         ]);
+    }
+
+    public function moveCardToReserve(int $playerId, int $cardId, int $squareId, int $rotation) {
+        //todo keep order
+        $this->biomesCards->moveCard($cardId, 'grid', $playerId);
+        $this->updatePlayer($playerId, PLAYER_FIELD_LAST_PLACED_CARD, $cardId);
+        $recipient = $this->getRecipientPlayer();
+        $this->biomesCards->moveAllCardsInLocation('hand', 'nextchoice', $playerId, $recipient);
+    }
+
+    public function undoMoveCardToReserve(int $playerId, int $cardId) {
+        $this->biomesCards->moveCard($cardId, 'hand', $playerId);
+        $this->updatePlayer($playerId, PLAYER_FIELD_LAST_PLACED_CARD, 0);
+        $recipient = $this->getRecipientPlayer();
+        $this->biomesCards->moveAllCardsInLocation('nextchoice', 'hand', $recipient, $playerId);
+    }
+
+    public function getDraftedCards(){
+        $this->biomesCards->moveAllCardsInLocationKeepOrder('nextchoice', 'hand');
+        //todo notify
     }
 }

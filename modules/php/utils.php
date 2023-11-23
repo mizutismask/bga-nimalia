@@ -88,10 +88,15 @@ trait UtilTrait {
         $this->DbQuery("DELETE FROM `global_variables` where `name` = '$name'");
     }
 
+    function incGlobalVariable(string $globalVariableName, int $value) {
+        $old = $this->getGameStateValue($globalVariableName);
+        $this->setGameStateValue($globalVariableName, $old + $value);
+    }
+
     /**
      * Transforms a BiomesCard Db object to BiomesCard class.
      */
-    function getBiomesCardFromDb($dbObject) {
+    function getBiomesCardFromDb($dbObject): BiomeCard {
         if (!$dbObject || !array_key_exists('id', $dbObject)) {
             throw new BgaSystemException("BiomesCard doesn't exists " . json_encode($dbObject));
         }
@@ -99,6 +104,13 @@ trait UtilTrait {
         self::dump('************type_arg*******', $dbObject["type_arg"]);
         self::dump('*******************', $this->BIOMES_CARDS[$dbObject["type"]][$dbObject["type_arg"]]);
         return new BiomeCard($dbObject, $this->BIOMES_CARDS);
+    }
+
+    /** Gets the next player after a given playerId if the round is clockwise, or the previous player if not. */
+    function getRecipientPlayer(int $playerId) {
+        if ($this->isClockWisePlayerOrder())
+            return self::getPlayerAfter($playerId);
+        return self::getPlayerBefore($playerId);
     }
 
     /**
@@ -135,6 +147,9 @@ trait UtilTrait {
         return $class;
     }*/
 
+    function isCardCoveringAnotherCard(int $player, BiomeCard $cardId, int $squareId) {
+        return true;
+    }
 
     function getNonZombiePlayersIds() {
         $sql = "SELECT player_id FROM player WHERE player_eliminated = 0 AND player_zombie = 0 ORDER BY player_no";
@@ -179,6 +194,18 @@ trait UtilTrait {
             'points' => $this->getPlayerScore($playerId),
             'delta' => $delta,
         ] + $messageArgs);
+    }
+
+    function updatePlayer(int $playerId, String $field, int $newValue) {
+        $this->DbQuery("UPDATE player SET $field = $newValue WHERE player_id = $playerId");
+    }
+
+    function updatePlayersExceptOne(int $playerId, String $field, int $newValue) {
+        $this->DbQuery("UPDATE player SET $field = $newValue WHERE player_id != $playerId");
+    }
+
+    function getPlayerFieldValue(int $playerId, String $field) {
+        return self::getUniqueValueFromDB("select $field from player WHERE player_id = $playerId");
     }
 
     /**

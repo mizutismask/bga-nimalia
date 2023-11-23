@@ -28,7 +28,13 @@ const LEVEL_EASY = 1;
 const LEVEL_MEDIUM = 2;
 const LEVEL_DIFFICULT = 3;
 
-const GOAL_COLORS=[GOAL_RED, GOAL_BLUE, GOAL_GREEN, GOAL_YELLOW];
+const GOAL_COLORS = [GOAL_RED, GOAL_BLUE, GOAL_GREEN, GOAL_YELLOW];
+
+/**
+ * SQL constants
+ */
+define('PLAYER_FIELD_LAST_PLACED_CARD', 'last_card_placed');
+
 /**
  * Options
  */
@@ -56,14 +62,14 @@ define('END_SCORE', 100);
  */
 
 define('LAST_TURN', 'LAST_TURN');
-define('ROUND', 'ROUND');
 define('GOAL_LEVEL', 'GOAL_LEVEL');
 
 
 /*
- * Global variables (objects)
- */
-//define('LAST_BLUE_ROUTES', 'LAST_BLUE_ROUTES'); //array of the 3 last arrows
+* Global variables (objects)
+*/
+define('ROUND', 'ROUND');
+
 
 /*
     Stats

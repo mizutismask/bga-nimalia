@@ -23,20 +23,33 @@ trait ActionTrait {
         $this->gamestate->nextState('continue');
     }*/
 
-    function pass() {
-        self::checkAction('pass');
+    public function placeCard(int $cardId, int $squareId, int $rotation) {
+        self::checkAction('placeCard');
+        $playerId = intval(self::getCurrentPlayerId());
+        $card = $this->getCard($cardId);
+        if ($card->location != 'hand' || $card->location_arg != $playerId)
+            throw new BgaUserException("You can’t place this card: " . $card->type);
+        if ($rotation % 90 != 0)
+            throw new BgaVisibleSystemException("Rotation is not a correct value: " . $rotation);
+        if ($squareId >= 5 || $squareId < 1)
+            throw new BgaUserException("You can’t place a card outside of the 6x6 grid: " . $squareId);
+        if (count($this->getGridCards($playerId)) != 0 && !$this->isCardCoveringAnotherCard($playerId, $card, $squareId))
+            throw new BgaUserException("You have to to cover a part of your existing animal reserve");
 
-        $args = $this->argChooseAction();
+        $this->moveCardToReserve($playerId,  $cardId,  $squareId,  $rotation);
 
-        if (!$args['canPass']) {
-            throw new BgaUserException("You cannot pass");
-        }
-
-        $this->gamestate->nextState('nextPlayer');
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'cardPlaced');
     }
 
-    function incGlobalVariable(string $globalVariableName, int $value) {
-        $old = $this->getGameStateValue($globalVariableName);
-        $this->setGameStateValue($globalVariableName, $old + $value);
+
+    public function undoPlaceCard() {
+        self::checkAction('undoPlaceCard');
+        $playerId = intval(self::getCurrentPlayerId());
+        $cardId = $this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD);
+        if (!$cardId) {
+            throw new BgaVisibleSystemException(self::_("Your last move was not saved, undo is not available"));
+        }
+        $this->undoMoveCardToReserve($playerId,  $cardId);
+        $this->gamestate->setPlayersMultiactive([$playerId], "ignored");
     }
 }

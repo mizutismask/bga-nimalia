@@ -52,6 +52,7 @@ class Nimalia extends Table
         self::initGameStateLabels( array( 
             LAST_TURN => 10, // last turn is the id of the last player, 0 if it's not last turn
             ROUND => 11, // round number, from 1 to 5
+            PLAYER_FIELD_LAST_PLACED_CARD => 12, // last card played, to enable undo
             //    "my_second_global_variable" => 11,
             //      ...
             GOAL_LEVEL => 100,
