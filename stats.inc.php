@@ -47,13 +47,7 @@
     
 */
 
-$commonStats = [
-    "turnsNumber" => [
-        "id" => 10,
-        "name" => totranslate("Number of turns"),
-        "type" => "int"
-    ],
-];
+$commonStats = [];
 
 $stats_type = [
 
@@ -63,12 +57,71 @@ $stats_type = [
     // Statistics existing for each player. Prefix "game_" is important for auto initialization.
     "player" => $commonStats + [
 
-       /* "game_pointsWithPlayerCompletedDestinations" => [
+        "game_pointsRound1" . GOAL_BLUE => [
             "id" => 20,
-            "name" => totranslate("Completed player biomesCards"),
+            "name" => totranslate("Round 1: blue goal"),
             "type" => "int"
         ],
-        */
+        "game_pointsRound1" . GOAL_GREEN => [
+            "id" => 21,
+            "name" => totranslate("Round 1: green goal"),
+            "type" => "int"
+        ],
+
+        "game_pointsRound2" . GOAL_GREEN => [
+            "id" => 22,
+            "name" => totranslate("Round 2: green goal"),
+            "type" => "int"
+        ],
+        "game_pointsRound2" . GOAL_YELLOW => [
+            "id" => 23,
+            "name" => totranslate("Round 2: yellow goal"),
+            "type" => "int"
+        ],
+
+        "game_pointsRound3" . GOAL_BLUE => [
+            "id" => 24,
+            "name" => totranslate("Round 3: blue goal"),
+            "type" => "int"
+        ],
+        "game_pointsRound3" . GOAL_RED => [
+            "id" => 25,
+            "name" => totranslate("Round 3: red goal"),
+            "type" => "int"
+        ],
+
+        "game_pointsRound4" . GOAL_GREEN => [
+            "id" => 26,
+            "name" => totranslate("Round 4: green goal"),
+            "type" => "int"
+        ],
+        "game_pointsRound4" . GOAL_YELLOW => [
+            "id" => 27,
+            "name" => totranslate("Round 4: yellow goal"),
+            "type" => "int"
+        ],
+        "game_pointsRound4" . GOAL_RED => [
+            "id" => 28,
+            "name" => totranslate("Round 4: red goal"),
+            "type" => "int"
+        ],
+
+        "game_pointsRound5" . GOAL_BLUE => [
+            "id" => 29,
+            "name" => totranslate("Round 5: blue goal"),
+            "type" => "int"
+        ],
+        "game_pointsRound5" . GOAL_RED => [
+            "id" => 30,
+            "name" => totranslate("Round 5: red goal"),
+            "type" => "int"
+        ],
+        "game_pointsRound5" . GOAL_YELLOW => [
+            "id" => 31,
+            "name" => totranslate("Round 5: yellow goal"),
+            "type" => "int"
+        ],
+
     ],
 
 ];

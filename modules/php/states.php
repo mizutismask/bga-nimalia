@@ -40,58 +40,51 @@ trait StateTrait {
     function stScore() {
         $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ORDER BY player_no ASC";
         $players = self::getCollectionFromDb($sql);
+        $round = self::getGameStateValue(ROUND);
 
-        // points gained during the game
+        // points gained during previous rounds
         $totalScore = [];
         foreach ($players as $playerId => $playerDb) {
             $totalScore[$playerId] = intval($playerDb['score']);
         }
 
-        //end of game points
-
-        // failed biomesCards 
-        /* $destinationsResults = [];
-        $completedDestinationsCount = [];
-        foreach ($players as $playerId => $playerDb) {
-            $completedDestinationsCount[$playerId] = 0;
-            $uncompletedDestinations = [];
-            $completedDestinations = [];
-
-            $biomesCards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId));
-
-            foreach ($biomesCards as &$destination) {
-                $completed = boolval(self::getUniqueValueFromDb("SELECT `completed` FROM `destination` WHERE `card_id` = $destination->id"));
-                if ($completed) {
-                    $completedDestinationsCount[$playerId]++;
-                    $completedDestinations[] = $destination;
-                    self::incStat(1, STAT_POINTS_WITH_PLAYER_COMPLETED_DESTINATIONS, $playerId);
-                } else {
-                    $totalScore[$playerId] += -1;
-                    self::incScore($playerId, -1);
-                    if ($this->isDestinationRevealed($destination->id)) {
-                        $totalScore[$playerId] += -1;
-                        self::incScore($playerId, -1);
-                        self::incStat(-1, STAT_POINTS_WITH_REVEALED_DESTINATIONS, $playerId);
-                    }
-                    self::incStat(1, STAT_POINTS_LOST_WITH_UNCOMPLETED_DESTINATIONS, $playerId);
-                    $uncompletedDestinations[] = $destination;
-                }
+        //this round points
+        $roundScores = [];
+        foreach ($this->getRoundGoals() as $goal) {
+            foreach ($players as $playerId => $playerDb) {
+                $score = $this->calculateGoalPoints($goal, $playerId);
+                self::incStat($score, "game_pointsRound" . $round . $goal->color, $playerId);
+                self::incScore($playerId, $score);
+                $roundScores[$playerId] += $score;
+                $totalScore[$playerId] += $score;
             }
-
-            $destinationsResults[$playerId] = $uncompletedDestinations;
-        }
-*/
-        foreach ($players as $playerId => $playerDb) {
-            self::DbQuery("UPDATE player SET `player_score` = $totalScore[$playerId] where `player_id` = $playerId");
-            self::DbQuery("UPDATE player SET `player_score_aux` = `player_remaining_tickets` where `player_id` = $playerId");
         }
 
-        $bestScore = max($totalScore);
+        //round winner
+        $this->notifyWinner($players, $roundScores);
+
+        if($round==5){
+            //game winner
+            $this->notifyWinner($players, $totalScore);
+        }
+
+        if ($this->hasReachedEndOfGameRequirements(null)) {
+            if ($this->getBgaEnvironment() == 'studio') {
+                $this->gamestate->nextState('debugEndGame');
+            } else {
+                $this->gamestate->nextState('endGame');
+            }
+        } else {
+            $this->gamestate->nextState('nextRound');
+        }
+    }
+
+    function notifyWinner($players, $roundScores){
+        $bestScore = max($roundScores);
         $playersWithScore = [];
         foreach ($players as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
-            $player['ticketsCount'] = $this->getRemainingTicketsCount($playerId);
-            $player['score'] = $totalScore[$playerId];
+            $player['score'] = $roundScores[$playerId];
             $playersWithScore[$playerId] = $player;
         }
         self::notifyAllPlayers('bestScore', '', [
@@ -100,22 +93,12 @@ trait StateTrait {
         ]);
 
         // highlight winner(s)
-        foreach ($totalScore as $playerId => $playerScore) {
+        foreach ($roundScores as $playerId => $playerScore) {
             if ($playerScore == $bestScore) {
                 self::notifyAllPlayers('highlightWinnerScore', '', [
                     'playerId' => $playerId,
                 ]);
             }
-        }
-
-        if($this->hasReachedEndOfGameRequirements(null)){
-            if ($this->getBgaEnvironment() == 'studio') {
-                $this->gamestate->nextState('debugEndGame');
-            } else {
-                $this->gamestate->nextState('endGame');
-            }
-        }else{
-            $this->gamestate->nextState('nextRound');
         }
     }
 }

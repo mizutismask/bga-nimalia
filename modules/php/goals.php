@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/objects/Goal.php');
 trait GoalTrait {
 
+    /** Choose the goals used for the entire game, at the beginning of it, according to level options. */
     public function selectGoals() {
         $goals = [];
         foreach (GOAL_COLORS as $color) {
@@ -17,6 +18,7 @@ trait GoalTrait {
         $this->setGlobalVariable("GOALS", $goals);
     }
 
+    /** Returns only goals that applies to the current round. */
     public function getRoundGoals() {
         $round = intval(self::getGameStateValue(ROUND));
         $goals = $this->getGlobalVariable("GOALS", true);
@@ -35,5 +37,10 @@ trait GoalTrait {
             default:
                 throw new BgaVisibleSystemException("this round is never supposed to happen : " . $round);
         }
+    }
+
+    /** Calculates points for a given goal and a given player. Called at the end of each round. */
+    public function calculateGoalPoints($goal, $playerId) {
+        return 0;
     }
 }
