@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
@@ -49,7 +50,7 @@
 
 //    !! It is not a good idea to modify this file when a game is running !!
 require_once("modules/php/constants.inc.php");
- 
+
 $basicGameStates = [
 
     // The initial state. Please do not modify.
@@ -82,22 +83,14 @@ $basicGameStates = [
 
 $playerActionsGameStates = [
 
-    ST_PLAYER_CHOOSE_ACTION => [
-        "name" => "chooseAction",
-        "description" => clienttranslate('${actplayer} must start/continue an expedition or use tickets'),
-        "descriptionmyturn" => clienttranslate('${you} must start/continue an expedition or use tickets'),
-        "descriptionLoop" => clienttranslate('${actplayer} made a loop and has to continue the expedition'),
-        "descriptionmyturnLoop" => clienttranslate('${you} made a loop and have to continue the expedition from any point'),
-        "type" => "activeplayer",
-        "args" => "argChooseAction",
-        "possibleactions" => [
-            "pass",
-        ],
-        "transitions" => [
-            "nextPlayer" => ST_NEXT_PLAYER,
-            "continue" => ST_PLAYER_CHOOSE_ACTION,
-        ]
-    ],
+    ST_PLACE_CARD => array(
+        "name" => "placeCard",
+        "description" => clienttranslate('Everyone must place a card on the animal reserve'),
+        "descriptionmyturn" => clienttranslate('${you} must place a card on your animal reserve'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array("placeCard", "undoPlaceCard"),
+        "transitions" => array("cardPlaced" => ST_MOVE_REVEAL)
+    ),
 ];
 
 $gameGameStates = [
@@ -107,28 +100,40 @@ $gameGameStates = [
         "type" => "game",
         "action" => "stDealInitialSetup",
         "transitions" => [
-            "" => ST_NEXT_PLAYER,
+            "" => ST_NEXT_ROUND,
         ],
     ],
 
-    ST_NEXT_PLAYER => [
-        "name" => "nextPlayer",
+    ST_NEXT_ROUND => [
+        "name" => "nextRound",
         "description" => "",
         "type" => "game",
-        "action" => "stNextPlayer",
+        "action" => "stNextRound",
         "updateGameProgression" => true,
         "transitions" => [
-            "nextPlayer" => ST_PLAYER_CHOOSE_ACTION,
-            "endScore" => ST_END_SCORE,
+            "" => ST_PLACE_CARD,
         ],
     ],
 
-    ST_END_SCORE => [
-        "name" => "endScore",
+    ST_MOVE_REVEAL => [
+        "name" => "moveReveal",
         "description" => "",
         "type" => "game",
-        "action" => "stEndScore",
+        "action" => "stMoveReveal",
+        "updateGameProgression" => true,
         "transitions" => [
+            "nextCard" => ST_PLACE_CARD,
+            "endScore" => ST_SCORE,
+        ],
+    ],
+
+    ST_SCORE => [
+        "name" => "score",
+        "description" => "",
+        "type" => "game",
+        "action" => "stScore",
+        "transitions" => [
+            "nextRound" => ST_NEXT_ROUND,
             "endGame" => ST_END_GAME,
             "debugEndGame" => ST_DEBUG_END_GAME,
         ],
@@ -136,6 +141,3 @@ $gameGameStates = [
 ];
 
 $machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
-
-
-

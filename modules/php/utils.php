@@ -18,6 +18,11 @@ trait UtilTrait {
         }
     }*/
 
+    function isClockWisePlayerOrder() {
+        $round = self::getGameStateValue(ROUND);
+        return $round == 1 || $round == 3 || $round == 5;
+    }
+
     function array_find(array $array, callable $fn) {
         foreach ($array as $value) {
             if ($fn($value)) {

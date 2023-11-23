@@ -12,60 +12,32 @@ trait StateTrait {
     */
 
     function stDealInitialSetup() {
-        $playersIds = $this->getPlayersIds();
-
-        foreach ($playersIds as $playerId) {
-            $this->pickInitialCards($playerId);
-        }
-
         $this->gamestate->nextState('');
     }
 
     function hasReachedEndOfGameRequirements($playerId): bool {
-        $playersIds = $this->getPlayersIds();
-
-        $end = false; //todo
-        if ($end && intval(self::getGameStateValue(LAST_TURN) == 0)) {
-            self::setGameStateValue(LAST_TURN, $this->getLastPlayer()); //we play until the last player to finish the round
-            if (!$this->isLastPlayer($playerId)) {
-                self::notifyAllPlayers('lastTurn', clienttranslate('${player_name} has no more destination cards, finishing round !'), [
-                    'playerId' => $playerId,
-                    'player_name' => $this->getPlayerName($playerId),
-                ]);
-            }
-        }
-        return $end;
+        return self::getGameStateValue(ROUND) >= 5;
     }
 
-    function stNextPlayer() {
+    function stMoveReveal() {
+    }
+
+    function stNextRound() {
         $playerId = self::getActivePlayerId();
 
-        self::incStat(1, 'turnsNumber');
-        self::incStat(1, 'turnsNumber', $playerId);
+        self::incGameStateValue(ROUND, 1);
 
-        //$this->setGameStateValue(TICKETS_USED, 0);
-        $lastTurn = intval(self::getGameStateValue(LAST_TURN));
-
-        // check if it was last action from the last player or if there is no arrow left
-        if (
-            $lastTurn == $playerId ||
-            ($this->hasReachedEndOfGameRequirements($playerId) && $this->isLastPlayer($playerId))
-        ) {
-            $this->gamestate->nextState('endScore');
-        } else {
-            //finishing round or playing normally
-            $playerId = self::activeNextPlayer();
-            self::giveExtraTime($playerId);
-            $this->gamestate->nextState('nextPlayer');
-            $this->notifyAllPlayers('msg', clienttranslate('&#10148; Start of ${player_name}\'s turn'), [
-                'playerId' => $playerId,
-                'player_name' => $this->getPlayerName($playerId),
-            ]);
+        $playersIds = $this->getPlayersIds();
+        foreach ($playersIds as $playerId) {
+            $this->pickInitialCards($playerId);
         }
+
+
+        $this->gamestate->nextState('');
     }
 
 
-    function stEndScore() {
+    function stScore() {
         $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ORDER BY player_no ASC";
         $players = self::getCollectionFromDb($sql);
 
@@ -136,10 +108,14 @@ trait StateTrait {
             }
         }
 
-        if ($this->getBgaEnvironment() == 'studio') {
-            $this->gamestate->nextState('debugEndGame');
-        } else {
-            $this->gamestate->nextState('endGame');
+        if($this->hasReachedEndOfGameRequirements(null)){
+            if ($this->getBgaEnvironment() == 'studio') {
+                $this->gamestate->nextState('debugEndGame');
+            } else {
+                $this->gamestate->nextState('endGame');
+            }
+        }else{
+            $this->gamestate->nextState('nextRound');
         }
     }
 }

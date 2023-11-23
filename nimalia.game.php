@@ -101,7 +101,7 @@ class Nimalia extends Table
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        self::setGameStateInitialValue( ROUND, 1 );
+        //self::setGameStateInitialValue( ROUND, 1 );
         //initialize everything to be compliant with undo framework
         //foreach ($this->GAMESTATELABELS as $value_label => $ID) if ($ID >= 10 && $ID < 90) $this->setGameStateInitialValue($value_label, 0);
 
