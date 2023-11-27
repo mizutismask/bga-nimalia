@@ -33,14 +33,28 @@ $this->card_types = array(
 */
 
 $this->GOALS = [
-  new Goal̤(1, LEVEL_EASY, GOAL_RED),
-  new Goal̤(2, LEVEL_MEDIUM, GOAL_RED),
+  new Goal̤(1, LEVEL_MEDIUM, GOAL_YELLOW),
+  new Goal̤(2, LEVEL_DIFFICULT, GOAL_BLUE),
   new Goal̤(3, LEVEL_EASY, GOAL_BLUE),
-  new Goal̤(4, LEVEL_MEDIUM, GOAL_BLUE),
-  new Goal̤(5, LEVEL_MEDIUM, GOAL_GREEN),
-  new Goal̤(6, LEVEL_EASY, GOAL_GREEN),
+  new Goal̤(4, LEVEL_EASY, GOAL_YELLOW),
+  new Goal̤(5, LEVEL_EASY, GOAL_BLUE),
+  new Goal̤(6, LEVEL_MEDIUM, GOAL_YELLOW),
   new Goal̤(7, LEVEL_MEDIUM, GOAL_YELLOW),
-  new Goal̤(8, LEVEL_EASY, GOAL_YELLOW),
+  new Goal̤(8, LEVEL_EASY, GOAL_GREEN),
+  new Goal̤(9, LEVEL_DIFFICULT, GOAL_BLUE),
+  new Goal̤(10, LEVEL_DIFFICULT, GOAL_YELLOW),
+  new Goal̤(11, LEVEL_MEDIUM, GOAL_BLUE),
+  new Goal̤(12, LEVEL_MEDIUM, GOAL_GREEN),
+  new Goal̤(13, LEVEL_EASY, GOAL_RED),
+  new Goal̤(14, LEVEL_MEDIUM, GOAL_GREEN),
+  new Goal̤(15, LEVEL_DIFFICULT, GOAL_YELLOW),
+  new Goal̤(16, LEVEL_MEDIUM, GOAL_RED),
+  new Goal̤(17, LEVEL_MEDIUM, GOAL_GREEN),
+  new Goal̤(18, LEVEL_MEDIUM, GOAL_RED),
+  new Goal̤(19, LEVEL_EASY, GOAL_GREEN),
+  new Goal̤(20, LEVEL_EASY, GOAL_RED),
+  new Goal̤(21, LEVEL_MEDIUM, GOAL_RED),
+  new Goal̤(22, LEVEL_MEDIUM, GOAL_GREEN),
 ];
 
 
