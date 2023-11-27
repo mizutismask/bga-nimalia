@@ -18,6 +18,9 @@ const ANIMAL_OTTER = 7;
 const ANIMAL_PANDA = 8;
 const ANIMAL_PINGUIN = 9;
 
+const RIVER_UP = 1;
+const RIVER_DOWN = 2;
+
 const GOAL_GREEN = 1;
 const GOAL_BLUE = 2;
 const GOAL_RED = 3;
