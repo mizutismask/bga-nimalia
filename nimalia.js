@@ -2496,7 +2496,7 @@ var Nimalia = /** @class */ (function () {
     //                  You can use this method to perform some user interface changes at this moment.
     //
     Nimalia.prototype.onEnteringState = function (stateName, args) {
-        console.log('Entering state: ' + stateName);
+        console.log('Entering state: ' + stateName, args);
         switch (stateName) {
             /* Example:
         
@@ -2507,11 +2507,22 @@ var Nimalia = /** @class */ (function () {
             
             break;
         */
-            case 'dummmy':
+            case 'placeCard':
+                this.onEnteringPlaceCard(args.args);
                 break;
         }
         if (this.gameFeatures.spyOnActivePlayerInGeneralActions) {
             this.addArrowsToActivePlayer(args);
+        }
+    };
+    Nimalia.prototype.onEnteringPlaceCard = function (args) {
+        dojo.query(".nml-square[droppable=true]").removeClass("dropzone");
+        console.log("args.possibleSquares2", args.possibleSquares[this.getCurrentPlayer().id]);
+        if (args.possibleSquares[this.getCurrentPlayer().id]) {
+            args.possibleSquares[this.getCurrentPlayer().id].forEach(function (droppable) { dojo.addClass(droppable, "dropzone"); });
+        }
+        else {
+            console.log("WARNING :no possible move");
         }
     };
     /**
@@ -3153,12 +3164,23 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.setupReserve = function (player) {
         var divId = "reserve-".concat(player.id);
         for (var i = 0; i < 36; i++) {
-            dojo.place("\n            <div id=\"square-".concat(player.id, "-").concat(i + 1, "\" class=\"nml-square\">\n            "), divId);
+            var squareId = "square-".concat(player.id, "-").concat(i + 1);
+            dojo.place("\n            <div id=\"".concat(squareId, "\" class=\"nml-square\">\n            "), divId);
+            $(squareId).addEventListener('drop', this.onCardDrop);
+            $(squareId).addEventListener('dragover', this.onCardDropOver);
+            $(squareId).addEventListener('touchend', this.onCardDropOver);
         }
     };
     PlayerTable.prototype.addCardsToHand = function (cards) {
-        console.log("add cards", cards);
+        var _this = this;
+        console.log('add cards', cards);
         this.handStock.addCards(cards);
+        cards.forEach(function (c) {
+            var cardId = _this.game.cardsManager.getId(c);
+            dojo.attr(cardId, 'draggable', true);
+            $(cardId).addEventListener('dragstart', _this.onCardDragStart);
+            $(cardId).addEventListener('touchmove', _this.onCardDragStart);
+        });
         /*this.handStock.addCards([{
             "id": 20,
             "location": "hand",
@@ -3168,6 +3190,26 @@ var PlayerTable = /** @class */ (function () {
             order:1,
             rotation:1,
         }])*/
+    };
+    PlayerTable.prototype.onCardDragStart = function (evt) {
+        var _a;
+        // Add the target element's id to the data transfer object
+        (_a = evt.dataTransfer) === null || _a === void 0 ? void 0 : _a.setData('text/plain', evt.target.id);
+        //evt.dataTransfer.effectAllowed = 'move'
+        //console.log('drag', evt.target.id)
+    };
+    PlayerTable.prototype.onCardDrop = function (evt) {
+        // Add the target element's id to the data transfer object
+        evt.dataTransfer.effectAllowed = 'move';
+        evt.preventDefault();
+        var cardId = evt.dataTransfer.getData('text/plain');
+        var squareId = evt.target.closest(".nml-square");
+        console.log('drop', cardId, "to", squareId);
+    };
+    PlayerTable.prototype.onCardDropOver = function (evt) {
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'move';
+        console.log('onCardDropOver');
     };
     return PlayerTable;
 }());

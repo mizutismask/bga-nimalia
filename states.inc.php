@@ -88,6 +88,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('Everyone must place a card on the animal reserve'),
         "descriptionmyturn" => clienttranslate('${you} must place a card on your animal reserve'),
         "type" => "multipleactiveplayer",
+        "args" => "argPlaceCard",
         "possibleactions" => array("placeCard", "undoPlaceCard"),
         "transitions" => array("cardPlaced" => ST_MOVE_REVEAL)
     ),

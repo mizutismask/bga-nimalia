@@ -25,10 +25,10 @@ interface NimaliaPlayer extends Player {
 	playerNo: number
 }
 
-interface Goal{
-	id: number;
-    level: number;
-    color: number;
+interface Goal {
+	id: number
+	level: number
+	color: number
 }
 
 interface NimaliaGamedatas {
@@ -48,7 +48,7 @@ interface NimaliaGamedatas {
 	bestScore: number
 	// Add here variables you set up in getAllDatas
 	hand: Array<NimaliaCard>
-	goals:Array<Goal>
+	goals: Array<Goal>
 }
 
 interface NimaliaGame extends Game {
@@ -63,6 +63,10 @@ interface NimaliaGame extends Game {
 
 interface EnteringChooseActionArgs {
 	canPass: boolean
+}
+
+interface EnteringPlaceCardArgs {
+	possibleSquares: { [playerId: number]: Array<String> }
 }
 
 interface NotifPointsArgs {

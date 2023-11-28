@@ -27,12 +27,22 @@ trait ArgsTrait {
     }
 */
 
-    function argChooseAction() {
-        $playerId = intval(self::getActivePlayerId());
-
-        $canPass = true;
+    function argPlaceCard() {
         return [
-            'canPass' => $canPass,
+            'possibleSquares' => $this->getPossibleSquares(),
         ];
+    }
+
+    function getPossibleSquares() {
+        $squares = [];
+        $playersIds = $this->getPlayersIds();
+        foreach ($playersIds as $playerId) {
+            $squares[$playerId] = [];
+            //$grid = $this->getGrid();
+            for ($i = 1; $i <= 36; $i++) {
+                $squares[$playerId][] = "square-" . $playerId . "-" . $i;
+            }
+        }
+        return $squares;
     }
 }

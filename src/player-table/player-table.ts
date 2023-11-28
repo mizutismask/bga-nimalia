@@ -7,7 +7,7 @@ class PlayerTable {
 
 	constructor(private game: NimaliaGame, player: NimaliaPlayer) {
 		const isMyTable = player.id === game.getCurrentPlayer().id
-		const ownClass = isMyTable ? 'own' : '';
+		const ownClass = isMyTable ? 'own' : ''
 		let html = `
 			<a id="anchor-player-${player.id}"></a>
 			<span class="player-name">${player.name}</span>
@@ -39,20 +39,32 @@ class PlayerTable {
 		this.handStock = new LineStock<NimaliaCard>(this.game.cardsManager, $('hand-' + player.id), stockSettings)
 		this.handStock.setSelectionMode('single')
 	}
-	 
-    private setupReserve(player: NimaliaPlayer) {
-        const divId = `reserve-${player.id}`
-        for (let i = 0; i < 36; i++) {
-            dojo.place(`
-            <div id="square-${player.id}-${i+1}" class="nml-square">
-            `
-            , divId)
-        }
-    }
+
+	private setupReserve(player: NimaliaPlayer) {
+		const divId = `reserve-${player.id}`
+		for (let i = 0; i < 36; i++) {
+			const squareId = `square-${player.id}-${i + 1}`
+			dojo.place(
+				`
+            <div id="${squareId}" class="nml-square">
+            `,
+				divId
+			)
+			$(squareId).addEventListener('drop', this.onCardDrop)
+			$(squareId).addEventListener('dragover', this.onCardDropOver)
+			$(squareId).addEventListener('touchend', this.onCardDropOver)
+		}
+	}
 
 	public addCardsToHand(cards: Array<NimaliaCard>) {
-		console.log("add cards",cards)
+		console.log('add cards', cards)
 		this.handStock.addCards(cards)
+		cards.forEach((c) => {
+			const cardId = this.game.cardsManager.getId(c)
+			dojo.attr(cardId, 'draggable', true)
+			$(cardId).addEventListener('dragstart', this.onCardDragStart)
+			$(cardId).addEventListener('touchmove', this.onCardDragStart)
+		})
 		/*this.handStock.addCards([{
 			"id": 20,
 			"location": "hand",
@@ -62,5 +74,27 @@ class PlayerTable {
 			order:1,
 			rotation:1,
 		}])*/
+	}
+
+	private onCardDragStart(evt) {
+		// Add the target element's id to the data transfer object
+		evt.dataTransfer?.setData('text/plain', evt.target.id)
+		//evt.dataTransfer.effectAllowed = 'move'
+		//console.log('drag', evt.target.id)
+	}
+
+	private onCardDrop(evt) {
+		// Add the target element's id to the data transfer object
+		evt.dataTransfer.effectAllowed = 'move'
+		evt.preventDefault();
+		const cardId = evt.dataTransfer.getData('text/plain')
+		const squareId = (evt.target as HTMLElement).closest(".nml-square");
+		console.log('drop', cardId,"to", squareId)
+	}
+
+	private onCardDropOver(evt) {
+		evt.preventDefault()
+		evt.dataTransfer.dropEffect = 'move'
+		console.log('onCardDropOver')
 	}
 }

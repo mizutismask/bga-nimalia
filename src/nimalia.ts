@@ -96,21 +96,23 @@ class Nimalia implements NimaliaGame {
 	}
 	private setupGoals(goals: Goal[]) {
 		const div = 'goals-wrapper'
-        goals.forEach((g) => {
-            const divId = `goal_${ g.id }`;
-			const html = `<div id="${divId}" class="nml-goal nml-goal-${g.id}" style="${getBackgroundInlineStyleForGoalCard(g)}"></div>`
-            dojo.place(html, div);
-            (this as any).addTooltipHtml(divId, this.getGoalTooltip(g));
+		goals.forEach((g) => {
+			const divId = `goal_${g.id}`
+			const html = `<div id="${divId}" class="nml-goal nml-goal-${
+				g.id
+			}" style="${getBackgroundInlineStyleForGoalCard(g)}"></div>`
+			dojo.place(html, div)
+			;(this as any).addTooltipHtml(divId, this.getGoalTooltip(g))
 		})
-    }
-    
-    public getGoalTooltip(card: Goal) {
-        let tooltip = `
+	}
+
+	public getGoalTooltip(card: Goal) {
+		let tooltip = `
 			<div class="nml-goal-tooltip">
-				${GOALS_DESC[card.id-1]}
-		    </div>`;
-        return tooltip;
-    }
+				${GOALS_DESC[card.id - 1]}
+		    </div>`
+		return tooltip
+	}
 
 	private setupTooltips() {
 		//todo change counter names
@@ -132,11 +134,11 @@ class Nimalia implements NimaliaGame {
 			this.playerTables[player.id] = new PlayerTable(this, player)
 			console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id)
 			if (player.id === this.getCurrentPlayer().id)
-                this.playerTables[player.id].addCardsToHand(this.gamedatas.hand)
+				this.playerTables[player.id].addCardsToHand(this.gamedatas.hand)
 		}
 		this.updateRound(player)
-    }
-   
+	}
+
 	private setupMiniPlayerBoard(player: NimaliaPlayer) {
 		const playerId = Number(player.id)
 		dojo.place(
@@ -246,7 +248,7 @@ class Nimalia implements NimaliaGame {
 	//                  You can use this method to perform some user interface changes at this moment.
 	//
 	public onEnteringState(stateName: string, args: any) {
-		console.log('Entering state: ' + stateName)
+		console.log('Entering state: ' + stateName, args)
 
 		switch (stateName) {
 			/* Example:
@@ -259,7 +261,8 @@ class Nimalia implements NimaliaGame {
             break;
         */
 
-			case 'dummmy':
+			case 'placeCard':
+				this.onEnteringPlaceCard(args.args)
 				break
 		}
 
@@ -267,6 +270,17 @@ class Nimalia implements NimaliaGame {
 			this.addArrowsToActivePlayer(args)
 		}
 	}
+
+    private onEnteringPlaceCard(args: EnteringPlaceCardArgs) {
+        dojo.query(".nml-square[droppable=true]").removeClass("dropzone");
+        console.log("args.possibleSquares2",args.possibleSquares[this.getCurrentPlayer().id])
+        if (args.possibleSquares[this.getCurrentPlayer().id]) {
+            args.possibleSquares[this.getCurrentPlayer().id].forEach(droppable => {  dojo.addClass(droppable, "dropzone") });
+        }
+        else {
+            console.log("WARNING :no possible move")
+        }
+    }
 
 	/**
 	 * Show score board.
