@@ -2285,8 +2285,12 @@ var CardsManager = /** @class */ (function (_super) {
                 div.classList.add('nimalia-card');
                 div.dataset.cardId = '' + card.id;
                 div.dataset.cardType = '' + card.type;
+                /*div.style.width = '200px';
+                div.style.height = '200px';
+                div.style.position = 'relative';*/
             },
             setupFrontDiv: function (card, div) {
+                console.log("setupFrontDiv", card.type_arg);
                 _this.setFrontBackground(div, card.type_arg);
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
@@ -2315,7 +2319,7 @@ var CardsManager = /** @class */ (function (_super) {
         return tooltip;
     };
     CardsManager.prototype.setFrontBackground = function (cardDiv, cardType) {
-        var destinationsUrl = "".concat(g_gamethemeurl, "img/biomesCards.jpg");
+        var destinationsUrl = "".concat(g_gamethemeurl, "img/biomeCards.png");
         cardDiv.style.backgroundImage = "url('".concat(destinationsUrl, "')");
         var imagePosition = cardType - 1;
         var row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW);
@@ -2327,163 +2331,6 @@ var CardsManager = /** @class */ (function (_super) {
     };
     return CardsManager;
 }(CardManager));
-var DRAG_AUTO_ZOOM_DELAY = 2000;
-var MAP_WIDTH = 1744;
-var MAP_HEIGHT = 1321;
-var DECK_WIDTH = 0;
-var PLAYER_WIDTH = 305;
-var PLAYER_HEIGHT = 150; // avg height (4 destination cards)
-var BOTTOM_RATIO = (MAP_WIDTH + DECK_WIDTH) / (MAP_HEIGHT + PLAYER_HEIGHT);
-var LEFT_RATIO = (PLAYER_WIDTH + MAP_WIDTH + DECK_WIDTH) / MAP_HEIGHT;
-/**
- * Manager for in-map zoom.
- */
-var InMapZoomManager = /** @class */ (function () {
-    function InMapZoomManager() {
-        var _this = this;
-        this.pos = { dragging: false, top: 0, left: 0, x: 0, y: 0 }; // for map drag (if zoomed)
-        this.zoomed = false; // indicates if in-map zoom is active
-        this.mapZoomDiv = document.getElementById('map-zoom');
-        this.mapDiv = document.getElementById('map');
-        // Attach the handler
-        this.mapDiv.addEventListener('mousedown', function (e) { return _this.mouseDownHandler(e); });
-        document.addEventListener('mousemove', function (e) { return _this.mouseMoveHandler(e); });
-        document.addEventListener('mouseup', function (e) { return _this.mouseUpHandler(); });
-        document.getElementById('zoom-button').addEventListener('click', function () { return _this.toggleZoom(); });
-        this.mapDiv.addEventListener('dragover', function (e) {
-            if (e.offsetX !== _this.dragClientX || e.offsetY !== _this.dragClientY) {
-                _this.dragClientX = e.offsetX;
-                _this.dragClientY = e.offsetY;
-                _this.dragOverMouseMoved(e.offsetX, e.offsetY);
-            }
-        });
-        this.mapDiv.addEventListener('dragleave', function (e) {
-            clearTimeout(_this.autoZoomTimeout);
-            _this.autoZoomTimeout = null;
-        });
-        this.mapDiv.addEventListener('drop', function (e) {
-            clearTimeout(_this.autoZoomTimeout);
-            _this.autoZoomTimeout = null;
-        });
-    }
-    InMapZoomManager.prototype.dragOverMouseMoved = function (clientX, clientY) {
-        var _this = this;
-        if (this.autoZoomTimeout) {
-            clearTimeout(this.autoZoomTimeout);
-        }
-        this.autoZoomTimeout = setTimeout(function () {
-            // do not automatically change the zoom when player is dragging over a route!
-            _this.toggleZoom(clientX / _this.mapDiv.clientWidth, clientY / _this.mapDiv.clientHeight);
-            _this.autoZoomTimeout = null;
-        }, DRAG_AUTO_ZOOM_DELAY);
-    };
-    /**
-     * Handle click on zoom button. Toggle between full map and in-map zoom.
-     */
-    InMapZoomManager.prototype.toggleZoom = function (scrollRatioX, scrollRatioY) {
-        if (scrollRatioX === void 0) { scrollRatioX = null; }
-        if (scrollRatioY === void 0) { scrollRatioY = null; }
-        this.zoomed = !this.zoomed;
-        this.mapDiv.style.transform = this.zoomed ? "scale(1.8)" : '';
-        dojo.toggleClass('zoom-button', 'zoomed', this.zoomed);
-        dojo.toggleClass('map-zoom', 'scrollable', this.zoomed);
-        this.mapDiv.style.cursor = this.zoomed ? 'grab' : 'default';
-        if (this.zoomed) {
-            if (scrollRatioX && scrollRatioY) {
-                this.mapZoomDiv.scrollLeft = (this.mapZoomDiv.scrollWidth - this.mapZoomDiv.clientWidth) * scrollRatioX;
-                this.mapZoomDiv.scrollTop =
-                    (this.mapZoomDiv.scrollHeight - this.mapZoomDiv.clientHeight) * scrollRatioY;
-            }
-        }
-        else {
-            this.mapZoomDiv.scrollTop = 0;
-            this.mapZoomDiv.scrollLeft = 0;
-        }
-    };
-    /**
-     * Handle mouse down, to grap map and scroll in it (imitate mobile touch scroll).
-     */
-    InMapZoomManager.prototype.mouseDownHandler = function (e) {
-        if (!this.zoomed) {
-            return;
-        }
-        this.mapDiv.style.cursor = 'grabbing';
-        this.pos = {
-            dragging: true,
-            left: this.mapDiv.scrollLeft,
-            top: this.mapDiv.scrollTop,
-            // Get the current mouse position
-            x: e.clientX,
-            y: e.clientY,
-        };
-    };
-    /**
-     * Handle mouse move, to grap map and scroll in it (imitate mobile touch scroll).
-     */
-    InMapZoomManager.prototype.mouseMoveHandler = function (e) {
-        if (!this.zoomed || !this.pos.dragging) {
-            return;
-        }
-        // How far the mouse has been moved
-        var dx = e.clientX - this.pos.x;
-        var dy = e.clientY - this.pos.y;
-        var factor = 0.1;
-        // Scroll the element
-        this.mapZoomDiv.scrollTop -= dy * factor;
-        this.mapZoomDiv.scrollLeft -= dx * factor;
-    };
-    /**
-     * Handle mouse up, to grap map and scroll in it (imitate mobile touch scroll).
-     */
-    InMapZoomManager.prototype.mouseUpHandler = function () {
-        if (!this.zoomed || !this.pos.dragging) {
-            return;
-        }
-        this.mapDiv.style.cursor = 'grab';
-        this.pos.dragging = false;
-    };
-    return InMapZoomManager;
-}());
-/**
- * Map creation and in-map zoom handler.
- */
-var TtrMap = /** @class */ (function () {
-    /**
-     * Place map illustration and other objects, and bind events.
-     */
-    function TtrMap(game) {
-        this.game = game;
-        // map border
-        dojo.place("\n            <div id=\"cities\"></div>\n        ", 'map', 'first');
-        this.resizedDiv = document.getElementById('resized');
-        this.mapDiv = document.getElementById('map');
-        this.inMapZoomManager = new InMapZoomManager();
-    }
-    /**
-     * Set map size, depending on available screen size.
-     */
-    TtrMap.prototype.setAutoZoom = function () {
-        var _this = this;
-        if (!this.mapDiv.clientWidth) {
-            setTimeout(function () { return _this.setAutoZoom(); }, 200);
-            return;
-        }
-        var gameWidth = MAP_WIDTH + DECK_WIDTH;
-        var gameHeight = MAP_HEIGHT + (PLAYER_HEIGHT * 0.75);
-        var horizontalScale = document.getElementById('game_play_area').clientWidth / gameWidth;
-        var verticalScale = (window.innerHeight - 80) / gameHeight;
-        this.scale = Math.min(1, horizontalScale, verticalScale);
-        this.resizedDiv.style.transform = this.scale === 1 ? '' : "scale(".concat(this.scale, ")");
-        this.resizedDiv.style.marginBottom = "-".concat((1 - this.scale) * gameHeight, "px");
-    };
-    /**
-     * Get current zoom.
-     */
-    TtrMap.prototype.getZoom = function () {
-        return this.scale;
-    };
-    return TtrMap;
-}());
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
@@ -2537,7 +2384,6 @@ var Nimalia = /** @class */ (function () {
         this.gameFeatures = new GameFeatureConfig();
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
-        this.map = new TtrMap(this);
         this.cardsManager = new CardsManager(this);
         this.animationManager = new AnimationManager(this);
         if (gamedatas.lastTurn) {
@@ -2555,7 +2401,6 @@ var Nimalia = /** @class */ (function () {
         this.setupSettingsIconInMainBar();
         this.setupPreferences();
         this.setupTooltips();
-        this.onScreenWidthChange = function () { return _this.map.setAutoZoom(); };
         console.log('Ending game setup');
     };
     Nimalia.prototype.setupTooltips = function () {
@@ -2572,7 +2417,13 @@ var Nimalia = /** @class */ (function () {
             this.setupPlayerOrderHints(player);
         }
         this.setupMiniPlayerBoard(player);
-        this.playerTables[player.id] = new PlayerTable(this, player);
+        if (!this.isSpectator) {
+            this.playerTables[player.id] = new PlayerTable(this, player);
+            console.log("player.id", player.id, "this.getCurrentPlayer().id", this.getCurrentPlayer().id);
+            if (player.id === this.getCurrentPlayer().id)
+                this.playerTables[player.id].addCardsToHand(this.gamedatas.hand);
+        }
+        this.updateRound(player);
     };
     Nimalia.prototype.setupMiniPlayerBoard = function (player) {
         var playerId = Number(player.id);
@@ -2606,13 +2457,20 @@ var Nimalia = /** @class */ (function () {
         this.updatePlayerHint(player, previousId, '_previous_player', _('Previous player: '), '&lt;', nameDiv, 'before');
         this.updatePlayerHint(player, nextId, '_next_player', _('Next player: '), '&gt;', nameDiv, 'after');
     };
+    Nimalia.prototype.updateRound = function (player) {
+        var surroundingPlayers = this.getSurroundingPlayersIds(player);
+        var previousId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[0] : surroundingPlayers[1];
+        var nextId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[1] : surroundingPlayers[0];
+        $("previous-player-draft").innerHTML = previousId;
+        $("next-player-draft").innerHTML = nextId;
+    };
     Nimalia.prototype.updatePlayerHint = function (currentPlayer, otherPlayerId, divSuffix, titlePrefix, content, parentDivId, location) {
         if (!$(currentPlayer.id + divSuffix)) {
             dojo.create('span', {
                 class: 'playerOrderHelp',
                 title: titlePrefix + this.gamedatas.players[otherPlayerId].name,
                 style: 'color:#' + this.gamedatas.players[otherPlayerId]['color'] + ';',
-                innerHTML: content,
+                innerHTML: content
             }, parentDivId, location);
         }
     };
@@ -2747,6 +2605,7 @@ var Nimalia = /** @class */ (function () {
         if (color === void 0) { color = 'gray'; }
         if (parentClass === void 0) { parentClass = ''; }
         // this will actually make a transparent button
+        ;
         this.addActionButton(id, div, handler, '', false, color);
         // remove boarder, for images it better without
         dojo.style(id, 'border', 'none');
@@ -2777,9 +2636,11 @@ var Nimalia = /** @class */ (function () {
         }, {});
     };
     Nimalia.prototype.setTooltip = function (id, html) {
+        ;
         this.addTooltipHtml(id, html, this.TOOLTIP_DELAY);
     };
     Nimalia.prototype.setTooltipToClass = function (className, html) {
+        ;
         this.addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY);
     };
     Nimalia.prototype.setGamestateDescription = function (property) {
@@ -2858,6 +2719,7 @@ var Nimalia = /** @class */ (function () {
      */
     Nimalia.prototype.setPoints = function (playerId, points) {
         var _a;
+        ;
         (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
     };
     /**
@@ -2967,6 +2829,7 @@ var Nimalia = /** @class */ (function () {
 
         dojo.toggleClass('useTicket_button', 'disabled', !chooseActionArgs.canUseTicket);*/
         if (chooseActionArgs.canPass) {
+            ;
             this.addActionButton('pass_button', _('End my turn'), function () { return _this.pass(); });
         }
     };
@@ -3023,7 +2886,7 @@ var Nimalia = /** @class */ (function () {
             //['claimedRoute', ANIMATION_MS],
             ['points', 1],
             ['lastTurn', 1],
-            ['bestScore', 1],
+            ['bestScore', 1]
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -3068,6 +2931,7 @@ var Nimalia = /** @class */ (function () {
                     args.ticket = "<div class=\"icon expTicket\"></div>";
                 }
                 // make cities names in bold
+                ;
                 ['from', 'to', 'cities_names'].forEach(function (field) {
                     if (args[field] !== null && args[field] !== undefined && args[field][0] != '<') {
                         args[field] = "<span style=\"color:#2cd51e\"><strong>".concat(_(args[field]), "</strong></span>");
@@ -3086,12 +2950,6 @@ var Nimalia = /** @class */ (function () {
             console.error(log, args, 'Exception thrown', e.stack);
         }
         return this.inherited(arguments);
-    };
-    /**
-     * Get current zoom.
-     */
-    Nimalia.prototype.getZoom = function () {
-        return this.map.getZoom();
     };
     /**
      * Get current player.
@@ -3119,13 +2977,13 @@ var NimaliaAnimation = /** @class */ (function () {
     }
     return NimaliaAnimation;
 }());
-var CARD_WIDTH = 150; //also change in scss
-var CARD_HEIGHT = 209;
+var CARD_WIDTH = 200; //also change in scss
+var CARD_HEIGHT = 200;
 function getBackgroundInlineStyleForNimaliaCard(destination) {
     var file;
     switch (destination.type) {
         case 1:
-            file = 'nimaliacards.jpg';
+            file = 'nimaliacards.png';
             break;
     }
     var imagePosition = destination.type_arg - 1;
@@ -3222,9 +3080,40 @@ var EndScore = /** @class */ (function () {
  */
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
-        var html = "\n\t\t\t<a id=\"anchor-player-".concat(player.id, "\"></a>\n            <div id=\"player-table-").concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(player.id === game.getCurrentPlayer().id ? 'own' : '', "\">\n\t\t\t    <span class=\"player-name\">").concat(player.name, "</span>\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n                ").concat(player.id === game.getCurrentPlayer().id ? "<div id=\"hand-".concat(player.id, "\" class=\"nml-player-hand\"></div>") : '', "\"\n            </div>\n        ");
+        this.game = game;
+        var isMyTable = player.id === game.getCurrentPlayer().id;
+        var ownClass = isMyTable ? 'own' : '';
+        var html = "\n\t\t\t<a id=\"anchor-player-".concat(player.id, "\"></a>\n\t\t\t<span class=\"player-name\">").concat(player.name, "</span>\n            <div id=\"player-table-").concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n            </div>\n        ");
         dojo.place(html, 'player-tables');
+        if (isMyTable) {
+            var handHtml = "\n\t\t\t<div id=\"previous-player-draft\" class=\"nml-player-draft nml-previous-player\"></div>\n\t\t\t<div id=\"hand-".concat(player.id, "\" class=\"nml-player-hand\"></div>\n\t\t\t<div id=\"next-player-draft\" class=\"nml-player-draft nml-next-player\"></div>\n        ");
+            dojo.place(handHtml, "player-table-".concat(player.id), 'last');
+            this.initHand(player);
+        }
     }
+    PlayerTable.prototype.initHand = function (player) {
+        var stockSettings = {
+            center: true,
+            gap: '100px',
+            direction: 'row',
+            wrap: 'wrap'
+        };
+        this.handStock = new LineStock(this.game.cardsManager, $('hand-' + player.id), stockSettings);
+        this.handStock.setSelectionMode('single');
+    };
+    PlayerTable.prototype.addCardsToHand = function (cards) {
+        console.log("add cards", cards);
+        this.handStock.addCards(cards);
+        /*this.handStock.addCards([{
+            "id": 20,
+            "location": "hand",
+            "location_arg": 2333092,
+            "type": 1,
+            "type_arg": 11,
+            order:1,
+            rotation:1,
+        }])*/
+    };
     return PlayerTable;
 }());
 var Setting = /** @class */ (function () {

@@ -11,7 +11,6 @@ $player-colors: (
 @import 'game-steps/game-steps';
 @import 'bga-hacks/bga-hacks';
 @import 'end-score/end-score';
-@import 'map/map';
 @import 'player-table/player-table';
 @import "settings";
 
@@ -59,4 +58,19 @@ html {
 
 .card .card-sides .card-side.front .card-info {
     pointer-events: all;
+}
+
+.card-side.front {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    //background-image: url("../img/biomeCards.png");
+    border-radius: 6px;
+    box-shadow: 0 0 8px 1px black;
+    pointer-events: all;
+    //transform-origin: top left;
+
+    &.animated {
+        transition: transform 0.5s;
+    }
 }

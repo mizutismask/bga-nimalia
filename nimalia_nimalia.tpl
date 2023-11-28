@@ -12,23 +12,11 @@
             <tbody id="score-table-body">
             </tbody>
         </table>
-</div>
-
-<div id="objectives">
-    <div id="objectives-wrapper">
-</div>
-
-<div id="map-zoom-wrapper">
-    <div id="resized">
-        <div id="main-line">
-            <div id="map-and-borders">
-                <div id="map-zoom" class="disable-scrollbars">
-                    <div id="map"></div>
-                </div>
-                <div id="zoom-button"></div>
-            </div>
-        </div>
     </div>
+</div>
+
+<div id="goals">
+    <div id="goals-wrapper"></div>
 </div>
 
 <div id="player-tables">

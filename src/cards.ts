@@ -8,8 +8,12 @@ class CardsManager extends CardManager<NimaliaCard> {
                 div.classList.add('nimalia-card');
                 div.dataset.cardId = '' + card.id;
                 div.dataset.cardType = '' + card.type;
+                /*div.style.width = '200px';
+                div.style.height = '200px';
+                div.style.position = 'relative';*/
             },
             setupFrontDiv: (card: NimaliaCard, div: HTMLElement) => {
+                console.log("setupFrontDiv", card.type_arg)
                 this.setFrontBackground(div as HTMLDivElement, card.type_arg);
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = `${super.getId(card)}-front`;
@@ -49,7 +53,7 @@ class CardsManager extends CardManager<NimaliaCard> {
     }
 
     private setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
-        const destinationsUrl = `${g_gamethemeurl}img/biomesCards.jpg`
+        const destinationsUrl = `${g_gamethemeurl}img/biomeCards.png`
         cardDiv.style.backgroundImage = `url('${destinationsUrl}')`;
         const imagePosition = cardType - 1;
         const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW);

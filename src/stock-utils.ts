@@ -1,11 +1,11 @@
-const CARD_WIDTH = 150; //also change in scss
-const CARD_HEIGHT = 209;
+const CARD_WIDTH = 200; //also change in scss
+const CARD_HEIGHT = 200;
 
 function getBackgroundInlineStyleForNimaliaCard(destination: NimaliaCard) {
     let file;
     switch (destination.type) {
         case 1:
-            file = 'nimaliacards.jpg';
+            file = 'nimaliacards.png';
             break;
     }
 

@@ -134,18 +134,13 @@ class Nimalia extends Table
 
         $result = [];
     
-        $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $currentPlayerId = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
-        $result['turnOrderClockwise'] = true;
-  
-        foreach ($result['players'] as $playerId => &$player) {
-            $player['playerNo'] = intval($player['playerNo']);
-        }
-
+        
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['expansion'] = EXPANSION;
         if ($isEnd) {
@@ -153,6 +148,18 @@ class Nimalia extends Table
         } else {
             $result['lastTurn'] = $this->getGameStateValue(LAST_TURN) > 0;
         }
+        
+        // shared information
+        $result['turnOrderClockwise'] = true;
+        $result["goals"]= $this->getRoundGoals();
+        foreach ($result['players'] as $playerId => &$player) {
+            $player['playerNo'] = intval($player['playerNo']);
+            $player['grid'] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('grid', $playerId));
+        }
+        
+        // private data : current player hidden informations
+        $result['hand'] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $currentPlayerId));
+        
         return $result;
     }
 
