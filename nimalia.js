@@ -3133,6 +3133,7 @@ var PlayerTable = /** @class */ (function () {
         var ownClass = isMyTable ? 'own' : '';
         var html = "\n\t\t\t<a id=\"anchor-player-".concat(player.id, "\"></a>\n\t\t\t<span class=\"player-name\">").concat(player.name, "</span>\n            <div id=\"player-table-").concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n            </div>\n        ");
         dojo.place(html, 'player-tables');
+        this.setupReserve(player);
         if (isMyTable) {
             var handHtml = "\n\t\t\t<div id=\"previous-player-draft\" class=\"nml-player-draft nml-previous-player\"></div>\n\t\t\t<div id=\"hand-".concat(player.id, "\" class=\"nml-player-hand\"></div>\n\t\t\t<div id=\"next-player-draft\" class=\"nml-player-draft nml-next-player\"></div>\n        ");
             dojo.place(handHtml, "player-table-".concat(player.id), 'last');
@@ -3148,6 +3149,12 @@ var PlayerTable = /** @class */ (function () {
         };
         this.handStock = new LineStock(this.game.cardsManager, $('hand-' + player.id), stockSettings);
         this.handStock.setSelectionMode('single');
+    };
+    PlayerTable.prototype.setupReserve = function (player) {
+        var divId = "reserve-".concat(player.id);
+        for (var i = 0; i < 36; i++) {
+            dojo.place("\n            <div id=\"square-".concat(player.id, "-").concat(i + 1, "\" class=\"nml-square\">\n            "), divId);
+        }
     };
     PlayerTable.prototype.addCardsToHand = function (cards) {
         console.log("add cards", cards);

@@ -16,6 +16,7 @@ class PlayerTable {
             </div>
         `
 		dojo.place(html, 'player-tables')
+		this.setupReserve(player)
 
 		if (isMyTable) {
 			const handHtml = `
@@ -38,6 +39,16 @@ class PlayerTable {
 		this.handStock = new LineStock<NimaliaCard>(this.game.cardsManager, $('hand-' + player.id), stockSettings)
 		this.handStock.setSelectionMode('single')
 	}
+	 
+    private setupReserve(player: NimaliaPlayer) {
+        const divId = `reserve-${player.id}`
+        for (let i = 0; i < 36; i++) {
+            dojo.place(`
+            <div id="square-${player.id}-${i+1}" class="nml-square">
+            `
+            , divId)
+        }
+    }
 
 	public addCardsToHand(cards: Array<NimaliaCard>) {
 		console.log("add cards",cards)

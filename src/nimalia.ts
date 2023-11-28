@@ -132,11 +132,11 @@ class Nimalia implements NimaliaGame {
 			this.playerTables[player.id] = new PlayerTable(this, player)
 			console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id)
 			if (player.id === this.getCurrentPlayer().id)
-				this.playerTables[player.id].addCardsToHand(this.gamedatas.hand)
+                this.playerTables[player.id].addCardsToHand(this.gamedatas.hand)
 		}
 		this.updateRound(player)
-	}
-
+    }
+   
 	private setupMiniPlayerBoard(player: NimaliaPlayer) {
 		const playerId = Number(player.id)
 		dojo.place(
