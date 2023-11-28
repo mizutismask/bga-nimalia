@@ -66,13 +66,17 @@ class BiomeCard extends BiomesDescription {
     public int $location_arg;
     public int $type;
     public int $type_arg;
+    public int $order;
+    public int $rotation;
 
-    public function __construct($dbCard, $BIOMES_CARDS) {
+    public function __construct($dbCard, $BIOMES_CARDS, $additionnalFields) {
         $this->id = intval($dbCard['id']);
         $this->location = $dbCard['location'];
         $this->location_arg = intval($dbCard['location_arg']);
         $this->type = intval($dbCard['type']);
         $this->type_arg = intval($dbCard['type_arg']);
+        $this->order = intval($additionnalFields['card_order_in_grid']);
+        $this->rotation = intval($additionnalFields['card_rotation']);
         $biomesDescription = $BIOMES_CARDS[$this->type][$this->type_arg];
         $this->biomes = $biomesDescription->biomes;
     }

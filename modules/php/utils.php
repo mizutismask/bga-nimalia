@@ -100,10 +100,12 @@ trait UtilTrait {
         if (!$dbObject || !array_key_exists('id', $dbObject)) {
             throw new BgaSystemException("BiomesCard doesn't exists " . json_encode($dbObject));
         }
-
+        $sql = "SELECT card_order_in_grid, card_rotation FROM card where card_id=". $dbObject['id'];
+        $additionalFields = self::getObjectFromDB( $sql );
         self::dump('************type_arg*******', $dbObject["type_arg"]);
         self::dump('*******************', $this->BIOMES_CARDS[$dbObject["type"]][$dbObject["type_arg"]]);
-        return new BiomeCard($dbObject, $this->BIOMES_CARDS);
+        self::dump('*******************additionalFields', $additionalFields);
+        return new BiomeCard($dbObject, $this->BIOMES_CARDS, $additionalFields);
     }
 
     /** Gets the next player after a given playerId if the round is clockwise, or the previous player if not. */

@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS `card` (
     `card_type_arg` int(11) NOT NULL,   
     `card_location` varchar(16) NOT NULL,
     `card_location_arg` int(11) NOT NULL,
+    `card_order_in_grid` int(1) unsigned NOT NULL DEFAULT 0,
+    `card_rotation` int(1) unsigned NOT NULL DEFAULT 0,
     PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
