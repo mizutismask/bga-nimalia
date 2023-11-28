@@ -17,6 +17,7 @@
 const ANIMATION_MS = 500
 const SCORE_MS = 1500
 const IMAGE_ITEMS_PER_ROW = 10
+const IMAGE_GOALS_PER_ROW = 11
 
 const isDebug = window.location.host == 'studio.boardgamearena.com'
 const log = isDebug ? console.log.bind(window.console) : function () {}
@@ -80,6 +81,7 @@ class Nimalia implements NimaliaGame {
 		}
 		this.setupNotifications()
 
+		this.setupGoals(this.gamedatas.goals)
 		Object.values(this.gamedatas.players).forEach((p) => {
 			this.setupPlayer(p)
 		})
@@ -92,6 +94,23 @@ class Nimalia implements NimaliaGame {
 
 		console.log('Ending game setup')
 	}
+	private setupGoals(goals: Goal[]) {
+		const div = 'goals-wrapper'
+        goals.forEach((g) => {
+            const divId = `goal_${ g.id }`;
+			const html = `<div id="${divId}" class="nml-goal nml-goal-${g.id}" style="${getBackgroundInlineStyleForGoalCard(g)}"></div>`
+            dojo.place(html, div);
+            (this as any).addTooltipHtml(divId, this.getGoalTooltip(g));
+		})
+    }
+    
+    public getGoalTooltip(card: Goal) {
+        let tooltip = `
+			<div class="nml-goal-tooltip">
+				${GOALS_DESC[card.id-1]}
+		    </div>`;
+        return tooltip;
+    }
 
 	private setupTooltips() {
 		//todo change counter names
@@ -110,12 +129,12 @@ class Nimalia implements NimaliaGame {
 		}
 		this.setupMiniPlayerBoard(player)
 		if (!(this as any).isSpectator) {
-            this.playerTables[player.id] = new PlayerTable(this, player)
-            console.log("player.id", player.id,"this.getCurrentPlayer().id", this.getCurrentPlayer().id);
-            if (player.id === this.getCurrentPlayer().id)
-                this.playerTables[player.id].addCardsToHand(this.gamedatas.hand)
-        }
-        this.updateRound(player)
+			this.playerTables[player.id] = new PlayerTable(this, player)
+			console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id)
+			if (player.id === this.getCurrentPlayer().id)
+				this.playerTables[player.id].addCardsToHand(this.gamedatas.hand)
+		}
+		this.updateRound(player)
 	}
 
 	private setupMiniPlayerBoard(player: NimaliaPlayer) {
@@ -186,15 +205,15 @@ class Nimalia implements NimaliaGame {
 
 		this.updatePlayerHint(player, previousId, '_previous_player', _('Previous player: '), '&lt;', nameDiv, 'before')
 		this.updatePlayerHint(player, nextId, '_next_player', _('Next player: '), '&gt;', nameDiv, 'after')
-    }
-    
-    public updateRound(player: NimaliaPlayer) {
-        const surroundingPlayers = this.getSurroundingPlayersIds(player)
+	}
+
+	public updateRound(player: NimaliaPlayer) {
+		const surroundingPlayers = this.getSurroundingPlayersIds(player)
 		const previousId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[0] : surroundingPlayers[1]
 		const nextId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[1] : surroundingPlayers[0]
-        $("previous-player-draft").innerHTML = previousId
-        $("next-player-draft").innerHTML = nextId
-    }
+		$('previous-player-draft').innerHTML = previousId
+		$('next-player-draft').innerHTML = nextId
+	}
 
 	public updatePlayerHint(
 		currentPlayer: NimaliaPlayer,

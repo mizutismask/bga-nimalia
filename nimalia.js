@@ -2350,6 +2350,7 @@ var CardsManager = /** @class */ (function (_super) {
 var ANIMATION_MS = 500;
 var SCORE_MS = 1500;
 var IMAGE_ITEMS_PER_ROW = 10;
+var IMAGE_GOALS_PER_ROW = 11;
 var isDebug = window.location.host == 'studio.boardgamearena.com';
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var Nimalia = /** @class */ (function () {
@@ -2394,6 +2395,7 @@ var Nimalia = /** @class */ (function () {
             this.onEnteringEndScore();
         }
         this.setupNotifications();
+        this.setupGoals(this.gamedatas.goals);
         Object.values(this.gamedatas.players).forEach(function (p) {
             _this.setupPlayer(p);
         });
@@ -2402,6 +2404,20 @@ var Nimalia = /** @class */ (function () {
         this.setupPreferences();
         this.setupTooltips();
         console.log('Ending game setup');
+    };
+    Nimalia.prototype.setupGoals = function (goals) {
+        var _this = this;
+        var div = 'goals-wrapper';
+        goals.forEach(function (g) {
+            var divId = "goal_".concat(g.id);
+            var html = "<div id=\"".concat(divId, "\" class=\"nml-goal nml-goal-").concat(g.id, "\" style=\"").concat(getBackgroundInlineStyleForGoalCard(g), "\"></div>");
+            dojo.place(html, div);
+            _this.addTooltipHtml(divId, _this.getGoalTooltip(g));
+        });
+    };
+    Nimalia.prototype.getGoalTooltip = function (card) {
+        var tooltip = "\n\t\t\t<div class=\"nml-goal-tooltip\">\n\t\t\t\t".concat(GOALS_DESC[card.id - 1], "\n\t\t    </div>");
+        return tooltip;
     };
     Nimalia.prototype.setupTooltips = function () {
         //todo change counter names
@@ -2419,7 +2435,7 @@ var Nimalia = /** @class */ (function () {
         this.setupMiniPlayerBoard(player);
         if (!this.isSpectator) {
             this.playerTables[player.id] = new PlayerTable(this, player);
-            console.log("player.id", player.id, "this.getCurrentPlayer().id", this.getCurrentPlayer().id);
+            console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id);
             if (player.id === this.getCurrentPlayer().id)
                 this.playerTables[player.id].addCardsToHand(this.gamedatas.hand);
         }
@@ -2461,8 +2477,8 @@ var Nimalia = /** @class */ (function () {
         var surroundingPlayers = this.getSurroundingPlayersIds(player);
         var previousId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[0] : surroundingPlayers[1];
         var nextId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[1] : surroundingPlayers[0];
-        $("previous-player-draft").innerHTML = previousId;
-        $("next-player-draft").innerHTML = nextId;
+        $('previous-player-draft').innerHTML = previousId;
+        $('next-player-draft').innerHTML = nextId;
     };
     Nimalia.prototype.updatePlayerHint = function (currentPlayer, otherPlayerId, divSuffix, titlePrefix, content, parentDivId, location) {
         if (!$(currentPlayer.id + divSuffix)) {
@@ -2979,19 +2995,51 @@ var NimaliaAnimation = /** @class */ (function () {
 }());
 var CARD_WIDTH = 200; //also change in scss
 var CARD_HEIGHT = 200;
-function getBackgroundInlineStyleForNimaliaCard(destination) {
+function getBackgroundInlineStyleForNimaliaCard(card) {
     var file;
-    switch (destination.type) {
+    switch (card.type) {
         case 1:
             file = 'nimaliacards.png';
             break;
     }
-    var imagePosition = destination.type_arg - 1;
+    var imagePosition = card.type_arg - 1;
     var row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW);
     var xBackgroundPercent = (imagePosition - row * IMAGE_ITEMS_PER_ROW) * 100;
     var yBackgroundPercent = row * 100;
     return "background-image: url('".concat(g_gamethemeurl, "img/").concat(file, "'); background-position: -").concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%; background-size:1000%;");
 }
+function getBackgroundInlineStyleForGoalCard(card) {
+    var file = 'goals.png';
+    var imagePosition = card.id - 1;
+    var row = Math.floor(imagePosition / IMAGE_GOALS_PER_ROW);
+    var xBackgroundPercent = (imagePosition - row * IMAGE_GOALS_PER_ROW) * 100;
+    var yBackgroundPercent = row * 100;
+    return "background-image: url('".concat(g_gamethemeurl, "img/").concat(file, "'); background-position: -").concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%; background-size:1100%;");
+}
+var GOALS_DESC = [
+    '1 point per identical animal if at least 2 of them are orthogonally adjacent to an otter',
+    '2 points per otter whose river connects to a lake.',
+    '2 points per distinct rain forest area',
+    '2 points per gorilla orthogonally adjacent to a lake',
+    '2 points per space of your largest savannah.',
+    '6 points per savanna area spanning exactly 4 spaces.',
+    '4 points per 2×2 square of ice floe (a space can be part of several squares)',
+    '2 points per polar bear that is part of a group of bears, and - 1 per solitary bear',
+    '2 points per space of the terrain of which you have the fewest spaces in your reserve (here it’s 2×3 = 6)',
+    '3, 5, 8, 13 or 21 points if your reserve completely fills a 2x2, 3x3, 4x4, 5x5, or 6x6 square',
+    '3 points per row of your reserve that contains all 4 terrain types',
+    '3 points per strict horizontally adjacent pair of identical animals. 3 animals don’t count',
+    'From 0 to 8 points according to how few giraffes you have (0 giraffe = 8 )',
+    '3 points per flamingo that is not touching the edge of your reserve',
+    'From 0 to 15 points according to how long your longest river runs. For example, a 3-space river is worth 0, +1, +2(thus 3)',
+    'The player with the longest river gets 5 points, 2nd gets 2 points',
+    '3 points per panda that is touching the edge of your reserve',
+    'The player with the most gorillas gets 5 points (2nd gets 2 points). The player with the most pandas gets - 5 points (2nd gets - 2 points)',
+    '3 points per column of your reserve that contains exactly 1 penguin',
+    'The player with the fewest lions gets 3 points. Everyone else gets - 2 points',
+    'The player with the most crocodiles gets 5 points (2nd gets 2 points ). The player with the fewest flamingoes gets 5 points (2nd gets 2 points)',
+    '2 points per crocodile orthogonally adjacent to at least one giraffe'
+];
 /**
  * End score board.
  * No notifications.

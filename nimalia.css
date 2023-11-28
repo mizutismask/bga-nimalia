@@ -474,3 +474,11 @@ html {
 .card-side.front.animated {
   transition: transform 0.5s;
 }
+
+.nml-goal {
+  width: 200px;
+  height: 200px;
+  border-radius: 6px;
+  box-shadow: 0 0 8px 1px black;
+  display: inline-block;
+}
