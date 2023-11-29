@@ -41,6 +41,7 @@ class Nimalia implements NimaliaGame {
 	private isTouch = window.matchMedia('(hover: none)').matches
 	private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined
 	private settings = [new Setting('customSounds', 'pref', 1)]
+	public clientActionData: ClientActionData
 
 	constructor() {
 		console.log('nimalia constructor')
@@ -82,12 +83,13 @@ class Nimalia implements NimaliaGame {
 		this.setupNotifications()
 
 		this.setupGoals(this.gamedatas.goals)
+		this.setupPlayer(this.getCurrentPlayer())
 		Object.values(this.gamedatas.players).forEach((p) => {
-			this.setupPlayer(p)
+			if (p.id != this.getCurrentPlayer().id) this.setupPlayer(p)
 		})
 
 		$('overall-content').classList.add(`player-count-${this.getPlayersCount()}`)
-
+        this.updateRound(this.getCurrentPlayer());
 		this.setupSettingsIconInMainBar()
 		this.setupPreferences()
 		this.setupTooltips()
@@ -136,7 +138,6 @@ class Nimalia implements NimaliaGame {
 			if (player.id === this.getCurrentPlayer().id)
 				this.playerTables[player.id].addCardsToHand(this.gamedatas.hand)
 		}
-		this.updateRound(player)
 	}
 
 	private setupMiniPlayerBoard(player: NimaliaPlayer) {
@@ -271,16 +272,17 @@ class Nimalia implements NimaliaGame {
 		}
 	}
 
-    private onEnteringPlaceCard(args: EnteringPlaceCardArgs) {
-        dojo.query(".nml-square[droppable=true]").removeClass("dropzone");
-        console.log("args.possibleSquares2",args.possibleSquares[this.getCurrentPlayer().id])
-        if (args.possibleSquares[this.getCurrentPlayer().id]) {
-            args.possibleSquares[this.getCurrentPlayer().id].forEach(droppable => {  dojo.addClass(droppable, "dropzone") });
-        }
-        else {
-            console.log("WARNING :no possible move")
-        }
-    }
+	private onEnteringPlaceCard(args: EnteringPlaceCardArgs) {
+		this.clientActionData = { placedCardId: undefined, destinationSquare: undefined }
+		dojo.query('.nml-square[droppable=true]').removeClass('dropzone')
+		if (args.possibleSquares[this.getCurrentPlayer().id]) {
+			args.possibleSquares[this.getCurrentPlayer().id].forEach((droppable) => {
+				dojo.addClass(droppable, 'dropzone')
+			})
+		} else {
+			console.log('WARNING :no possible move')
+		}
+	}
 
 	/**
 	 * Show score board.
@@ -322,30 +324,32 @@ class Nimalia implements NimaliaGame {
 	//                        action status bar (ie: the HTML links in the status bar).
 	//
 	public onUpdateActionButtons(stateName: string, args: any) {
-		console.log('onUpdateActionButtons: ' + stateName)
-
+		console.log('onUpdateActionButtons: ' + stateName, 'player active', (this as any).isCurrentPlayerActive())
 		if ((this as any).isCurrentPlayerActive()) {
-			switch (
-				stateName
-				/*               
-                Example:
-
-                case 'myGameState':
-                
-                // Add 3 action buttons in the action status bar:
-                
-                (this as any).addActionButton( 'button_1_id', _('Button 1 label'), 'onMyMethodToCall1' ); 
-                (this as any).addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' ); 
-                (this as any).addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
-                break;
-*/
-			) {
+			switch (stateName) {
+				case 'placeCard':
+					;(this as any).addActionButton('place-card-button', _('Validate'), () => this.placeCard())
+					dojo.addClass('place-card-button', 'disabled')
+					break
 			}
 		}
 	}
 
 	///////////////////////////////////////////////////
 	//// Utility methods
+
+	public getPart(haystack: string, i: number, noException: boolean = false): string {
+		const parts: string[] = haystack.split('-')
+		const len: number = parts.length
+
+		if (noException && i >= len) {
+			return ''
+		}
+		if (noException && len + i < 0) {
+			return ''
+		}
+		return parts[i >= 0 ? i : len + i]
+	}
 
 	public addArrowsToActivePlayer(state: Gamestate) {
 		const notUsefulStates = ['todo']
@@ -722,14 +726,18 @@ class Nimalia implements NimaliaGame {
     */
 
 	/**
-	 * Pass (in case of no possible action).
+	 * Validates a placed card.
 	 */
-	public pass() {
-		if (!(this as any).checkAction('pass')) {
+	public placeCard() {
+		if (!(this as any).checkAction('placeCard')) {
 			return
 		}
 
-		this.takeAction('pass')
+		this.takeAction('placeCard', {
+			'cardId': this.getPart(this.clientActionData.placedCardId, -1),
+			'squareId': this.getPart(this.clientActionData.destinationSquare, -1),
+			'rotation': 0
+		})
 	}
 
 	public takeAction(action: string, data?: any) {

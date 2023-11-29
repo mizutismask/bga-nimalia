@@ -2396,10 +2396,13 @@ var Nimalia = /** @class */ (function () {
         }
         this.setupNotifications();
         this.setupGoals(this.gamedatas.goals);
+        this.setupPlayer(this.getCurrentPlayer());
         Object.values(this.gamedatas.players).forEach(function (p) {
-            _this.setupPlayer(p);
+            if (p.id != _this.getCurrentPlayer().id)
+                _this.setupPlayer(p);
         });
         $('overall-content').classList.add("player-count-".concat(this.getPlayersCount()));
+        this.updateRound(this.getCurrentPlayer());
         this.setupSettingsIconInMainBar();
         this.setupPreferences();
         this.setupTooltips();
@@ -2439,7 +2442,6 @@ var Nimalia = /** @class */ (function () {
             if (player.id === this.getCurrentPlayer().id)
                 this.playerTables[player.id].addCardsToHand(this.gamedatas.hand);
         }
-        this.updateRound(player);
     };
     Nimalia.prototype.setupMiniPlayerBoard = function (player) {
         var playerId = Number(player.id);
@@ -2516,13 +2518,15 @@ var Nimalia = /** @class */ (function () {
         }
     };
     Nimalia.prototype.onEnteringPlaceCard = function (args) {
-        dojo.query(".nml-square[droppable=true]").removeClass("dropzone");
-        console.log("args.possibleSquares2", args.possibleSquares[this.getCurrentPlayer().id]);
+        this.clientActionData = { placedCardId: undefined, destinationSquare: undefined };
+        dojo.query('.nml-square[droppable=true]').removeClass('dropzone');
         if (args.possibleSquares[this.getCurrentPlayer().id]) {
-            args.possibleSquares[this.getCurrentPlayer().id].forEach(function (droppable) { dojo.addClass(droppable, "dropzone"); });
+            args.possibleSquares[this.getCurrentPlayer().id].forEach(function (droppable) {
+                dojo.addClass(droppable, 'dropzone');
+            });
         }
         else {
-            console.log("WARNING :no possible move");
+            console.log('WARNING :no possible move');
         }
     };
     /**
@@ -2559,27 +2563,32 @@ var Nimalia = /** @class */ (function () {
     //                        action status bar (ie: the HTML links in the status bar).
     //
     Nimalia.prototype.onUpdateActionButtons = function (stateName, args) {
-        console.log('onUpdateActionButtons: ' + stateName);
+        var _this = this;
+        console.log('onUpdateActionButtons: ' + stateName, 'player active', this.isCurrentPlayerActive());
         if (this.isCurrentPlayerActive()) {
-            switch (stateName
-            /*
-            Example:
-
-            case 'myGameState':
-            
-            // Add 3 action buttons in the action status bar:
-            
-            (this as any).addActionButton( 'button_1_id', _('Button 1 label'), 'onMyMethodToCall1' );
-            (this as any).addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' );
-            (this as any).addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' );
-            break;
-*/
-            ) {
+            switch (stateName) {
+                case 'placeCard':
+                    ;
+                    this.addActionButton('place-card-button', _('Validate'), function () { return _this.placeCard(); });
+                    dojo.addClass('place-card-button', 'disabled');
+                    break;
             }
         }
     };
     ///////////////////////////////////////////////////
     //// Utility methods
+    Nimalia.prototype.getPart = function (haystack, i, noException) {
+        if (noException === void 0) { noException = false; }
+        var parts = haystack.split('-');
+        var len = parts.length;
+        if (noException && i >= len) {
+            return '';
+        }
+        if (noException && len + i < 0) {
+            return '';
+        }
+        return parts[i >= 0 ? i : len + i];
+    };
     Nimalia.prototype.addArrowsToActivePlayer = function (state) {
         var notUsefulStates = ['todo'];
         if (state.type === 'activeplayer' &&
@@ -2873,13 +2882,17 @@ var Nimalia = /** @class */ (function () {
     
     */
     /**
-     * Pass (in case of no possible action).
+     * Validates a placed card.
      */
-    Nimalia.prototype.pass = function () {
-        if (!this.checkAction('pass')) {
+    Nimalia.prototype.placeCard = function () {
+        if (!this.checkAction('placeCard')) {
             return;
         }
-        this.takeAction('pass');
+        this.takeAction('placeCard', {
+            'cardId': this.getPart(this.clientActionData.placedCardId, -1),
+            'squareId': this.getPart(this.clientActionData.destinationSquare, -1),
+            'rotation': 0
+        });
     };
     Nimalia.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -3166,9 +3179,9 @@ var PlayerTable = /** @class */ (function () {
         for (var i = 0; i < 36; i++) {
             var squareId = "square-".concat(player.id, "-").concat(i + 1);
             dojo.place("\n            <div id=\"".concat(squareId, "\" class=\"nml-square\">\n            "), divId);
-            $(squareId).addEventListener('drop', this.onCardDrop);
-            $(squareId).addEventListener('dragover', this.onCardDropOver);
-            $(squareId).addEventListener('touchend', this.onCardDropOver);
+            dojo.connect($(squareId), "drop", this, dojo.hitch(this, this.onCardDrop));
+            dojo.connect($(squareId), "dragover", this, dojo.hitch(this, this.onCardDropOver));
+            dojo.connect($(squareId), "touchend", this, dojo.hitch(this, this.onCardDropOver));
         }
     };
     PlayerTable.prototype.addCardsToHand = function (cards) {
@@ -3178,8 +3191,9 @@ var PlayerTable = /** @class */ (function () {
         cards.forEach(function (c) {
             var cardId = _this.game.cardsManager.getId(c);
             dojo.attr(cardId, 'draggable', true);
-            $(cardId).addEventListener('dragstart', _this.onCardDragStart);
-            $(cardId).addEventListener('touchmove', _this.onCardDragStart);
+            dojo.addClass(cardId, 'nml-card-order-' + c.order);
+            dojo.connect($(cardId), "dragstart", _this, dojo.hitch(_this, _this.onCardDragStart));
+            dojo.connect($(cardId), "touchmove", _this, dojo.hitch(_this, _this.onCardDragStart));
         });
         /*this.handStock.addCards([{
             "id": 20,
@@ -3203,8 +3217,14 @@ var PlayerTable = /** @class */ (function () {
         evt.dataTransfer.effectAllowed = 'move';
         evt.preventDefault();
         var cardId = evt.dataTransfer.getData('text/plain');
-        var squareId = evt.target.closest(".nml-square");
-        console.log('drop', cardId, "to", squareId);
+        var square = evt.target.closest('.nml-square');
+        console.log('drop', cardId, 'to', square.id);
+        if (cardId && square) {
+            square.appendChild($(cardId));
+        }
+        dojo.toggleClass('place-card-button', 'disabled', !cardId || !square);
+        this.game.clientActionData.destinationSquare = square.id;
+        this.game.clientActionData.placedCardId = cardId;
     };
     PlayerTable.prototype.onCardDropOver = function (evt) {
         evt.preventDefault();

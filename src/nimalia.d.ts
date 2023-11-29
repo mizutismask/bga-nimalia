@@ -51,10 +51,16 @@ interface NimaliaGamedatas {
 	goals: Array<Goal>
 }
 
+interface ClientActionData{
+	placedCardId: string
+	destinationSquare: string
+}
+
 interface NimaliaGame extends Game {
 	cardsManager: CardsManager
 	animationManager: AnimationManager
 	getCurrentPlayer(): NimaliaPlayer
+	clientActionData: ClientActionData
 	getPlayerId(): number
 	getPlayerScore(playerId: number): number
 	setTooltip(id: string, html: string): void

@@ -31,7 +31,7 @@ trait ActionTrait {
             throw new BgaUserException("You can’t place this card: " . $card->type);
         if ($rotation % 90 != 0)
             throw new BgaVisibleSystemException("Rotation is not a correct value: " . $rotation);
-        if ($squareId >= 5 || $squareId < 1)
+        if ($squareId > 5 || $squareId < 1)
             throw new BgaUserException("You can’t place a card outside of the 6x6 grid: " . $squareId);
         if (count($this->getGridCards($playerId)) != 0 && !$this->isCardCoveringAnotherCard($playerId, $card, $squareId))
             throw new BgaUserException("You have to to cover a part of your existing animal reserve");

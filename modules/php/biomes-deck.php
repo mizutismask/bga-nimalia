@@ -76,7 +76,7 @@ trait BiomesCardTrait {
      * Get cards in player grid.
      */
     public function getGridCards(int $playerId) {
-        $cards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid", $playerId));
+        $cards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid$playerId"));
         return $cards;
     }
 
@@ -165,16 +165,19 @@ trait BiomesCardTrait {
 
     public function moveCardToReserve(int $playerId, int $cardId, int $squareId, int $rotation) {
         //todo keep order
-        $this->biomesCards->moveCard($cardId, 'grid', $playerId);
+        $this->biomesCards->moveCard($cardId, "grid$playerId", $squareId);
+        $order =  self::getUniqueValueFromDB("select max(card_order_in_grid)+1 from card where card_location= 'grid$playerId'");
+        $sql= "UPDATE card set card_rotation=$rotation, card_order_in_grid=$order where card_id='$cardId'";
+        self::DbQuery($sql);
         $this->updatePlayer($playerId, PLAYER_FIELD_LAST_PLACED_CARD, $cardId);
-        $recipient = $this->getRecipientPlayer();
+        $recipient = $this->getRecipientPlayer($playerId);
         $this->biomesCards->moveAllCardsInLocation('hand', 'nextchoice', $playerId, $recipient);
     }
 
     public function undoMoveCardToReserve(int $playerId, int $cardId) {
         $this->biomesCards->moveCard($cardId, 'hand', $playerId);
         $this->updatePlayer($playerId, PLAYER_FIELD_LAST_PLACED_CARD, 0);
-        $recipient = $this->getRecipientPlayer();
+        $recipient = $this->getRecipientPlayer($playerId);
         $this->biomesCards->moveAllCardsInLocation('nextchoice', 'hand', $recipient, $playerId);
     }
 

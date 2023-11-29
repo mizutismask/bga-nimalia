@@ -50,9 +50,9 @@ class PlayerTable {
             `,
 				divId
 			)
-			$(squareId).addEventListener('drop', this.onCardDrop)
-			$(squareId).addEventListener('dragover', this.onCardDropOver)
-			$(squareId).addEventListener('touchend', this.onCardDropOver)
+			dojo.connect($(squareId), "drop", this, dojo.hitch(this, this.onCardDrop));
+			dojo.connect($(squareId), "dragover", this, dojo.hitch(this, this.onCardDropOver));
+			dojo.connect($(squareId), "touchend", this, dojo.hitch(this, this.onCardDropOver));
 		}
 	}
 
@@ -62,8 +62,9 @@ class PlayerTable {
 		cards.forEach((c) => {
 			const cardId = this.game.cardsManager.getId(c)
 			dojo.attr(cardId, 'draggable', true)
-			$(cardId).addEventListener('dragstart', this.onCardDragStart)
-			$(cardId).addEventListener('touchmove', this.onCardDragStart)
+			dojo.addClass(cardId, 'nml-card-order-' + c.order)
+			dojo.connect($(cardId), "dragstart", this, dojo.hitch(this, this.onCardDragStart));
+			dojo.connect($(cardId), "touchmove", this, dojo.hitch(this, this.onCardDragStart));
 		})
 		/*this.handStock.addCards([{
 			"id": 20,
@@ -86,10 +87,16 @@ class PlayerTable {
 	private onCardDrop(evt) {
 		// Add the target element's id to the data transfer object
 		evt.dataTransfer.effectAllowed = 'move'
-		evt.preventDefault();
+		evt.preventDefault()
 		const cardId = evt.dataTransfer.getData('text/plain')
-		const squareId = (evt.target as HTMLElement).closest(".nml-square");
-		console.log('drop', cardId,"to", squareId)
+		const square = (evt.target as HTMLElement).closest('.nml-square')
+		console.log('drop', cardId, 'to', square.id)
+		if (cardId && square) {
+			square.appendChild($(cardId))
+		}
+		dojo.toggleClass('place-card-button', 'disabled', !cardId || !square)
+		this.game.clientActionData.destinationSquare = square.id
+		this.game.clientActionData.placedCardId = cardId
 	}
 
 	private onCardDropOver(evt) {
