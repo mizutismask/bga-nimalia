@@ -49,9 +49,10 @@ interface NimaliaGamedatas {
 	// Add here variables you set up in getAllDatas
 	hand: Array<NimaliaCard>
 	goals: Array<Goal>
+	round: {round:number, clockwise:boolean, goals:Array<Goal>}
 }
 
-interface ClientActionData{
+interface ClientActionData {
 	placedCardId: string
 	destinationSquare: string
 }
@@ -73,6 +74,17 @@ interface EnteringChooseActionArgs {
 
 interface EnteringPlaceCardArgs {
 	possibleSquares: { [playerId: number]: Array<String> }
+}
+
+interface CardsMoveArgs {
+	playerId: number
+	added: Array<NimaliaCard>
+}
+
+interface NewRoundArgs{
+	round: number
+	clockwise: boolean
+	goals:Array<Goal>
 }
 
 interface NotifPointsArgs {

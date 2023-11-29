@@ -89,7 +89,7 @@ class Nimalia implements NimaliaGame {
 		})
 
 		$('overall-content').classList.add(`player-count-${this.getPlayersCount()}`)
-        this.updateRound(this.getCurrentPlayer());
+		this.updateRound(gamedatas.round)
 		this.setupSettingsIconInMainBar()
 		this.setupPreferences()
 		this.setupTooltips()
@@ -97,7 +97,8 @@ class Nimalia implements NimaliaGame {
 		console.log('Ending game setup')
 	}
 	private setupGoals(goals: Goal[]) {
-		const div = 'goals-wrapper'
+        const div = 'goals-wrapper'
+        dojo.empty(div)
 		goals.forEach((g) => {
 			const divId = `goal_${g.id}`
 			const html = `<div id="${divId}" class="nml-goal nml-goal-${
@@ -136,7 +137,7 @@ class Nimalia implements NimaliaGame {
 			this.playerTables[player.id] = new PlayerTable(this, player)
 			console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id)
 			if (player.id === this.getCurrentPlayer().id)
-				this.playerTables[player.id].addCardsToHand(this.gamedatas.hand)
+				this.playerTables[player.id].replaceCardsInHand(this.gamedatas.hand)
 		}
 	}
 
@@ -210,7 +211,7 @@ class Nimalia implements NimaliaGame {
 		this.updatePlayerHint(player, nextId, '_next_player', _('Next player: '), '&gt;', nameDiv, 'after')
 	}
 
-	public updateRound(player: NimaliaPlayer) {
+	public updateTurnOrder(player: NimaliaPlayer) {
 		const surroundingPlayers = this.getSurroundingPlayersIds(player)
 		const previousId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[0] : surroundingPlayers[1]
 		const nextId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[1] : surroundingPlayers[0]
@@ -239,6 +240,11 @@ class Nimalia implements NimaliaGame {
 				parentDivId,
 				location
 			)
+		} else {
+			const div: HTMLElement = $(currentPlayer.id + divSuffix)
+			div.title = titlePrefix + this.gamedatas.players[otherPlayerId].name
+			div.style.color = '#' + this.gamedatas.players[otherPlayerId]['color']
+			div.innerHTML = content
 		}
 	}
 
@@ -774,6 +780,8 @@ class Nimalia implements NimaliaGame {
 
 		const notifs = [
 			//['claimedRoute', ANIMATION_MS],
+			['cardsMove', 1],
+			['newRound', 1],
 			['points', 1],
 			['lastTurn', 1],
 			['bestScore', 1]
@@ -783,6 +791,22 @@ class Nimalia implements NimaliaGame {
 			dojo.subscribe(notif[0], this, `notif_${notif[0]}`)
 			;(this as any).notifqueue.setSynchronous(notif[0], notif[1])
 		})
+	}
+
+	notif_newRound(notif: Notif<NewRoundArgs>) {
+		this.updateRound(notif.args)
+	}
+
+	updateRound(args: NewRoundArgs) {
+		this.gamedatas.turnOrderClockwise = args.clockwise
+		$('round').innerHTML = args.round
+		this.updateTurnOrder(this.getCurrentPlayer())
+        this.setupPlayerOrderHints(this.getCurrentPlayer())
+        this.setupGoals(args.goals)
+	}
+
+	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
+		this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added)
 	}
 
 	/**

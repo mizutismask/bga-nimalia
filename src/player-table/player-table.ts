@@ -50,21 +50,22 @@ class PlayerTable {
             `,
 				divId
 			)
-			dojo.connect($(squareId), "drop", this, dojo.hitch(this, this.onCardDrop));
-			dojo.connect($(squareId), "dragover", this, dojo.hitch(this, this.onCardDropOver));
-			dojo.connect($(squareId), "touchend", this, dojo.hitch(this, this.onCardDropOver));
+			dojo.connect($(squareId), 'drop', this, dojo.hitch(this, this.onCardDrop))
+			dojo.connect($(squareId), 'dragover', this, dojo.hitch(this, this.onCardDropOver))
+			dojo.connect($(squareId), 'touchend', this, dojo.hitch(this, this.onCardDropOver))
 		}
 	}
 
-	public addCardsToHand(cards: Array<NimaliaCard>) {
+	public replaceCardsInHand(cards: Array<NimaliaCard>) {
 		console.log('add cards', cards)
+		this.handStock.removeAll()
 		this.handStock.addCards(cards)
 		cards.forEach((c) => {
 			const cardId = this.game.cardsManager.getId(c)
 			dojo.attr(cardId, 'draggable', true)
 			dojo.addClass(cardId, 'nml-card-order-' + c.order)
-			dojo.connect($(cardId), "dragstart", this, dojo.hitch(this, this.onCardDragStart));
-			dojo.connect($(cardId), "touchmove", this, dojo.hitch(this, this.onCardDragStart));
+			dojo.connect($(cardId), 'dragstart', this, dojo.hitch(this, this.onCardDragStart))
+			dojo.connect($(cardId), 'touchmove', this, dojo.hitch(this, this.onCardDragStart))
 		})
 		/*this.handStock.addCards([{
 			"id": 20,

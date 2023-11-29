@@ -16,6 +16,7 @@
 </div>
 
 <div id="goals">
+    <div id="round" class="nml-round css-icon"></div>
     <div id="goals-wrapper"></div>
 </div>
 

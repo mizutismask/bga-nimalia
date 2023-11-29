@@ -151,6 +151,7 @@ class Nimalia extends Table
         
         // shared information
         $result['turnOrderClockwise'] = true;
+        $result['round'] = $this->getRoundArgs();
         $result["goals"]= $this->getRoundGoals();
         foreach ($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);

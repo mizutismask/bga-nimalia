@@ -22,10 +22,10 @@ trait StateTrait {
     /** Notifies everyone’s move at the same time when everyone has finished his move. Also gets drafted cards for the next move. */
     function stMoveReveal() {
         $playersIds = $this->getPlayersIds();
+        $this->getDraftedCards();
         if (count($this->getPlayerCards(array_pop($playersIds))) == 0) {
             $this->gamestate->nextState("endScore");
         } else {
-            $this->getDraftedCards();
             $this->gamestate->nextState("nextCard");
         }
     }
@@ -35,13 +35,19 @@ trait StateTrait {
 
         self::incGameStateValue(ROUND, 1);
 
+
         $playersIds = $this->getPlayersIds();
         foreach ($playersIds as $playerId) {
             $this->pickInitialCards($playerId);
         }
-
+        self::notifyAllPlayers('newRound', "", $this->getRoundArgs());
 
         $this->gamestate->nextState('');
+    }
+
+    function getRoundArgs() {
+        $round = intval(self::getGameStateValue(ROUND));
+        return ["round" => $round, "clockwise" => $this->isClockWisePlayerOrder(), "goals" => $this->getRoundGoals()];
     }
 
 

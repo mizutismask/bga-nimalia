@@ -2402,7 +2402,7 @@ var Nimalia = /** @class */ (function () {
                 _this.setupPlayer(p);
         });
         $('overall-content').classList.add("player-count-".concat(this.getPlayersCount()));
-        this.updateRound(this.getCurrentPlayer());
+        this.updateRound(gamedatas.round);
         this.setupSettingsIconInMainBar();
         this.setupPreferences();
         this.setupTooltips();
@@ -2411,6 +2411,7 @@ var Nimalia = /** @class */ (function () {
     Nimalia.prototype.setupGoals = function (goals) {
         var _this = this;
         var div = 'goals-wrapper';
+        dojo.empty(div);
         goals.forEach(function (g) {
             var divId = "goal_".concat(g.id);
             var html = "<div id=\"".concat(divId, "\" class=\"nml-goal nml-goal-").concat(g.id, "\" style=\"").concat(getBackgroundInlineStyleForGoalCard(g), "\"></div>");
@@ -2440,7 +2441,7 @@ var Nimalia = /** @class */ (function () {
             this.playerTables[player.id] = new PlayerTable(this, player);
             console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id);
             if (player.id === this.getCurrentPlayer().id)
-                this.playerTables[player.id].addCardsToHand(this.gamedatas.hand);
+                this.playerTables[player.id].replaceCardsInHand(this.gamedatas.hand);
         }
     };
     Nimalia.prototype.setupMiniPlayerBoard = function (player) {
@@ -2475,7 +2476,7 @@ var Nimalia = /** @class */ (function () {
         this.updatePlayerHint(player, previousId, '_previous_player', _('Previous player: '), '&lt;', nameDiv, 'before');
         this.updatePlayerHint(player, nextId, '_next_player', _('Next player: '), '&gt;', nameDiv, 'after');
     };
-    Nimalia.prototype.updateRound = function (player) {
+    Nimalia.prototype.updateTurnOrder = function (player) {
         var surroundingPlayers = this.getSurroundingPlayersIds(player);
         var previousId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[0] : surroundingPlayers[1];
         var nextId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[1] : surroundingPlayers[0];
@@ -2490,6 +2491,12 @@ var Nimalia = /** @class */ (function () {
                 style: 'color:#' + this.gamedatas.players[otherPlayerId]['color'] + ';',
                 innerHTML: content
             }, parentDivId, location);
+        }
+        else {
+            var div = $(currentPlayer.id + divSuffix);
+            div.title = titlePrefix + this.gamedatas.players[otherPlayerId].name;
+            div.style.color = '#' + this.gamedatas.players[otherPlayerId]['color'];
+            div.innerHTML = content;
         }
     };
     ///////////////////////////////////////////////////
@@ -2924,6 +2931,8 @@ var Nimalia = /** @class */ (function () {
         //
         var notifs = [
             //['claimedRoute', ANIMATION_MS],
+            ['cardsMove', 1],
+            ['newRound', 1],
             ['points', 1],
             ['lastTurn', 1],
             ['bestScore', 1]
@@ -2932,6 +2941,19 @@ var Nimalia = /** @class */ (function () {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
+    };
+    Nimalia.prototype.notif_newRound = function (notif) {
+        this.updateRound(notif.args);
+    };
+    Nimalia.prototype.updateRound = function (args) {
+        this.gamedatas.turnOrderClockwise = args.clockwise;
+        $('round').innerHTML = args.round;
+        this.updateTurnOrder(this.getCurrentPlayer());
+        this.setupPlayerOrderHints(this.getCurrentPlayer());
+        this.setupGoals(args.goals);
+    };
+    Nimalia.prototype.notif_cardsMove = function (notif) {
+        this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added);
     };
     /**
      * Update player score.
@@ -3179,21 +3201,22 @@ var PlayerTable = /** @class */ (function () {
         for (var i = 0; i < 36; i++) {
             var squareId = "square-".concat(player.id, "-").concat(i + 1);
             dojo.place("\n            <div id=\"".concat(squareId, "\" class=\"nml-square\">\n            "), divId);
-            dojo.connect($(squareId), "drop", this, dojo.hitch(this, this.onCardDrop));
-            dojo.connect($(squareId), "dragover", this, dojo.hitch(this, this.onCardDropOver));
-            dojo.connect($(squareId), "touchend", this, dojo.hitch(this, this.onCardDropOver));
+            dojo.connect($(squareId), 'drop', this, dojo.hitch(this, this.onCardDrop));
+            dojo.connect($(squareId), 'dragover', this, dojo.hitch(this, this.onCardDropOver));
+            dojo.connect($(squareId), 'touchend', this, dojo.hitch(this, this.onCardDropOver));
         }
     };
-    PlayerTable.prototype.addCardsToHand = function (cards) {
+    PlayerTable.prototype.replaceCardsInHand = function (cards) {
         var _this = this;
         console.log('add cards', cards);
+        this.handStock.removeAll();
         this.handStock.addCards(cards);
         cards.forEach(function (c) {
             var cardId = _this.game.cardsManager.getId(c);
             dojo.attr(cardId, 'draggable', true);
             dojo.addClass(cardId, 'nml-card-order-' + c.order);
-            dojo.connect($(cardId), "dragstart", _this, dojo.hitch(_this, _this.onCardDragStart));
-            dojo.connect($(cardId), "touchmove", _this, dojo.hitch(_this, _this.onCardDragStart));
+            dojo.connect($(cardId), 'dragstart', _this, dojo.hitch(_this, _this.onCardDragStart));
+            dojo.connect($(cardId), 'touchmove', _this, dojo.hitch(_this, _this.onCardDragStart));
         });
         /*this.handStock.addCards([{
             "id": 20,
