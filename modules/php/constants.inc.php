@@ -3,6 +3,8 @@
 /* 
  * Game constants 
  */
+const GRID_SIZE = 6;
+
 const LAND_JUNGLE = 1;
 const LAND_WATER = 2;
 const LAND_SNOW = 3;

@@ -11,4 +11,9 @@ class Goal̤{
         $this->level = $level;
         $this->color = $color;
     }
+
+    public static function getCastedGoal($jsonDecoded):Goal̤ {
+        $instance = new self( $jsonDecoded["id"], $jsonDecoded["level"], $jsonDecoded["color"]);
+        return $instance;
+    }
 }

@@ -21,7 +21,13 @@ trait StateTrait {
 
     /** Notifies everyone’s move at the same time when everyone has finished his move. Also gets drafted cards for the next move. */
     function stMoveReveal() {
-        $this->getDraftedCards();
+        $playersIds = $this->getPlayersIds();
+        if (count($this->getPlayerCards(array_pop($playersIds))) == 0) {
+            $this->gamestate->nextState("endScore");
+        } else {
+            $this->getDraftedCards();
+            $this->gamestate->nextState("nextCard");
+        }
     }
 
     function stNextRound() {
@@ -51,7 +57,7 @@ trait StateTrait {
         }
 
         //this round points
-        $roundScores = [];
+        $roundScores = array_fill_keys(array_keys($players), 0);
         foreach ($this->getRoundGoals() as $goal) {
             foreach ($players as $playerId => $playerDb) {
                 $score = $this->calculateGoalPoints($goal, $playerId);
@@ -65,7 +71,7 @@ trait StateTrait {
         //round winner
         $this->notifyWinner($players, $roundScores);
 
-        if($round==5){
+        if ($round == 5) {
             //game winner
             $this->notifyWinner($players, $totalScore);
         }
@@ -81,7 +87,7 @@ trait StateTrait {
         }
     }
 
-    function notifyWinner($players, $roundScores){
+    function notifyWinner($players, $roundScores) {
         $bestScore = max($roundScores);
         $playersWithScore = [];
         foreach ($players as $playerId => &$player) {
