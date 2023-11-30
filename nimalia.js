@@ -2294,6 +2294,7 @@ var CardsManager = /** @class */ (function (_super) {
                 _this.setFrontBackground(div, card.type_arg);
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
+                div.classList.add("nml-card-order-100");
                 var info = document.createElement('div');
                 info.id = "".concat(_super.prototype.getId.call(_this, card), "-front-info");
                 info.innerText = '?';
@@ -2443,6 +2444,7 @@ var Nimalia = /** @class */ (function () {
             if (player.id === this.getCurrentPlayer().id)
                 this.playerTables[player.id].replaceCardsInHand(this.gamedatas.hand);
         }
+        this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id]);
     };
     Nimalia.prototype.setupMiniPlayerBoard = function (player) {
         var playerId = Number(player.id);
@@ -2539,6 +2541,7 @@ var Nimalia = /** @class */ (function () {
         else {
             console.log('WARNING :no possible move');
         }
+        document.getElementById('score').style.display = 'none';
     };
     /**
      * Show score board.
@@ -2577,7 +2580,7 @@ var Nimalia = /** @class */ (function () {
             
             break;
         */
-            case 'dummmy':
+            case 'seeScore':
                 break;
         }
     };
@@ -3066,7 +3069,7 @@ function getBackgroundInlineStyleForNimaliaCard(card) {
     var file;
     switch (card.type) {
         case 1:
-            file = 'nimaliacards.png';
+            file = 'biomeCards.png';
             break;
     }
     var imagePosition = card.type_arg - 1;
@@ -3128,27 +3131,7 @@ var EndScore = /** @class */ (function () {
         }
         players.forEach(function (player) {
             var playerId = Number(player.id);
-            /*dojo.place(
-                `<tr id="score${player.id}">
-                    <td id="score-name-${player.id}" class="player-name" style="color: #${
-                    player.color
-                }"><span id="score-winner-${player.id}"/> <span>${player.name}</span></td>
-                    <td id="destination-reached${player.id}" class="score-number">${
-                    player.completedDestinations.length + player.sharedCompletedDestinationsCount
-                }</td>
-                    <td id="revealed-tokens-back${player.id}" class="score-number">${
-                    player.revealedTokensBackCount
-                }</td>
-                    <td id="destination-unreached${player.id}" class="score-number">${this.preventMinusZero(
-                    player.uncompletedDestinations?.length
-                )}</td>
-                    <td id="revealed-tokens-left${player.id}" class="score-number">${this.preventMinusZero(
-                    player.revealedTokensLeftCount
-                )}</td>
-                    <td id="total${player.id}" class="score-number total">${player.score}</td>
-                </tr>`,
-                "score-table-body"
-            );*/
+            dojo.place("<tr id=\"score".concat(player.id, "\">\n                    <td id=\"score-name-").concat(player.id, "\" class=\"player-name\" style=\"color: #").concat(player.color, "\"><span id=\"score-winner-").concat(player.id, "\"/> <span>").concat(player.name, "</span></td>\n                    <td id=\"destination-reached").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"revealed-tokens-back").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"destination-unreached").concat(player.id, "\" class=\"score-number\">").concat(_this.preventMinusZero(0), "</td>\n                    <td id=\"revealed-tokens-left").concat(player.id, "\" class=\"score-number\">").concat(_this.preventMinusZero(0), "</td>\n                    <td id=\"total").concat(player.id, "\" class=\"score-number total\">").concat(player.score, "</td>\n                </tr>"), "score-table-body");
         });
         this.setBestScore(bestScore);
         players.forEach(function (player) {
@@ -3230,6 +3213,16 @@ var PlayerTable = /** @class */ (function () {
             dojo.connect($(squareId), 'touchend', this, dojo.hitch(this, this.onCardDropOver));
         }
     };
+    PlayerTable.prototype.displayGrid = function (player, cards) {
+        var _this = this;
+        cards.forEach(function (c) {
+            dojo.create('div', {
+                id: _this.game.cardsManager.getId(c),
+                style: getBackgroundInlineStyleForNimaliaCard(c),
+                class: 'nimalia-card card-side front nml-card-order-' + c.order
+            }, "square-".concat(player.id, "-").concat(c.location_arg));
+        });
+    };
     PlayerTable.prototype.replaceCardsInHand = function (cards) {
         var _this = this;
         console.log('add cards', cards);
@@ -3238,7 +3231,6 @@ var PlayerTable = /** @class */ (function () {
         cards.forEach(function (c) {
             var cardId = _this.game.cardsManager.getId(c);
             dojo.attr(cardId, 'draggable', true);
-            dojo.addClass(cardId, 'nml-card-order-' + c.order);
             dojo.connect($(cardId), 'dragstart', _this, dojo.hitch(_this, _this.onCardDragStart));
             dojo.connect($(cardId), 'touchmove', _this, dojo.hitch(_this, _this.onCardDragStart));
         });

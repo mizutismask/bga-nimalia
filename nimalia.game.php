@@ -155,7 +155,7 @@ class Nimalia extends Table
         $result["goals"]= $this->getRoundGoals();
         foreach ($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
-            $player['grid'] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('grid', $playerId));
+            $result['grids'][$playerId] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid$playerId", null, "card_order_in_grid"));
         }
         
         // private data : current player hidden informations

@@ -17,6 +17,7 @@ class CardsManager extends CardManager<NimaliaCard> {
                 this.setFrontBackground(div as HTMLDivElement, card.type_arg);
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = `${super.getId(card)}-front`;
+                div.classList.add("nml-card-order-100")
 
                 const info: HTMLDivElement = document.createElement('div');
                 info.id = `${super.getId(card)}-front-info`;

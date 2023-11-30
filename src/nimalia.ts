@@ -138,9 +138,10 @@ class Nimalia implements NimaliaGame {
 			console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id)
 			if (player.id === this.getCurrentPlayer().id)
 				this.playerTables[player.id].replaceCardsInHand(this.gamedatas.hand)
-		}
-	}
-
+        }
+        this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id])
+    }
+    
 	private setupMiniPlayerBoard(player: NimaliaPlayer) {
 		const playerId = Number(player.id)
 		dojo.place(
@@ -291,7 +292,8 @@ class Nimalia implements NimaliaGame {
 			})
 		} else {
 			console.log('WARNING :no possible move')
-		}
+        }
+        document.getElementById('score').style.display = 'none'
 	}
 
 	/**
@@ -339,7 +341,8 @@ class Nimalia implements NimaliaGame {
             break;
         */
 
-			case 'dummmy':
+            case 'seeScore':
+                
 				break
 		}
 	}

@@ -49,7 +49,8 @@ interface NimaliaGamedatas {
 	// Add here variables you set up in getAllDatas
 	hand: Array<NimaliaCard>
 	goals: Array<Goal>
-	round: {round:number, clockwise:boolean, goals:Array<Goal>}
+	round: { round: number, clockwise: boolean, goals: Array<Goal> }
+	grids: { [playerId: number]: Array<NimaliaCard> }
 }
 
 interface ClientActionData {

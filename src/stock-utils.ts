@@ -5,7 +5,7 @@ function getBackgroundInlineStyleForNimaliaCard(card: NimaliaCard) {
 	let file
 	switch (card.type) {
 		case 1:
-			file = 'nimaliacards.png'
+			file = 'biomeCards.png'
 			break
 	}
 

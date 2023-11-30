@@ -56,6 +56,20 @@ class PlayerTable {
 		}
 	}
 
+	public displayGrid(player: NimaliaPlayer, cards: Array<NimaliaCard>) {
+		cards.forEach((c) => {
+			dojo.create(
+				'div',
+				{
+					id: this.game.cardsManager.getId(c),
+					style: getBackgroundInlineStyleForNimaliaCard(c),
+					class: 'nimalia-card card-side front nml-card-order-' + c.order
+				},
+				`square-${player.id}-${c.location_arg}`
+			)
+		})
+	}
+
 	public replaceCardsInHand(cards: Array<NimaliaCard>) {
 		console.log('add cards', cards)
 		this.handStock.removeAll()
@@ -63,7 +77,6 @@ class PlayerTable {
 		cards.forEach((c) => {
 			const cardId = this.game.cardsManager.getId(c)
 			dojo.attr(cardId, 'draggable', true)
-			dojo.addClass(cardId, 'nml-card-order-' + c.order)
 			dojo.connect($(cardId), 'dragstart', this, dojo.hitch(this, this.onCardDragStart))
 			dojo.connect($(cardId), 'touchmove', this, dojo.hitch(this, this.onCardDragStart))
 		})

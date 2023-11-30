@@ -62,27 +62,26 @@ class EndScore {
 		players.forEach((player) => {
 			const playerId = Number(player.id)
 
-			/*dojo.place(
+			dojo.place(
                 `<tr id="score${player.id}">
                     <td id="score-name-${player.id}" class="player-name" style="color: #${
                     player.color
                 }"><span id="score-winner-${player.id}"/> <span>${player.name}</span></td>
-                    <td id="destination-reached${player.id}" class="score-number">${
-                    player.completedDestinations.length + player.sharedCompletedDestinationsCount
+                    <td id="destination-reached${player.id}" class="score-number">${0
                 }</td>
                     <td id="revealed-tokens-back${player.id}" class="score-number">${
-                    player.revealedTokensBackCount
+                    0
                 }</td>
                     <td id="destination-unreached${player.id}" class="score-number">${this.preventMinusZero(
-                    player.uncompletedDestinations?.length
+                   0
                 )}</td>
                     <td id="revealed-tokens-left${player.id}" class="score-number">${this.preventMinusZero(
-                    player.revealedTokensLeftCount
+                    0
                 )}</td>
                     <td id="total${player.id}" class="score-number total">${player.score}</td>
                 </tr>`,
                 "score-table-body"
-            );*/
+            );
 		})
 
 		this.setBestScore(bestScore)
