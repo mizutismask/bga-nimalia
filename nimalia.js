@@ -3246,6 +3246,12 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.onCardDragStart = function (evt) {
         var _a;
+        if (!this.game.isCurrentPlayerActive()) {
+            evt.dataTransfer.clearData();
+            evt.preventDefault();
+            evt.stopPropagation();
+            return;
+        }
         // Add the target element's id to the data transfer object
         (_a = evt.dataTransfer) === null || _a === void 0 ? void 0 : _a.setData('text/plain', evt.target.id);
         //evt.dataTransfer.effectAllowed = 'move'

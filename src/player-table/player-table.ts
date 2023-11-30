@@ -92,6 +92,12 @@ class PlayerTable {
 	}
 
 	private onCardDragStart(evt) {
+		if (!(this.game as any).isCurrentPlayerActive()) {
+			evt.dataTransfer.clearData();
+            evt.preventDefault();
+            evt.stopPropagation();
+			return
+		}
 		// Add the target element's id to the data transfer object
 		evt.dataTransfer?.setData('text/plain', evt.target.id)
 		//evt.dataTransfer.effectAllowed = 'move'
