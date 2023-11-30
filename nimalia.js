@@ -2486,6 +2486,7 @@ var Nimalia = /** @class */ (function () {
     Nimalia.prototype.updatePlayerHint = function (currentPlayer, otherPlayerId, divSuffix, titlePrefix, content, parentDivId, location) {
         if (!$(currentPlayer.id + divSuffix)) {
             dojo.create('span', {
+                id: currentPlayer.id + divSuffix,
                 class: 'playerOrderHelp',
                 title: titlePrefix + this.gamedatas.players[otherPlayerId].name,
                 style: 'color:#' + this.gamedatas.players[otherPlayerId]['color'] + ';',
@@ -2519,6 +2520,9 @@ var Nimalia = /** @class */ (function () {
             case 'placeCard':
                 this.onEnteringPlaceCard(args.args);
                 break;
+            case 'seeScore':
+                this.onEnteringSeeScore();
+                break;
         }
         if (this.gameFeatures.spyOnActivePlayerInGeneralActions) {
             this.addArrowsToActivePlayer(args);
@@ -2540,6 +2544,17 @@ var Nimalia = /** @class */ (function () {
      * Show score board.
      */
     Nimalia.prototype.onEnteringEndScore = function () {
+        var lastTurnBar = document.getElementById('last-round');
+        if (lastTurnBar) {
+            lastTurnBar.style.display = 'none';
+        }
+        document.getElementById('score').style.display = 'flex';
+        this.endScore = new EndScore(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore);
+    };
+    /**
+     * Show score board.
+     */
+    Nimalia.prototype.onEnteringSeeScore = function () {
         var lastTurnBar = document.getElementById('last-round');
         if (lastTurnBar) {
             lastTurnBar.style.display = 'none';
@@ -2578,6 +2593,12 @@ var Nimalia = /** @class */ (function () {
                     ;
                     this.addActionButton('place-card-button', _('Validate'), function () { return _this.placeCard(); });
                     dojo.addClass('place-card-button', 'disabled');
+                    break;
+                case 'seeScore':
+                    ;
+                    this.addActionButton('score-seen-button', _('Finished'), function () {
+                        return _this.takeAction('seeScore');
+                    });
                     break;
             }
         }
@@ -3098,9 +3119,12 @@ var EndScore = /** @class */ (function () {
         this.game = game;
         this.players = players;
         this.bestScore = bestScore;
-        var headers = document.getElementById("scoretr");
+        var headers = document.getElementById('scoretr');
         if (!headers.childElementCount) {
-            dojo.place("\n                <th></th>\n                <th id=\"th-destination-reached-score\" class=\"\">_(\"biomesCards reached\")</th>\n                <th id=\"th-revealed-tokens-back-score\" class=\"\">_(\"Revealed biomesCards reached\")</th>\n                <th id=\"th-destination-unreached-score\" class=\"\">_(\"biomesCards not reached\")</th>\n                <th id=\"th-revelead-tokens-left-score\" class=\"\">$(\"Revealed biomesCards not reached\")</th>\n                <th id=\"th-total-score\" class=\"\">_(\"Total\")</th>\n            ", headers);
+            dojo.place("\n                <th colspan=\"3\">_(\"Round\u202F1\")</th>\n                <th colspan=\"3\">_(\"Round\u202F2\")</th>\n                <th colspan=\"3\">_(\"Round\u202F3\")</th>\n                <th colspan=\"4\">_(\"Round\u202F4\")</th>\n                <th colspan=\"4\">_(\"Round\u202F5\")</th>\n                <th id=\"th-total-score\" class=\"\">_(\"Total\")</th>\n            ", headers);
+            console.log("parentNode", headers.parentNode);
+            console.log("parentElement", headers.parentElement);
+            dojo.place("\n                <thead>\n                <tr>\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"></th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"></th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n                <tr/>\n                <thead/>\n            ", headers.parentElement, "after");
         }
         players.forEach(function (player) {
             var playerId = Number(player.id);
@@ -3150,16 +3174,16 @@ var EndScore = /** @class */ (function () {
     };
     EndScore.prototype.preventMinusZero = function (score) {
         if (score === 0) {
-            return "0";
+            return '0';
         }
-        return "-" + score.toString();
+        return '-' + score.toString();
     };
     /**
      * Add trophee icon to top score player(s)
      */
     EndScore.prototype.highlightWinnerScore = function (playerId) {
-        document.getElementById("score".concat(playerId)).classList.add("highlight");
-        document.getElementById("score-winner-".concat(playerId)).classList.add("fa", "fa-trophy", "fa-lg");
+        document.getElementById("score".concat(playerId)).classList.add('highlight');
+        document.getElementById("score-winner-".concat(playerId)).classList.add('fa', 'fa-trophy', 'fa-lg');
     };
     /**
      * Save best score.
@@ -3177,7 +3201,7 @@ var PlayerTable = /** @class */ (function () {
         this.game = game;
         var isMyTable = player.id === game.getCurrentPlayer().id;
         var ownClass = isMyTable ? 'own' : '';
-        var html = "\n\t\t\t<a id=\"anchor-player-".concat(player.id, "\"></a>\n\t\t\t<span class=\"player-name\">").concat(player.name, "</span>\n            <div id=\"player-table-").concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n            </div>\n        ");
+        var html = "\n\t\t\t<a id=\"anchor-player-".concat(player.id, "\"></a>\n\t\t\t<span class=\"nml-player-name\">").concat(player.name, "</span>\n            <div id=\"player-table-").concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n            </div>\n        ");
         dojo.place(html, 'player-tables');
         this.setupReserve(player);
         if (isMyTable) {

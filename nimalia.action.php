@@ -75,4 +75,10 @@ class action_nimalia extends APP_GameAction {
         $this->game->undoPlaceCard();
         self::ajaxResponse();
     }
+
+    public function seeScore() {
+        self::setAjaxMode();
+        $this->game->scoreSeen();
+        self::ajaxResponse();
+    }
 }

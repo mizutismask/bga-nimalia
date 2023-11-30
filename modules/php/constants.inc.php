@@ -55,6 +55,7 @@ define('ST_NEXT_ROUND', 80);
 define('ST_PLACE_CARD', 81);
 define('ST_MOVE_REVEAL', 82);
 
+define('ST_SEE_SCORE', 96);
 define('ST_DEBUG_END_GAME', 97);
 define('ST_SCORE', 98);
 

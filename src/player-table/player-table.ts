@@ -10,7 +10,7 @@ class PlayerTable {
 		const ownClass = isMyTable ? 'own' : ''
 		let html = `
 			<a id="anchor-player-${player.id}"></a>
-			<span class="player-name">${player.name}</span>
+			<span class="nml-player-name">${player.name}</span>
             <div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${ownClass}">
                 <div id="reserve-${player.id}" class="nml-reserve"></div>
             </div>

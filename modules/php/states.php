@@ -82,15 +82,7 @@ trait StateTrait {
             $this->notifyWinner($players, $totalScore);
         }
 
-        if ($this->hasReachedEndOfGameRequirements(null)) {
-            if ($this->getBgaEnvironment() == 'studio') {
-                $this->gamestate->nextState('debugEndGame');
-            } else {
-                $this->gamestate->nextState('endGame');
-            }
-        } else {
-            $this->gamestate->nextState('nextRound');
-        }
+       $this->gamestate->nextState("seeScore");
     }
 
     function notifyWinner($players, $roundScores) {

@@ -52,4 +52,20 @@ trait ActionTrait {
         $this->undoMoveCardToReserve($playerId,  $cardId);
         $this->gamestate->setPlayersMultiactive([$playerId], "ignored");
     }
+
+    public function scoreSeen() {
+        self::checkAction('seen');
+        $playerId = intval(self::getCurrentPlayerId());
+        $nextState = 'nextRound';
+
+        if ($this->hasReachedEndOfGameRequirements(null)) {
+            if ($this->getBgaEnvironment() == 'studio') {
+                $this->gamestate->nextState('debugEndGame');
+            } else {
+                $this->gamestate->nextState('endGame');
+            }
+        }
+
+        $this->gamestate->setPlayerNonMultiactive($playerId, $nextState);
+    }
 }

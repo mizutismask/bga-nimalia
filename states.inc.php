@@ -93,6 +93,20 @@ $playerActionsGameStates = [
         "possibleactions" => array("placeCard", "undoPlaceCard"),
         "transitions" => array("cardPlaced" => ST_MOVE_REVEAL)
     ),
+
+    ST_SEE_SCORE => array(
+        "name" => "seeScore",
+        "description" => clienttranslate('Other players are watching the results'),
+        "descriptionmyturn" => clienttranslate('${you} can watch the results'),
+        "type" => "multipleactiveplayer",
+        "action" => "stMakeEveryoneActive",
+        "possibleactions" => array("seen"),
+        "transitions" => [
+            "nextRound" => ST_NEXT_ROUND,
+            "endGame" => ST_END_GAME,
+            "debugEndGame" => ST_DEBUG_END_GAME,
+        ],
+    ),
 ];
 
 $gameGameStates = [
@@ -135,9 +149,7 @@ $gameGameStates = [
         "type" => "game",
         "action" => "stScore",
         "transitions" => [
-            "nextRound" => ST_NEXT_ROUND,
-            "endGame" => ST_END_GAME,
-            "debugEndGame" => ST_DEBUG_END_GAME,
+            "seeScore" => ST_SEE_SCORE,
         ],
     ],
 ];

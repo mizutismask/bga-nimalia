@@ -20,14 +20,15 @@
 			}
 		}
 	}
+
+    .nml-player-name {
+        bottom: 8px;
+        z-index: 100;
+        width: 100%;
+        left: 0px;
+        color: #1f273b;
+        font-weight: bold;
+        text-align: center;
+    }
 }
 
-.player-name {
-	bottom: 8px;
-	z-index: 100;
-	width: 100%;
-	left: 0px;
-	color: #1f273b;
-	font-weight: bold;
-	text-align: center;
-}
