@@ -97,8 +97,8 @@ class Nimalia implements NimaliaGame {
 		console.log('Ending game setup')
 	}
 	private setupGoals(goals: Goal[]) {
-        const div = 'goals-wrapper'
-        dojo.empty(div)
+		const div = 'goals-wrapper'
+		dojo.empty(div)
 		goals.forEach((g) => {
 			const divId = `goal_${g.id}`
 			const html = `<div id="${divId}" class="nml-goal nml-goal-${
@@ -232,6 +232,7 @@ class Nimalia implements NimaliaGame {
 			dojo.create(
 				'span',
 				{
+					id: currentPlayer.id + divSuffix,
 					class: 'playerOrderHelp',
 					title: titlePrefix + this.gamedatas.players[otherPlayerId].name,
 					style: 'color:#' + this.gamedatas.players[otherPlayerId]['color'] + ';',
@@ -271,6 +272,9 @@ class Nimalia implements NimaliaGame {
 			case 'placeCard':
 				this.onEnteringPlaceCard(args.args)
 				break
+			case 'seeScore':
+				this.onEnteringSeeScore()
+				break
 		}
 
 		if (this.gameFeatures.spyOnActivePlayerInGeneralActions) {
@@ -294,6 +298,20 @@ class Nimalia implements NimaliaGame {
 	 * Show score board.
 	 */
 	private onEnteringEndScore() {
+		const lastTurnBar = document.getElementById('last-round')
+		if (lastTurnBar) {
+			lastTurnBar.style.display = 'none'
+		}
+
+		document.getElementById('score').style.display = 'flex'
+
+		this.endScore = new EndScore(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore)
+    }
+    
+	/**
+	 * Show score board.
+	 */
+	private onEnteringSeeScore() {
 		const lastTurnBar = document.getElementById('last-round')
 		if (lastTurnBar) {
 			lastTurnBar.style.display = 'none'
@@ -336,6 +354,11 @@ class Nimalia implements NimaliaGame {
 				case 'placeCard':
 					;(this as any).addActionButton('place-card-button', _('Validate'), () => this.placeCard())
 					dojo.addClass('place-card-button', 'disabled')
+					break
+				case 'seeScore':
+					;(this as any).addActionButton('score-seen-button', _('Finished'), () =>
+						this.takeAction('seeScore')
+					)
 					break
 			}
 		}
@@ -801,8 +824,8 @@ class Nimalia implements NimaliaGame {
 		this.gamedatas.turnOrderClockwise = args.clockwise
 		$('round').innerHTML = args.round
 		this.updateTurnOrder(this.getCurrentPlayer())
-        this.setupPlayerOrderHints(this.getCurrentPlayer())
-        this.setupGoals(args.goals)
+		this.setupPlayerOrderHints(this.getCurrentPlayer())
+		this.setupGoals(args.goals)
 	}
 
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
