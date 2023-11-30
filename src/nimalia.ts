@@ -138,10 +138,10 @@ class Nimalia implements NimaliaGame {
 			console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id)
 			if (player.id === this.getCurrentPlayer().id)
 				this.playerTables[player.id].replaceCardsInHand(this.gamedatas.hand)
-        }
-        this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id])
-    }
-    
+		}
+		this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id])
+	}
+
 	private setupMiniPlayerBoard(player: NimaliaPlayer) {
 		const playerId = Number(player.id)
 		dojo.place(
@@ -292,8 +292,8 @@ class Nimalia implements NimaliaGame {
 			})
 		} else {
 			console.log('WARNING :no possible move')
-        }
-        document.getElementById('score').style.display = 'none'
+		}
+		document.getElementById('score').style.display = 'none'
 	}
 
 	/**
@@ -308,8 +308,8 @@ class Nimalia implements NimaliaGame {
 		document.getElementById('score').style.display = 'flex'
 
 		this.endScore = new EndScore(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore)
-    }
-    
+	}
+
 	/**
 	 * Show score board.
 	 */
@@ -341,8 +341,7 @@ class Nimalia implements NimaliaGame {
             break;
         */
 
-            case 'seeScore':
-                
+			case 'seeScore':
 				break
 		}
 	}
@@ -357,10 +356,25 @@ class Nimalia implements NimaliaGame {
 				case 'placeCard':
 					;(this as any).addActionButton('place-card-button', _('Validate'), () => this.placeCard())
 					dojo.addClass('place-card-button', 'disabled')
+					;(this as any).addActionButton('cancel-button', _('Cancel'), () => this.cancelPlaceCard(),null, null,'red')
+					dojo.addClass('cancel-button', 'disabled')
 					break
 				case 'seeScore':
 					;(this as any).addActionButton('score-seen-button', _('Finished'), () =>
 						this.takeAction('seeScore')
+					)
+					break
+			}
+		} else {
+			switch (stateName) {
+				case 'placeCard':
+					;(this as any).addActionButton(
+						'undo_button',
+						_('Undo'),
+						() => this.takeAction('undoPlaceCard'),
+						null,
+						null,
+						'red'
 					)
 					break
 			}
@@ -738,7 +752,7 @@ class Nimalia implements NimaliaGame {
 
         dojo.toggleClass('useTicket_button', 'disabled', !chooseActionArgs.canUseTicket);*/
 
-	/*	if (chooseActionArgs.canPass) {
+		/*	if (chooseActionArgs.canPass) {
 			;(this as any).addActionButton('pass_button', _('End my turn'), () => this.pass())
 		}*/
 	}
@@ -768,9 +782,17 @@ class Nimalia implements NimaliaGame {
 		this.takeAction('placeCard', {
 			'cardId': this.getPart(this.clientActionData.placedCardId, -1),
 			'squareId': this.getPart(this.clientActionData.destinationSquare, -1),
-			'rotation': $(this.clientActionData.placedCardId+"-front").dataset.rotation
+			'rotation': $(this.clientActionData.placedCardId + '-front').dataset.rotation
 		})
-	}
+    }
+    
+    public cancelPlaceCard() {
+        //this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
+        this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId));
+        console.log("grid",this.gamedatas.grids[this.getCurrentPlayer().id])
+        this.playerTables[this.getCurrentPlayer().id].displayGrid(this.getCurrentPlayer(), this.gamedatas.grids[this.getCurrentPlayer().id])
+        dojo.toggleClass('cancel-button', 'disabled', true)
+    }
 
 	public takeAction(action: string, data?: any) {
 		data = data || {}

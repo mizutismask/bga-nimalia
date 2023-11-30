@@ -57,6 +57,7 @@ class PlayerTable {
 	}
 
 	public displayGrid(player: NimaliaPlayer, cards: Array<NimaliaCard>) {
+		dojo.query(`#reserve-${player.id} .nml-square`).empty();
 		cards.forEach((c) => {
 			dojo.create(
 				'div',
@@ -64,7 +65,7 @@ class PlayerTable {
 					id: this.game.cardsManager.getId(c),
 					style: getBackgroundInlineStyleForNimaliaCard(c),
 					class: 'nimalia-card card-side front nml-card-order-' + c.order,
-					"data-rotation": c.rotation
+					'data-rotation': c.rotation
 				},
 				`square-${player.id}-${c.location_arg}`
 			)
@@ -94,9 +95,9 @@ class PlayerTable {
 
 	private onCardDragStart(evt) {
 		if (!(this.game as any).isCurrentPlayerActive()) {
-			evt.dataTransfer.clearData();
-            evt.preventDefault();
-            evt.stopPropagation();
+			evt.dataTransfer.clearData()
+			evt.preventDefault()
+			evt.stopPropagation()
 			return
 		}
 		// Add the target element's id to the data transfer object
@@ -113,9 +114,14 @@ class PlayerTable {
 		const square = (evt.target as HTMLElement).closest('.nml-square')
 		console.log('drop', cardId, 'to', square.id)
 		if (cardId && square) {
+			this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement
 			square.appendChild($(cardId))
+			/*this.handStock.removeCard(
+				this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
+			)*/
 		}
 		dojo.toggleClass('place-card-button', 'disabled', !cardId || !square)
+		dojo.toggleClass('cancel-button', 'disabled', !cardId || !square)
 		this.game.clientActionData.destinationSquare = square.id
 		this.game.clientActionData.placedCardId = cardId
 	}

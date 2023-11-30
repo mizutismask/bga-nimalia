@@ -56,6 +56,7 @@ interface NimaliaGamedatas {
 interface ClientActionData {
 	placedCardId: string
 	destinationSquare: string
+	previousCardParentInHand:HTMLElement
 }
 
 interface NimaliaGame extends Game {

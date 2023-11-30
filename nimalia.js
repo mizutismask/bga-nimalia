@@ -2604,12 +2604,22 @@ var Nimalia = /** @class */ (function () {
                     ;
                     this.addActionButton('place-card-button', _('Validate'), function () { return _this.placeCard(); });
                     dojo.addClass('place-card-button', 'disabled');
+                    this.addActionButton('cancel-button', _('Cancel'), function () { return _this.cancelPlaceCard(); }, null, null, 'red');
+                    dojo.addClass('cancel-button', 'disabled');
                     break;
                 case 'seeScore':
                     ;
                     this.addActionButton('score-seen-button', _('Finished'), function () {
                         return _this.takeAction('seeScore');
                     });
+                    break;
+            }
+        }
+        else {
+            switch (stateName) {
+                case 'placeCard':
+                    ;
+                    this.addActionButton('undo_button', _('Undo'), function () { return _this.takeAction('undoPlaceCard'); }, null, null, 'red');
                     break;
             }
         }
@@ -2903,8 +2913,8 @@ var Nimalia = /** @class */ (function () {
 
         dojo.toggleClass('useTicket_button', 'disabled', !chooseActionArgs.canUseTicket);*/
         /*	if (chooseActionArgs.canPass) {
-                ;(this as any).addActionButton('pass_button', _('End my turn'), () => this.pass())
-            }*/
+            ;(this as any).addActionButton('pass_button', _('End my turn'), () => this.pass())
+        }*/
     };
     ///////////////////////////////////////////////////
     //// Player's action
@@ -2928,8 +2938,15 @@ var Nimalia = /** @class */ (function () {
         this.takeAction('placeCard', {
             'cardId': this.getPart(this.clientActionData.placedCardId, -1),
             'squareId': this.getPart(this.clientActionData.destinationSquare, -1),
-            'rotation': $(this.clientActionData.placedCardId + "-front").dataset.rotation
+            'rotation': $(this.clientActionData.placedCardId + '-front').dataset.rotation
         });
+    };
+    Nimalia.prototype.cancelPlaceCard = function () {
+        //this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
+        this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId));
+        console.log("grid", this.gamedatas.grids[this.getCurrentPlayer().id]);
+        this.playerTables[this.getCurrentPlayer().id].displayGrid(this.getCurrentPlayer(), this.gamedatas.grids[this.getCurrentPlayer().id]);
+        dojo.toggleClass('cancel-button', 'disabled', true);
     };
     Nimalia.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -3221,12 +3238,13 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.displayGrid = function (player, cards) {
         var _this = this;
+        dojo.query("#reserve-".concat(player.id, " .nml-square")).empty();
         cards.forEach(function (c) {
             dojo.create('div', {
                 id: _this.game.cardsManager.getId(c),
                 style: getBackgroundInlineStyleForNimaliaCard(c),
                 class: 'nimalia-card card-side front nml-card-order-' + c.order,
-                "data-rotation": c.rotation
+                'data-rotation': c.rotation
             }, "square-".concat(player.id, "-").concat(c.location_arg));
         });
     };
@@ -3272,9 +3290,14 @@ var PlayerTable = /** @class */ (function () {
         var square = evt.target.closest('.nml-square');
         console.log('drop', cardId, 'to', square.id);
         if (cardId && square) {
+            this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement;
             square.appendChild($(cardId));
+            /*this.handStock.removeCard(
+                this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
+            )*/
         }
         dojo.toggleClass('place-card-button', 'disabled', !cardId || !square);
+        dojo.toggleClass('cancel-button', 'disabled', !cardId || !square);
         this.game.clientActionData.destinationSquare = square.id;
         this.game.clientActionData.placedCardId = cardId;
     };
