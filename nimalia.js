@@ -3289,13 +3289,13 @@ var GameFeatureConfig = /** @class */ (function () {
         /** Adds the spy icon in other players miniboard. */
         this._spyOnOtherPlayerBoard = true;
         /** Adds the spy active player icon in the main action bar. */
-        this._spyOnActivePlayerInGeneralActions = true;
+        this._spyOnActivePlayerInGeneralActions = false;
         /** Adds colored <> around the player name in miniboards to show who are the previous and next players. */
         this._showPlayerOrderHints = true;
         /** Shows a player help card in the player miniboard. */
-        this._showPlayerHelp = true;
+        this._showPlayerHelp = false;
         /** Shows a first player icon in the player miniboard */
-        this._showFirstPlayer = true;
+        this._showFirstPlayer = false;
     }
     Object.defineProperty(GameFeatureConfig.prototype, "showFirstPlayer", {
         get: function () {
