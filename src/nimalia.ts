@@ -738,9 +738,9 @@ class Nimalia implements NimaliaGame {
 
         dojo.toggleClass('useTicket_button', 'disabled', !chooseActionArgs.canUseTicket);*/
 
-		if (chooseActionArgs.canPass) {
+	/*	if (chooseActionArgs.canPass) {
 			;(this as any).addActionButton('pass_button', _('End my turn'), () => this.pass())
-		}
+		}*/
 	}
 
 	///////////////////////////////////////////////////
@@ -768,7 +768,7 @@ class Nimalia implements NimaliaGame {
 		this.takeAction('placeCard', {
 			'cardId': this.getPart(this.clientActionData.placedCardId, -1),
 			'squareId': this.getPart(this.clientActionData.destinationSquare, -1),
-			'rotation': 0
+			'rotation': $(this.clientActionData.placedCardId+"-front").dataset.rotation
 		})
 	}
 

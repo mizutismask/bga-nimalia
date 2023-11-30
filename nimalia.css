@@ -372,6 +372,27 @@
   font-weight: bold;
   text-align: center;
 }
+.player-table .nml-rotate {
+  color: #5b1a3d;
+  top: 50%;
+  position: absolute;
+  transform-style: preserve-3d;
+}
+.player-table .nml-rotate.nml-rotate-left {
+  left: 2%;
+}
+.player-table .nml-rotate.nml-rotate-right {
+  right: 2%;
+}
+.player-table .front[data-rotation="90"] {
+  rotate: 90deg;
+}
+.player-table .front[data-rotation="180"] {
+  rotate: 180deg;
+}
+.player-table .front[data-rotation="270"] {
+  rotate: 270deg;
+}
 
 /*
  * Controls in the top bar

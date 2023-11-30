@@ -2285,37 +2285,45 @@ var CardsManager = /** @class */ (function (_super) {
                 div.classList.add('nimalia-card');
                 div.dataset.cardId = '' + card.id;
                 div.dataset.cardType = '' + card.type;
+                div.style.position = 'relative';
                 /*div.style.width = '200px';
                 div.style.height = '200px';
-                div.style.position = 'relative';*/
+                */
+                _this.addRotateButton(card, div, 'left');
+                _this.addRotateButton(card, div, 'right');
             },
             setupFrontDiv: function (card, div) {
-                console.log("setupFrontDiv", card.type_arg);
+                console.log('setupFrontDiv', card.type_arg);
                 _this.setFrontBackground(div, card.type_arg);
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
-                div.classList.add("nml-card-order-100");
-                var info = document.createElement('div');
-                info.id = "".concat(_super.prototype.getId.call(_this, card), "-front-info");
-                info.innerText = '?';
-                info.classList.add('css-icon', 'card-info');
-                div.appendChild(info);
-                var cardTypeId = card.type * 100 + card.type_arg;
-                _this.game.addTooltipHtml(info.id, _this.getTooltip(card, cardTypeId));
+                div.classList.add('nml-card-order-100');
+                div.dataset.rotation = '0';
             },
             setupBackDiv: function (card, div) {
                 div.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/nimalia-card-background.jpg')");
-            },
+            }
         }) || this;
         _this.game = game;
         return _this;
     }
+    CardsManager.prototype.addRotateButton = function (card, cardDiv, direction) {
+        var rotate = document.createElement('div');
+        rotate.id = "".concat(_super.prototype.getId.call(this, card), "-rotate-").concat(direction);
+        rotate.classList.add('fa', 'fa-solid', "fa-rotate-".concat(direction), "nml-rotate-".concat(direction), 'nml-rotate', 'fa6-2xl');
+        cardDiv.appendChild(rotate);
+        dojo.connect(rotate, 'click', this, function (evt) {
+            var frontDiv = document.querySelector("#".concat(cardDiv.id, " .front"));
+            var rotation = (parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360;
+            frontDiv.dataset.rotation = rotation.toString();
+        });
+    };
     CardsManager.prototype.getCardName = function (cardTypeId) {
-        return "todo";
+        return 'todo';
     };
     CardsManager.prototype.getTooltip = function (card, cardUniqueId) {
         var tooltip = "\n\t\t<div class=\"xpd-city-zoom-wrapper\">\n\t\t\t<div id=\"xpd-city-".concat(cardUniqueId, "-zoom\" class=\"xpd-city-zoom\" style=\"").concat(getBackgroundInlineStyleForNimaliaCard(card), "\"></div>\n\t\t\t<div class=\"xpd-city-zoom-desc-wrapper\">\n\t\t\t\t<div class=\"xpd-city\">").concat(dojo.string.substitute(_('${to}'), {
-            to: "replace",
+            to: 'replace'
         }), "</div>\n\t\t\t</div>\n\t\t</div>");
         return tooltip;
     };
@@ -2874,7 +2882,6 @@ var Nimalia = /** @class */ (function () {
      * Sets the action bar (title and buttons) for Choose action.
      */
     Nimalia.prototype.setActionBarChooseAction = function (fromCancel) {
-        var _this = this;
         document.getElementById("generalactions").innerHTML = '';
         if (fromCancel) {
             this.setChooseActionGamestateDescription();
@@ -2895,10 +2902,9 @@ var Nimalia = /** @class */ (function () {
         $('expTicket-button').parentElement.style.padding = '0';
 
         dojo.toggleClass('useTicket_button', 'disabled', !chooseActionArgs.canUseTicket);*/
-        if (chooseActionArgs.canPass) {
-            ;
-            this.addActionButton('pass_button', _('End my turn'), function () { return _this.pass(); });
-        }
+        /*	if (chooseActionArgs.canPass) {
+                ;(this as any).addActionButton('pass_button', _('End my turn'), () => this.pass())
+            }*/
     };
     ///////////////////////////////////////////////////
     //// Player's action
@@ -2922,7 +2928,7 @@ var Nimalia = /** @class */ (function () {
         this.takeAction('placeCard', {
             'cardId': this.getPart(this.clientActionData.placedCardId, -1),
             'squareId': this.getPart(this.clientActionData.destinationSquare, -1),
-            'rotation': 0
+            'rotation': $(this.clientActionData.placedCardId + "-front").dataset.rotation
         });
     };
     Nimalia.prototype.takeAction = function (action, data) {
@@ -3219,7 +3225,8 @@ var PlayerTable = /** @class */ (function () {
             dojo.create('div', {
                 id: _this.game.cardsManager.getId(c),
                 style: getBackgroundInlineStyleForNimaliaCard(c),
-                class: 'nimalia-card card-side front nml-card-order-' + c.order
+                class: 'nimalia-card card-side front nml-card-order-' + c.order,
+                "data-rotation": c.rotation
             }, "square-".concat(player.id, "-").concat(c.location_arg));
         });
     };

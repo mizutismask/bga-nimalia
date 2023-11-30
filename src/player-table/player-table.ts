@@ -63,7 +63,8 @@ class PlayerTable {
 				{
 					id: this.game.cardsManager.getId(c),
 					style: getBackgroundInlineStyleForNimaliaCard(c),
-					class: 'nimalia-card card-side front nml-card-order-' + c.order
+					class: 'nimalia-card card-side front nml-card-order-' + c.order,
+					"data-rotation": c.rotation
 				},
 				`square-${player.id}-${c.location_arg}`
 			)
