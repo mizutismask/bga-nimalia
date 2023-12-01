@@ -102,9 +102,9 @@ trait UtilTrait {
         }
         $sql = "SELECT card_order_in_grid, card_rotation FROM card where card_id=". $dbObject['id'];
         $additionalFields = self::getObjectFromDB( $sql );
-        self::dump('************type_arg*******', $dbObject["type_arg"]);
-        self::dump('*******************', $this->BIOMES_CARDS[$dbObject["type"]][$dbObject["type_arg"]]);
-        self::dump('*******************additionalFields', $additionalFields);
+        //self::dump('************type_arg*******', $dbObject["type_arg"]);
+        //self::dump('*******************', $this->BIOMES_CARDS[$dbObject["type"]][$dbObject["type_arg"]]);
+        //self::dump('*******************additionalFields', $additionalFields);
         return new BiomeCard($dbObject, $this->BIOMES_CARDS, $additionalFields);
     }
 
