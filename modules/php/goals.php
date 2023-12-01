@@ -280,43 +280,19 @@ trait GoalTrait {
     }
 
     function calculateGoalCompleteSquare($grid) {
-        $rows = count($grid);
-        $cols = count($grid[0]);
-
-        // Initialiser une matrice pour stocker la taille des carrés complets à chaque position
-        $squareSizes = array_fill(0, $rows, array_fill(0, $cols, 0));
-
-        // Remplir la première colonne de la matrice avec les valeurs de la première colonne de la grille
-        for ($i = 0; $i < $rows; $i++) {
-            $squareSizes[$i][0] = ($grid[$i][0]->land != FAKE_LAND) ? 1 : 0;
-        }
-
-        // Remplir la première ligne de la matrice avec les valeurs de la première ligne de la grille
-        for ($j = 0; $j < $cols; $j++) {
-            $squareSizes[0][$j] = ($grid[0][$j]->land != FAKE_LAND) ? 1 : 0;
-        }
-
-        // Calculer les tailles des carrés complets pour les positions restantes
-        for ($i = 1; $i < $rows; $i++) {
-            for ($j = 1; $j < $cols; $j++) {
-                if ($grid[$i][$j]->land != FAKE_LAND) {
-                    // Trouver la taille minimale des carrés complets adjacents
-                    $minSize = min(
-                        $squareSizes[$i - 1][$j],      // En haut
-                        $squareSizes[$i][$j - 1],      // À gauche
-                        $squareSizes[$i - 1][$j - 1]   // En diagonale (haut gauche)
-                    );
-
-                    // La taille du carré complet actuel est la taille minimale + 1
-                    $squareSizes[$i][$j] = $minSize + 1;
+        $foundEmptySquare = false;
+        $squareSize = 0;
+        while (!$foundEmptySquare && $squareSize < GRID_SIZE) {
+            for ($i = GRID_SIZE - 1; $i >= GRID_SIZE - 1 - $squareSize && !$foundEmptySquare; $i--) { //row
+                for ($j = 0; $j <= $squareSize && !$foundEmptySquare; $j++) { //col
+                    $foundEmptySquare = $foundEmptySquare || $grid[$i][$j]->land == FAKE_LAND;
                 }
             }
+            if (!$foundEmptySquare) {
+                $squareSize++;
+            }
         }
-
-        // Trouver la taille maximale dans la dernière colonne (partant du bas à gauche)
-        $maxSize = max(...$squareSizes[$rows - 1]);
-
         $points = [0, 0, 3, 5, 8, 13, 21];
-        return $points[$maxSize];
+        return $points[$squareSize];
     }
 }
