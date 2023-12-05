@@ -46,18 +46,13 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $grid[1][1] = new Biome(ANIMAL_CROCODILE);
         $grid[2][1] = new Biome(ANIMAL_GIRAFFE);
         $grid[2][2] = new Biome(ANIMAL_CROCODILE);
-        $this->displayGrid($grid);
+        //$this->displayGrid($grid);
 
         $result = $this->calculateGoalAnimalTouchingAtLeastOneOtherAnimal($grid, ANIMAL_CROCODILE, ANIMAL_GIRAFFE);
 
         $equal = $result == 4;
 
-        if ($equal) {
-            echo "Test3: PASSED\n";
-        } else {
-            echo "Test3: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
     function testcalculateGoalAnimalTouchingAtLeastOneLand() {
@@ -75,36 +70,19 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         $equal = $result == 4;
 
-        if ($equal) {
-            echo "Test1: PASSED\n";
-        } else {
-            echo "Test1: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
     function testCalculateGoalLeastLionsFalse() {
         $result = $this->calculateGoalLeastLions(1);
         $equal = $result == -2;
-        if ($equal) {
-            echo "Test2: PASSED\n";
-        } else {
-            echo "Test2: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
-
-
 
     function testCalculateGoalLeastLionsTrue() {
         $result = $this->calculateGoalLeastLions(2);
         $equal = $result == 3;
-        if ($equal) {
-            echo "Test4: PASSED\n";
-        } else {
-            echo "Test4: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
     function testCalculateGoalExactlyOneAnimalOfTypePerColonne() {
@@ -119,12 +97,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         $result = $this->calculateGoalExactlyOneAnimalOfTypePerColonne($grid, ANIMAL_PINGUIN);
         $equal = $result == 3;
-        if ($equal) {
-            echo "Test5: PASSED\n";
-        } else {
-            echo "Test5: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
     function testCalculateLandZonesNone() {
         $grid = $this->initGrid();
@@ -136,33 +109,47 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $grid[2][1] = new Biome(ANIMAL_PINGUIN);
         // $this->displayGrid($grid);
 
-        $result = $this->calculateLandZones($grid, LAND_SAVANNAH);
+        $result = $this->calculateGoalLandZonesSize4($grid, LAND_SAVANNAH);
         $equal = $result == 0;
-        if ($equal) {
-            echo "Test6: PASSED\n";
-        } else {
-            echo "Test6: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
+
     function testCalculateLandZonesOne() {
+        $grid = $this->initGrid();
+
+        $grid[0][0] = new Biome(ANIMAL_LION);
+        $grid[0][1] = new Biome(ANIMAL_LION);
+        $grid[1][0] = new Biome(ANIMAL_LION);
+        $grid[1][1] = new Biome(ANIMAL_LION);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalLandZonesSize4($grid, LAND_SAVANNAH);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateLandZonesRuleCase() {
         $grid = $this->initGrid();
 
         //from rule case
         $grid[0][0] = new Biome(ANIMAL_LION);
         $grid[0][1] = new Biome(ANIMAL_LION);
-        $grid[1][1] = new Biome(ANIMAL_LION);
-        $grid[1][2] = new Biome(ANIMAL_LION);
-        $this->displayGrid($grid);
+        $grid[0][4] = new Biome(ANIMAL_LION);
 
-        $result = $this->calculateLandZones($grid, LAND_SAVANNAH);
-        $equal = $result == 6;
-        if ($equal) {
-            echo "Test7: PASSED\n";
-        } else {
-            echo "Test7: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $grid[1][0] = new Biome(ANIMAL_LION);
+        $grid[1][1] = new Biome(ANIMAL_LION);
+        $grid[1][4] = new Biome(ANIMAL_LION);
+
+        $grid[2][3] = new Biome(ANIMAL_LION);
+        $grid[2][4] = new Biome(ANIMAL_LION);
+
+        $grid[3][1] = new Biome(ANIMAL_LION);
+        $grid[3][2] = new Biome(ANIMAL_LION);
+
+        //$this->displayGrid($grid);
+        $result = $this->calculateGoalLandZonesSize4($grid, LAND_SAVANNAH);
+        $equal = $result == 12;
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
     function testCalculateGoalCompleteSquareNone() {
@@ -173,16 +160,11 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $grid[5][4] = new Biome(ANIMAL_LION);
         $grid[4][5] = new Biome(ANIMAL_LION);
         $grid[4][4] = new Biome(ANIMAL_LION);
-        $this->displayGrid($grid);
+        //$this->displayGrid($grid);
 
         $result = $this->calculateGoalCompleteSquare($grid);
         $equal = $result == 0;
-        if ($equal) {
-            echo "Test8: PASSED\n";
-        } else {
-            echo "Test8: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
     function testCalculateGoalCompleteSquare21() {
@@ -198,12 +180,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         $result = $this->calculateGoalCompleteSquare($grid);
         $equal = $result == 21;
-        if ($equal) {
-            echo "Test9: PASSED\n";
-        } else {
-            echo "Test9: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
     function testCalculateGoalCompleteSquare4() {
@@ -218,12 +195,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         $result = $this->calculateGoalCompleteSquare($grid);
         $equal = $result == 3;
-        if ($equal) {
-            echo "Test10: PASSED\n";
-        } else {
-            echo "Test10: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
     function testCalculateGoalCompleteSquareWithHole() {
@@ -237,12 +209,319 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         $result = $this->calculateGoalCompleteSquare($grid);
         $equal = $result == 0;
-        if ($equal) {
-            echo "Test11: PASSED\n";
-        } else {
-            echo "Test11: FAILED\n";
-            echo "Found: $result\n";
-        }
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalAnimalTouchingBorder() {
+        $grid = $this->initGrid();
+
+        //from rule case
+        $grid[0][2] = new Biome(ANIMAL_LION);
+        $grid[0][3] = new Biome(ANIMAL_LION);
+        $grid[1][0] = new Biome(ANIMAL_LION);
+        $grid[1][1] = new Biome(ANIMAL_LION);
+        $grid[2][0] = new Biome(ANIMAL_LION);
+        $grid[2][2] = new Biome(ANIMAL_LION);
+        $grid[2][3] = new Biome(ANIMAL_LION);
+        $grid[3][1] = new Biome(ANIMAL_LION);
+
+        $grid[1][2] = new Biome(ANIMAL_PINGUIN);
+        $grid[1][3] = new Biome(ANIMAL_PINGUIN);
+        $grid[2][1] = new Biome(ANIMAL_PINGUIN);
+        $grid[3][2] = new Biome(ANIMAL_PINGUIN);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalAnimalTouchingBorder($grid, ANIMAL_PINGUIN, true);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalAnimalNotTouchingBorder() {
+        $grid = $this->initGrid();
+
+        //from rule case
+        $grid[0][2] = new Biome(ANIMAL_LION);
+        $grid[0][3] = new Biome(ANIMAL_LION);
+        $grid[1][0] = new Biome(ANIMAL_LION);
+        $grid[1][3] = new Biome(ANIMAL_LION);
+        $grid[2][0] = new Biome(ANIMAL_LION);
+        $grid[2][2] = new Biome(ANIMAL_LION);
+        $grid[2][3] = new Biome(ANIMAL_LION);
+        $grid[3][1] = new Biome(ANIMAL_LION);
+        $grid[3][2] = new Biome(ANIMAL_LION);
+
+        $grid[1][1] = new Biome(ANIMAL_FLAMINGO);
+        $grid[1][2] = new Biome(ANIMAL_FLAMINGO);
+        $grid[2][1] = new Biome(ANIMAL_FLAMINGO);
+        $grid[3][3] = new Biome(ANIMAL_FLAMINGO);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalAnimalTouchingBorder($grid, ANIMAL_FLAMINGO, false);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalLineWithAllLands() {
+        $grid = $this->initGrid();
+
+        //from rule case
+        $grid[0][0] = new Biome(ANIMAL_PINGUIN);
+        $grid[0][1] = new Biome(ANIMAL_LION);
+        $grid[0][2] = new Biome(ANIMAL_GORILLA);
+        $grid[0][3] = new Biome(ANIMAL_CROCODILE);
+
+        $grid[1][0] = new Biome(ANIMAL_PINGUIN);
+        $grid[1][1] = new Biome(ANIMAL_CROCODILE);
+
+        $grid[2][0] = new Biome(ANIMAL_GORILLA);
+        $grid[2][1] = new Biome(ANIMAL_CROCODILE);
+        $grid[2][2] = new Biome(ANIMAL_LION);
+        $grid[2][3] = new Biome(ANIMAL_PINGUIN);
+        $grid[2][4] = new Biome(ANIMAL_GORILLA);
+
+        $grid[3][0] = new Biome(ANIMAL_CROCODILE);
+        $grid[3][1] = new Biome(ANIMAL_PINGUIN);
+        $grid[3][2] = new Biome(ANIMAL_GORILLA);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalLineWithAllLands($grid, ANIMAL_FLAMINGO, false);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalSmallestLandSquares() {
+        $grid = $this->initGrid();
+
+        //from rule case
+        $grid[0][1] = new Biome(ANIMAL_LION);
+        $grid[0][2] = new Biome(ANIMAL_LION);
+        $grid[0][4] = new Biome(ANIMAL_GORILLA);
+        $grid[0][5] = new Biome(ANIMAL_GORILLA);
+
+        $grid[1][0] = new Biome(ANIMAL_CROCODILE);
+        $grid[1][1] = new Biome(ANIMAL_LION);
+        $grid[1][2] = new Biome(ANIMAL_LION);
+        $grid[1][3] = new Biome(ANIMAL_GORILLA);
+        $grid[1][4] = new Biome(ANIMAL_GORILLA);
+        $grid[1][5] = new Biome(ANIMAL_GORILLA);
+
+        $grid[2][0] = new Biome(ANIMAL_CROCODILE);
+        $grid[2][1] = new Biome(ANIMAL_LION);
+        $grid[2][2] = new Biome(ANIMAL_PINGUIN);
+        $grid[2][3] = new Biome(ANIMAL_PINGUIN);
+        $grid[2][4] = new Biome(ANIMAL_CROCODILE);
+        $grid[2][5] = new Biome(ANIMAL_GORILLA);
+
+        $grid[3][0] = new Biome(ANIMAL_PINGUIN);
+        $grid[3][1] = new Biome(ANIMAL_CROCODILE);
+        $grid[3][2] = new Biome(ANIMAL_CROCODILE);
+        $grid[3][3] = new Biome(ANIMAL_CROCODILE);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalSmallestLandSquares($grid);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoal2x2Squares() {
+        $grid = $this->initGrid();
+
+        //from rule case
+        $grid[0][2] = new Biome(ANIMAL_PINGUIN);
+        $grid[0][3] = new Biome(ANIMAL_PINGUIN);
+
+        $grid[1][0] = new Biome(ANIMAL_PINGUIN);
+        $grid[1][1] = new Biome(ANIMAL_PINGUIN);
+        $grid[1][2] = new Biome(ANIMAL_PINGUIN);
+        $grid[1][3] = new Biome(ANIMAL_PINGUIN);
+
+        $grid[2][0] = new Biome(ANIMAL_PINGUIN);
+        $grid[2][1] = new Biome(ANIMAL_PINGUIN);
+        $grid[2][2] = new Biome(ANIMAL_PINGUIN);
+
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoal2x2Squares(
+                $grid,
+                LAND_SNOW
+            );
+        $equal = $result == 12;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalRiverConnectedToLand() {
+        $grid = $this->initGrid();
+
+        //from rule case
+        $grid[0][0] = new Biome(ANIMAL_CROCODILE);
+        $grid[0][3] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+
+        $grid[1][1] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[1][2] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[1][3] = new Biome(ANIMAL_CROCODILE);
+
+        $grid[2][0] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[2][1] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[2][3] = new Biome(ANIMAL_CROCODILE);
+
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalRiverConnectedToLand($grid, LAND_WATER);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateLargestRiverOneLongContinous() {
+        $grid = $this->initGrid();
+
+        //from rule case
+        $grid[0][2] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[0][3] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+
+        $grid[1][1] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[1][3] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+
+        $grid[2][0] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[2][3] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+
+        //$this->displayRiverGrid($grid);
+
+        $result = $this->calculateLargestRiver($grid);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateLargestRiverOneWithLoop() {
+        $grid = $this->initGrid();
+
+        $grid[1][1] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[1][2] = new Biome(
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_UP
+        );
+        $grid[1][3] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+
+
+        $grid[2][1] =  new Biome(
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_UP
+        );
+        $grid[2][2] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[2][3] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+
+        //$this->displayRiverGrid($grid);
+
+        $result = $this->calculateLargestRiver($grid);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateLargestRiver3Rivers() {
+        $grid = $this->initGrid();
+
+        $grid[0][0] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[0][2] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[0][3] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+
+        $grid[2][1] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[2][2] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[2][3] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+
+        //$this->displayRiverGrid($grid);
+
+        $result = $this->calculateLargestRiver($grid);
+        $equal = $result == 3;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalLandZonesCount() {
+        $grid = $this->initGrid();
+
+        $grid[0][1] = new Biome(ANIMAL_GORILLA);
+        $grid[1][1] = new Biome(ANIMAL_GORILLA);
+        $grid[1][3] = new Biome(ANIMAL_GORILLA);
+
+        $grid[2][0] =  new Biome(ANIMAL_GORILLA);
+
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalLandZonesCount($grid, LAND_JUNGLE);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalAnimalZonesCount() {
+        $grid = $this->initGrid();
+        $grid[0][0] = new Biome(ANIMAL_BEAR);
+        $grid[0][1] = new Biome(ANIMAL_BEAR);
+        $grid[0][3] = new Biome(ANIMAL_BEAR);
+
+        $grid[1][0] =  new Biome(ANIMAL_BEAR);
+
+        $grid[2][0] =  new Biome(ANIMAL_BEAR);
+        $grid[2][2] =  new Biome(ANIMAL_BEAR);
+        $grid[2][3] =  new Biome(ANIMAL_BEAR);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalAnimalZonesCount($grid, ANIMAL_BEAR);
+        $equal = $result == 11;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalBiggestSavannah() {
+        $grid = $this->initGrid();
+        $grid[0][0] = new Biome(ANIMAL_LION);
+        $grid[0][2] = new Biome(ANIMAL_LION);
+
+        $grid[1][0] =  new Biome(ANIMAL_LION);
+        $grid[1][2] = new Biome(ANIMAL_LION);
+        $grid[1][3] = new Biome(ANIMAL_LION);
+
+        $grid[2][2] =  new Biome(ANIMAL_LION);
+        $grid[2][3] =  new Biome(ANIMAL_LION);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalBiggestSavannah($grid);
+        $equal = $result == 10;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoal2HorizontalAnimals() {
+        $grid = $this->initGrid();
+        $grid[0][0] = new Biome(ANIMAL_BEAR);
+        $grid[0][1] = new Biome(ANIMAL_BEAR);
+        $grid[0][2] = new Biome(ANIMAL_BEAR);
+
+        $grid[1][0] =  new Biome(ANIMAL_LION);
+        $grid[2][0] = new Biome(ANIMAL_LION);
+
+        $grid[2][1] =  new Biome(ANIMAL_CROCODILE);
+        $grid[2][2] =  new Biome(ANIMAL_CROCODILE);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoal2HorizontalAnimals($grid);
+        $equal = $result == 3;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoalSeveralAnimalsTouchingOtter() {
+        $grid = $this->initGrid();
+        //according to rule exemple
+        $grid[0][2] = new Biome(ANIMAL_PINGUIN);
+
+        $grid[1][0] = new Biome(ANIMAL_LION);
+        $grid[1][1] = new Biome(ANIMAL_OTTER,LAND_SNOW);
+        $grid[1][2] =  new Biome(ANIMAL_PINGUIN);
+
+        $grid[2][0] = new Biome(ANIMAL_LION);
+        $grid[2][1] =  new Biome(ANIMAL_PINGUIN);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalSeveralAnimalsTouchingOtter($grid);
+        $equal = $result == 2;
+        $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
     function testAll() {
@@ -253,10 +532,35 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalExactlyOneAnimalOfTypePerColonne();
         $this->testCalculateLandZonesNone();
         $this->testCalculateLandZonesOne();
+        $this->testCalculateLandZonesRuleCase();
         $this->testCalculateGoalCompleteSquareNone();
         $this->testCalculateGoalCompleteSquare21();
         $this->testCalculateGoalCompleteSquare4();
         $this->testCalculateGoalCompleteSquareWithHole();
+        $this->testCalculateGoalAnimalTouchingBorder();
+        $this->testCalculateGoalAnimalNotTouchingBorder();
+        $this->testCalculateGoalLineWithAllLands();
+        $this->testCalculateGoalSmallestLandSquares();
+        $this->testCalculateGoal2x2Squares();
+        $this->testCalculateGoalRiverConnectedToLand();
+        $this->testCalculateLargestRiverOneLongContinous();
+        $this->testCalculateLargestRiverOneWithLoop();
+        $this->testCalculateLargestRiver3Rivers();
+        $this->testCalculateGoalLandZonesCount();
+        $this->testCalculateGoalAnimalZonesCount();
+        $this->testCalculateGoalBiggestSavannah();
+        $this->testCalculateGoal2HorizontalAnimals();
+        $this->testCalculateGoalSeveralAnimalsTouchingOtter();
+    }
+
+    function displayResult($testName, $equal, $result) {
+        echo ($testName);
+        if ($equal) {
+            echo " : PASSED\n";
+        } else {
+            echo " : FAILED\n";
+            echo "Found: $result\n";
+        }
     }
 }
 
