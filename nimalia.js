@@ -3003,14 +3003,16 @@ var Nimalia = /** @class */ (function () {
     };
     Nimalia.prototype.updateRound = function (args) {
         this.gamedatas.turnOrderClockwise = args.clockwise;
+        $('round').classList.remove('fa6-rotate-right', 'fa6-rotate-left');
+        $('round').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left');
         $('round').innerHTML = args.round;
         this.updateTurnOrder(this.getCurrentPlayer());
         this.setupPlayerOrderHints(this.getCurrentPlayer());
         this.activateGoals(args.goals);
     };
     Nimalia.prototype.activateGoals = function (activeGoals) {
-        dojo.query("nml-active-goal").removeClass("nml-active-goal");
-        activeGoals.forEach(function (g) { return dojo.query("#goal_".concat(g.id)).addClass("nml-active-goal"); });
+        dojo.query('nml-active-goal').removeClass('nml-active-goal');
+        activeGoals.forEach(function (g) { return dojo.query("#goal_".concat(g.id)).addClass('nml-active-goal'); });
     };
     Nimalia.prototype.notif_cardsMove = function (notif) {
         this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added);

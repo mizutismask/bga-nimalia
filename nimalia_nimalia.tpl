@@ -16,7 +16,7 @@
 </div>
 
 <div id="goals">
-    <div id="round" class="nml-round css-icon"></div>
+    <span id="round" class="nml-round css-icon fa fa6 fa6-rotate-right"></span>
     <div id="goals-wrapper"></div>
 </div>
 
@@ -24,3 +24,11 @@
 </div>
 
 {OVERALL_GAME_FOOTER}
+<!--  
+
+ <div class="round-wrapper">
+        <i class="fa-solid fa fa6 fa6-rotate fa6-xl"></i>
+        <span id="round" class="nml-round css-icon"></span>
+    </div>
+    <div id="goals-wrapper"></div>
+-->

@@ -94,11 +94,11 @@ class Nimalia implements NimaliaGame {
 		this.setupPreferences()
 		this.setupTooltips()
 		this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players), undefined)
-		this.gamedatas.scores.forEach(s => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score));
+		this.gamedatas.scores.forEach((s) => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score))
 
 		console.log('Ending game setup')
 	}
-	
+
 	private setupGoals(goals: Goal[]) {
 		const div = 'goals-wrapper'
 		dojo.empty(div)
@@ -110,7 +110,7 @@ class Nimalia implements NimaliaGame {
 			dojo.place(html, div)
 			;(this as any).addTooltipHtml(divId, this.getGoalTooltip(g))
 		})
-		this.activateGoals(this.gamedatas.round.goals);
+		this.activateGoals(this.gamedatas.round.goals)
 	}
 
 	public getGoalTooltip(card: Goal) {
@@ -865,15 +865,17 @@ class Nimalia implements NimaliaGame {
 
 	updateRound(args: NewRoundArgs) {
 		this.gamedatas.turnOrderClockwise = args.clockwise
+		$('round').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
+		$('round').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
 		$('round').innerHTML = args.round
 		this.updateTurnOrder(this.getCurrentPlayer())
 		this.setupPlayerOrderHints(this.getCurrentPlayer())
 		this.activateGoals(args.goals)
 	}
 
-	activateGoals(activeGoals:Array<Goal>){
-		dojo.query("nml-active-goal").removeClass("nml-active-goal")
-		activeGoals.forEach(g=>dojo.query(`#goal_${g.id}`).addClass("nml-active-goal"))
+	activateGoals(activeGoals: Array<Goal>) {
+		dojo.query('nml-active-goal').removeClass('nml-active-goal')
+		activeGoals.forEach((g) => dojo.query(`#goal_${g.id}`).addClass('nml-active-goal'))
 	}
 
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
@@ -886,7 +888,11 @@ class Nimalia implements NimaliaGame {
 	notif_points(notif: Notif<NotifPointsArgs>) {
 		//console.log('notif_points', notif)
 		this.setPoints(notif.args.playerId, notif.args.points)
-		this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.delta > 0 ? notif.args.delta: notif.args.points)
+		this.scoreBoard.updateScore(
+			notif.args.playerId,
+			notif.args.scoreType,
+			notif.args.delta > 0 ? notif.args.delta : notif.args.points
+		)
 	}
 
 	/**
