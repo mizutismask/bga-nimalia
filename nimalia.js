@@ -2429,6 +2429,7 @@ var Nimalia = /** @class */ (function () {
             dojo.place(html, div);
             _this.addTooltipHtml(divId, _this.getGoalTooltip(g));
         });
+        this.activateGoals(this.gamedatas.round.goals);
     };
     Nimalia.prototype.getGoalTooltip = function (card) {
         var tooltip = "\n\t\t\t<div class=\"nml-goal-tooltip\">\n\t\t\t\t".concat(GOALS_DESC[card.id - 1], "\n\t\t    </div>");
@@ -3005,7 +3006,11 @@ var Nimalia = /** @class */ (function () {
         $('round').innerHTML = args.round;
         this.updateTurnOrder(this.getCurrentPlayer());
         this.setupPlayerOrderHints(this.getCurrentPlayer());
-        this.setupGoals(args.goals);
+        this.activateGoals(args.goals);
+    };
+    Nimalia.prototype.activateGoals = function (activeGoals) {
+        dojo.query("nml-active-goal").removeClass("nml-active-goal");
+        activeGoals.forEach(function (g) { return dojo.query("#goal_".concat(g.id)).addClass("nml-active-goal"); });
     };
     Nimalia.prototype.notif_cardsMove = function (notif) {
         this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added);

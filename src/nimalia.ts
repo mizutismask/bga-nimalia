@@ -98,6 +98,7 @@ class Nimalia implements NimaliaGame {
 
 		console.log('Ending game setup')
 	}
+	
 	private setupGoals(goals: Goal[]) {
 		const div = 'goals-wrapper'
 		dojo.empty(div)
@@ -109,6 +110,7 @@ class Nimalia implements NimaliaGame {
 			dojo.place(html, div)
 			;(this as any).addTooltipHtml(divId, this.getGoalTooltip(g))
 		})
+		this.activateGoals(this.gamedatas.round.goals);
 	}
 
 	public getGoalTooltip(card: Goal) {
@@ -866,7 +868,12 @@ class Nimalia implements NimaliaGame {
 		$('round').innerHTML = args.round
 		this.updateTurnOrder(this.getCurrentPlayer())
 		this.setupPlayerOrderHints(this.getCurrentPlayer())
-		this.setupGoals(args.goals)
+		this.activateGoals(args.goals)
+	}
+
+	activateGoals(activeGoals:Array<Goal>){
+		dojo.query("nml-active-goal").removeClass("nml-active-goal")
+		activeGoals.forEach(g=>dojo.query(`#goal_${g.id}`).addClass("nml-active-goal"))
 	}
 
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {

@@ -41,6 +41,11 @@ trait GoalTrait {
         }
     }
 
+    public function getGameGoals(){
+        $goals = $this->getGlobalVariable("GOALS", true);
+        return array_map(fn ($g) => Goal̤::getCastedGoal($g), $goals);
+    }
+
     /** Calculates points for a given goal and a given player. Called at the end of each round. */
     public function calculateGoalPoints(Goal̤ $goal, $playerId) {
         $grid = $this->getGrid($playerId);

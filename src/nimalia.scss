@@ -1,88 +1,107 @@
- //(classic BGA colors) :
+//(classic BGA colors) :
 $player-colors: (
-    'red': 'ff0000',
-    'green': '008000',
-    'blue': '0000ff',
-    'yellow': 'ffa500',
-    'purple': '982fff',
+	'red': 'ff0000',
+	'green': '008000',
+	'blue': '0000ff',
+	'yellow': 'ffa500',
+	'purple': '982fff'
 );
 
-@import "playerboards";
+@import 'playerboards';
 @import 'game-steps/game-steps';
 @import 'bga-hacks/bga-hacks';
 @import 'score/score';
 @import 'player-table/player-table';
-@import "settings";
-
+@import 'settings';
 
 html {
-    background: rgb(21, 104, 134);
-    background-repeat: no-repeat;
-    background-size: 100%;
+	background: rgb(21, 104, 134);
+	background-repeat: no-repeat;
+	background-size: 100%;
 }
 
-
 .stockitem {
-    border-radius: 6px;
-    background-size: 1000%;
-    &.disabled {
-        filter: contrast(0.6);
-        cursor: not-allowed;
-    }
+	border-radius: 6px;
+	background-size: 1000%;
+	&.disabled {
+		filter: contrast(0.6);
+		cursor: not-allowed;
+	}
 }
 
 .css-icon {
-    width: 25px;
-    height: 25px;
-    background-color: white;
-    border-radius: 15px;
-    text-align: center;
-    font-weight: bolder;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    color: rgb(21, 104, 134);
-    cursor: pointer;
-    pointer-events: auto;
+	width: 25px;
+	height: 25px;
+	background-color: white;
+	border-radius: 50%;
+	text-align: center;
+	font-weight: bolder;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	color: rgb(21, 104, 134);
+	cursor: pointer;
+	pointer-events: auto;
 
-    &.card-info {
-        width: 25px;
-        height: 25px;
-        position: relative;
-        top: 10px;
-        left: 10px;
-        color: white;
-        background-color: rgb(21, 104, 134);
-    }
+	&.card-info {
+		width: 25px;
+		height: 25px;
+		position: relative;
+		top: 10px;
+		left: 10px;
+		color: white;
+		background-color: rgb(21, 104, 134);
+	}
 }
 
 .card .card-sides .card-side.front .card-info {
-    pointer-events: all;
+	pointer-events: all;
 }
 
 .card-side.front {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    //background-image: url("../img/biomeCards.png");
-    border-radius: 6px;
-    box-shadow: 0 0 8px 1px black;
-    pointer-events: all;
-    //transform-origin: top left;
+	position: relative;
+	width: 200px;
+	height: 200px;
+	//background-image: url("../img/biomeCards.png");
+	border-radius: 6px;
+	box-shadow: 0 0 8px 1px black;
+	pointer-events: all;
+	//transform-origin: top left;
 
-    &.animated {
-        transition: transform 0.5s;
-    }
+	&.animated {
+		transition: transform 0.5s;
+	}
 }
 
-.nml-goal{
-    width: 200px;
-    height: 200px;
-    border-radius: 6px;
-    box-shadow: 0 0 8px 1px black;
-    display: inline-block;
-}
+#goals {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+    flex-wrap: wrap;
 
-.nml-round{
-}
+	#goals-wrapper {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		justify-content: center;
 
+		.nml-goal {
+			width: 200px;
+			height: 200px;
+			border-radius: 6px;
+			box-shadow: 0 0 8px 1px black;
+			display: inline-block;
+			filter: grayscale(0.8);
+
+			&.nml-active-goal {
+				filter: none;
+				box-shadow: 0 0 8px 1px greenyellow;
+			}
+		}
+	}
+}
+.nml-round {
+    width: 2em;
+    height: 2em;
+    font-size: xx-large;
+}
