@@ -46,6 +46,7 @@ interface Dojo {
 	forEach: Function
 	xhrGet: Function
 	empty: (nodeId: string) => void
+	byId: (nodeId: string) => HTMLElement
 }
 
 interface Player {

@@ -32,7 +32,7 @@ class Nimalia implements NimaliaGame {
 	public cardsManager: CardsManager
 	private originalTextChooseAction: string
 
-	private endScore: EndScore
+	private scoreBoard: ScoreBoard
 	private ticketsCounters: Counter[] = []
 
 	private animations: NimaliaAnimation[] = []
@@ -78,7 +78,7 @@ class Nimalia implements NimaliaGame {
 		}
 		if (Number(gamedatas.gamestate.id) >= 90) {
 			// score or end
-			this.onEnteringEndScore()
+			this.onEnteringScore()
 		}
 		this.setupNotifications()
 
@@ -93,6 +93,8 @@ class Nimalia implements NimaliaGame {
 		this.setupSettingsIconInMainBar()
 		this.setupPreferences()
 		this.setupTooltips()
+		this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players), undefined)
+		this.gamedatas.scores.forEach(s => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score));
 
 		console.log('Ending game setup')
 	}
@@ -275,6 +277,8 @@ class Nimalia implements NimaliaGame {
 				break
 			case 'seeScore':
 				this.onEnteringSeeScore()
+			case 'score':
+				this.onEnteringScore()
 				break
 		}
 
@@ -284,7 +288,11 @@ class Nimalia implements NimaliaGame {
 	}
 
 	private onEnteringPlaceCard(args: EnteringPlaceCardArgs) {
-		this.clientActionData = { placedCardId: undefined, destinationSquare: undefined }
+		this.clientActionData = {
+			placedCardId: undefined,
+			destinationSquare: undefined,
+			previousCardParentInHand: undefined
+		}
 		dojo.query('.nml-square[droppable=true]').removeClass('dropzone')
 		if (args.possibleSquares[this.getCurrentPlayer().id]) {
 			args.possibleSquares[this.getCurrentPlayer().id].forEach((droppable) => {
@@ -299,15 +307,12 @@ class Nimalia implements NimaliaGame {
 	/**
 	 * Show score board.
 	 */
-	private onEnteringEndScore() {
+	private onEnteringScore() {
 		const lastTurnBar = document.getElementById('last-round')
 		if (lastTurnBar) {
 			lastTurnBar.style.display = 'none'
 		}
-
 		document.getElementById('score').style.display = 'flex'
-
-		this.endScore = new EndScore(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore)
 	}
 
 	/**
@@ -321,7 +326,7 @@ class Nimalia implements NimaliaGame {
 
 		document.getElementById('score').style.display = 'flex'
 
-		this.endScore = new EndScore(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore)
+		//this.scoreBoard.updateScores(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore)
 	}
 
 	// onLeavingState: this method is called each time we are leaving a game state.
@@ -356,7 +361,14 @@ class Nimalia implements NimaliaGame {
 				case 'placeCard':
 					;(this as any).addActionButton('place-card-button', _('Validate'), () => this.placeCard())
 					dojo.addClass('place-card-button', 'disabled')
-					;(this as any).addActionButton('cancel-button', _('Cancel'), () => this.cancelPlaceCard(),null, null,'red')
+					;(this as any).addActionButton(
+						'cancel-button',
+						_('Cancel'),
+						() => this.cancelPlaceCard(),
+						null,
+						null,
+						'red'
+					)
 					dojo.addClass('cancel-button', 'disabled')
 					break
 				case 'seeScore':
@@ -784,15 +796,18 @@ class Nimalia implements NimaliaGame {
 			'squareId': this.getPart(this.clientActionData.destinationSquare, -1),
 			'rotation': $(this.clientActionData.placedCardId + '-front').dataset.rotation
 		})
-    }
-    
-    public cancelPlaceCard() {
-        //this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
-        this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId));
-        console.log("grid",this.gamedatas.grids[this.getCurrentPlayer().id])
-        this.playerTables[this.getCurrentPlayer().id].displayGrid(this.getCurrentPlayer(), this.gamedatas.grids[this.getCurrentPlayer().id])
-        dojo.toggleClass('cancel-button', 'disabled', true)
-    }
+	}
+
+	public cancelPlaceCard() {
+		//this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
+		this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId))
+		console.log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
+		this.playerTables[this.getCurrentPlayer().id].displayGrid(
+			this.getCurrentPlayer(),
+			this.gamedatas.grids[this.getCurrentPlayer().id]
+		)
+		dojo.toggleClass('cancel-button', 'disabled', true)
+	}
 
 	public takeAction(action: string, data?: any) {
 		data = data || {}
@@ -830,7 +845,8 @@ class Nimalia implements NimaliaGame {
 			//['claimedRoute', ANIMATION_MS],
 			['cardsMove', 1],
 			['newRound', 1],
-			['points', 1],
+			['points', ANIMATION_MS],
+			['score', ANIMATION_MS],
 			['lastTurn', 1],
 			['bestScore', 1]
 		]
@@ -858,10 +874,21 @@ class Nimalia implements NimaliaGame {
 	}
 
 	/**
-	 * Update player score.
+	 * Update player goal score.
 	 */
 	notif_points(notif: Notif<NotifPointsArgs>) {
+		//console.log('notif_points', notif)
 		this.setPoints(notif.args.playerId, notif.args.points)
+		this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.delta > 0 ? notif.args.delta: notif.args.points)
+	}
+
+	/**
+	 * Updates a total or subtotal
+	 * @param notif
+	 */
+	notif_score(notif: Notif<NotifScoreArgs>) {
+		console.log('notif_score', notif)
+		this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.score)
 	}
 
 	/**
@@ -882,15 +909,15 @@ class Nimalia implements NimaliaGame {
 
 	notif_bestScore(notif: Notif<NotifBestScoreArgs>) {
 		this.gamedatas.bestScore = notif.args.bestScore
-		this.endScore?.setBestScore(notif.args.bestScore)
-		this.endScore?.updateScores(notif.args.players)
+		this.scoreBoard?.setBestScore(notif.args.bestScore)
+		this.scoreBoard?.updateScores(notif.args.players)
 	}
 
 	/**
 	 * Highlight winner for end score.
 	 */
 	notif_highlightWinnerScore(notif: Notif<NotifLongestPathArgs>) {
-		this.endScore?.highlightWinnerScore(notif.args.playerId)
+		this.scoreBoard?.highlightWinnerScore(notif.args.playerId)
 	}
 
 	/* This enable to inject translatable styled things to logs or action bar */

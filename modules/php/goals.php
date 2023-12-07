@@ -19,8 +19,10 @@ trait GoalTrait {
     }
 
     /** Returns only goals that applies to the current round. */
-    public function getRoundGoals() {
-        $round = intval(self::getGameStateValue(ROUND));
+    public function getRoundGoals($round=null) {
+        if(!$round){
+            $round = intval(self::getGameStateValue(ROUND));
+        }
         $goals = $this->getGlobalVariable("GOALS", true);
         switch ($round) {
             case 1:

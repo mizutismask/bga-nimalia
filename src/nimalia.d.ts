@@ -51,6 +51,7 @@ interface NimaliaGamedatas {
 	goals: Array<Goal>
 	round: { round: number, clockwise: boolean, goals: Array<Goal> }
 	grids: { [playerId: number]: Array<NimaliaCard> }
+	scores:Array<NotifScoreArgs>
 }
 
 interface ClientActionData {
@@ -92,6 +93,14 @@ interface NewRoundArgs{
 interface NotifPointsArgs {
 	playerId: number
 	points: number
+	delta: number
+	scoreType:string
+}
+
+interface NotifScoreArgs {
+	playerId: number
+	score: number
+	scoreType:string
 }
 
 interface NotifBestScoreArgs {

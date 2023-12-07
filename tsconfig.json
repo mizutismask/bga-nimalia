@@ -38,7 +38,7 @@
         "src/define.ts",
         "src/nimalia-animation.ts",
         "src/stock-utils.ts",
-        "src/end-score/end-score.ts",
+        "src/score/score.ts",
         "src/player-table/player-table.ts",
         "src/settings.ts",
         "src/gamefeatureconfig.ts",

@@ -153,6 +153,7 @@ class Nimalia extends Table
         $result['turnOrderClockwise'] = true;
         $result['round'] = $this->getRoundArgs();
         $result["goals"]= $this->getRoundGoals();
+        $result["scores"]= $this->getScoreArgs();
         foreach ($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
             $result['grids'][$playerId] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid$playerId", null, "card_order_in_grid"));

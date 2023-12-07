@@ -7,16 +7,18 @@ trait UtilTrait {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     ////////////
-    /*function getColorName(int $color) {
+    function getColorName(int $color) {
         switch ($color) {
-            case BLUE:
+            case GOAL_BLUE:
                 return clienttranslate("blue");
-            case YELLOW:
+            case GOAL_YELLOW:
                 return clienttranslate("yellow");
-            case RED:
+            case GOAL_RED:
                 return clienttranslate("red");
+            case GOAL_GREEN:
+                return clienttranslate("green");
         }
-    }*/
+    }
 
     function isClockWisePlayerOrder() {
         $round = self::getGameStateValue(ROUND);
@@ -187,7 +189,7 @@ trait UtilTrait {
         return $this->getUniqueIntValueFromDB("SELECT player_score FROM player where `player_id` = $playerId");
     }
 
-    function incScore(int $playerId, int $delta, $message = null, $messageArgs = []) {
+    function incPlayerScore(int $playerId, int $delta, $message = null, $messageArgs = []) {
         self::DbQuery("UPDATE player SET `player_score` = `player_score` + $delta where `player_id` = $playerId");
 
         self::notifyAllPlayers('points', $message !== null ? $message : '', [
@@ -196,8 +198,38 @@ trait UtilTrait {
             'points' => $this->getPlayerScore($playerId),
             'delta' => $delta,
         ] + $messageArgs);
+
+        if($this->getPlayerScore($playerId)<0){
+            self::DbQuery("UPDATE player SET `player_score` = 0 where `player_id` = $playerId");
+
+            self::notifyAllPlayers('points',clienttranslate("Score can’t be negative, reset to 0 for {player_name}"), [
+                'playerId' => $playerId,
+                'player_name' => $this->getPlayerName($playerId),
+                'points' => $this->getPlayerScore($playerId),
+                'delta' => 0,
+            ] + $messageArgs);
+        }
     }
 
+    function notifyPlayerScore(int $playerId, int $score, $message = null, $messageArgs = [], $stat=null) {
+        if($stat){
+            self::incStat($score, $stat, $playerId);
+        }
+        self::notifyAllPlayers('score', $message !== null ? $message : '', [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'score' => $score,
+        ] + $messageArgs);
+    }
+
+    function getScoreType($round, $goalColor, $playerId){
+        return "round-${round}-goal-${goalColor}-${playerId}";
+    }
+
+    function getTotalType($round,  $playerId){
+        return "total-round-${round}-${playerId}";
+    }
+    
     function updatePlayer(int $playerId, String $field, int $newValue) {
         $this->DbQuery("UPDATE player SET $field = $newValue WHERE player_id = $playerId");
     }

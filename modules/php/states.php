@@ -50,6 +50,23 @@ trait StateTrait {
         return ["round" => $round, "clockwise" => $this->isClockWisePlayerOrder(), "goals" => $this->getRoundGoals()];
     }
 
+    function getScoreArgs() {
+        $scores = [];
+        foreach (range(1, 5) as $round) {
+            foreach ($this->getPlayersIds() as $playerId) {
+                $total = 0;
+                foreach ($this->getRoundGoals($round) as $goal) {
+                    $statName = "game_pointsRound" . $round . $goal->color;
+                    $score = self::getStat($statName, $playerId);
+                    $total += $score;
+                    $scores[] = ["playerId" => $playerId, "score" => $score, "scoreType" => $this->getScoreType($round, $goal->color, $playerId)];
+                }
+                $scores[] = ["playerId" => $playerId, "score" => $total, "scoreType" =>  $this->getTotalType($round, $playerId)];
+            }
+        }
+        return $scores;
+    }
+
 
     function stScore() {
         $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ORDER BY player_no ASC";
@@ -68,10 +85,15 @@ trait StateTrait {
             foreach ($players as $playerId => $playerDb) {
                 $score = $this->calculateGoalPoints($goal, $playerId);
                 self::incStat($score, "game_pointsRound" . $round . $goal->color, $playerId);
-                self::incScore($playerId, $score);
+                $goalColor = $goal->color;
+                $this->incPlayerScore($playerId, $score, clienttranslate('${player_name} gains ${delta} points with the ${color} goal'), ["color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId)]);
                 $roundScores[$playerId] += $score;
                 $totalScore[$playerId] += $score;
             }
+        }
+
+        foreach ($players as $playerId => $playerDb) {
+            $this->notifyPlayerScore($playerId, $roundScores[$playerId], clienttranslate('${player_name} gains a total of ${score} points for the round ${round}'), ["round" => $round, "scoreType" => $this->getTotalType($round, $playerId)]);
         }
 
         //round winner
@@ -82,7 +104,11 @@ trait StateTrait {
             $this->notifyWinner($players, $totalScore);
         }
 
-       $this->gamestate->nextState("seeScore");
+        //total from the beginning
+        foreach ($players as $playerId => $playerDb) {
+            $this->incPlayerScore($playerId, 0, null, ["scoreType" => "total-$playerId"]);
+        }
+        $this->gamestate->nextState("seeScore");
     }
 
     function notifyWinner($players, $roundScores) {

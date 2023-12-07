@@ -2401,7 +2401,7 @@ var Nimalia = /** @class */ (function () {
         }
         if (Number(gamedatas.gamestate.id) >= 90) {
             // score or end
-            this.onEnteringEndScore();
+            this.onEnteringScore();
         }
         this.setupNotifications();
         this.setupGoals(this.gamedatas.goals);
@@ -2415,6 +2415,8 @@ var Nimalia = /** @class */ (function () {
         this.setupSettingsIconInMainBar();
         this.setupPreferences();
         this.setupTooltips();
+        this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players), undefined);
+        this.gamedatas.scores.forEach(function (s) { return _this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score); });
         console.log('Ending game setup');
     };
     Nimalia.prototype.setupGoals = function (goals) {
@@ -2532,6 +2534,8 @@ var Nimalia = /** @class */ (function () {
                 break;
             case 'seeScore':
                 this.onEnteringSeeScore();
+            case 'score':
+                this.onEnteringScore();
                 break;
         }
         if (this.gameFeatures.spyOnActivePlayerInGeneralActions) {
@@ -2539,7 +2543,11 @@ var Nimalia = /** @class */ (function () {
         }
     };
     Nimalia.prototype.onEnteringPlaceCard = function (args) {
-        this.clientActionData = { placedCardId: undefined, destinationSquare: undefined };
+        this.clientActionData = {
+            placedCardId: undefined,
+            destinationSquare: undefined,
+            previousCardParentInHand: undefined
+        };
         dojo.query('.nml-square[droppable=true]').removeClass('dropzone');
         if (args.possibleSquares[this.getCurrentPlayer().id]) {
             args.possibleSquares[this.getCurrentPlayer().id].forEach(function (droppable) {
@@ -2554,13 +2562,12 @@ var Nimalia = /** @class */ (function () {
     /**
      * Show score board.
      */
-    Nimalia.prototype.onEnteringEndScore = function () {
+    Nimalia.prototype.onEnteringScore = function () {
         var lastTurnBar = document.getElementById('last-round');
         if (lastTurnBar) {
             lastTurnBar.style.display = 'none';
         }
         document.getElementById('score').style.display = 'flex';
-        this.endScore = new EndScore(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore);
     };
     /**
      * Show score board.
@@ -2571,7 +2578,7 @@ var Nimalia = /** @class */ (function () {
             lastTurnBar.style.display = 'none';
         }
         document.getElementById('score').style.display = 'flex';
-        this.endScore = new EndScore(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore);
+        //this.scoreBoard.updateScores(this, Object.values(this.gamedatas.players), this.gamedatas.bestScore)
     };
     // onLeavingState: this method is called each time we are leaving a game state.
     //                 You can use this method to perform some user interface changes at this moment.
@@ -2944,7 +2951,7 @@ var Nimalia = /** @class */ (function () {
     Nimalia.prototype.cancelPlaceCard = function () {
         //this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
         this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId));
-        console.log("grid", this.gamedatas.grids[this.getCurrentPlayer().id]);
+        console.log('grid', this.gamedatas.grids[this.getCurrentPlayer().id]);
         this.playerTables[this.getCurrentPlayer().id].displayGrid(this.getCurrentPlayer(), this.gamedatas.grids[this.getCurrentPlayer().id]);
         dojo.toggleClass('cancel-button', 'disabled', true);
     };
@@ -2980,7 +2987,8 @@ var Nimalia = /** @class */ (function () {
             //['claimedRoute', ANIMATION_MS],
             ['cardsMove', 1],
             ['newRound', 1],
-            ['points', 1],
+            ['points', ANIMATION_MS],
+            ['score', ANIMATION_MS],
             ['lastTurn', 1],
             ['bestScore', 1]
         ];
@@ -3003,10 +3011,20 @@ var Nimalia = /** @class */ (function () {
         this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added);
     };
     /**
-     * Update player score.
+     * Update player goal score.
      */
     Nimalia.prototype.notif_points = function (notif) {
+        //console.log('notif_points', notif)
         this.setPoints(notif.args.playerId, notif.args.points);
+        this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.delta > 0 ? notif.args.delta : notif.args.points);
+    };
+    /**
+     * Updates a total or subtotal
+     * @param notif
+     */
+    Nimalia.prototype.notif_score = function (notif) {
+        console.log('notif_score', notif);
+        this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.score);
     };
     /**
      * Show last turn banner.
@@ -3021,15 +3039,15 @@ var Nimalia = /** @class */ (function () {
     Nimalia.prototype.notif_bestScore = function (notif) {
         var _a, _b;
         this.gamedatas.bestScore = notif.args.bestScore;
-        (_a = this.endScore) === null || _a === void 0 ? void 0 : _a.setBestScore(notif.args.bestScore);
-        (_b = this.endScore) === null || _b === void 0 ? void 0 : _b.updateScores(notif.args.players);
+        (_a = this.scoreBoard) === null || _a === void 0 ? void 0 : _a.setBestScore(notif.args.bestScore);
+        (_b = this.scoreBoard) === null || _b === void 0 ? void 0 : _b.updateScores(notif.args.players);
     };
     /**
      * Highlight winner for end score.
      */
     Nimalia.prototype.notif_highlightWinnerScore = function (notif) {
         var _a;
-        (_a = this.endScore) === null || _a === void 0 ? void 0 : _a.highlightWinnerScore(notif.args.playerId);
+        (_a = this.scoreBoard) === null || _a === void 0 ? void 0 : _a.highlightWinnerScore(notif.args.playerId);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
@@ -3137,8 +3155,8 @@ var GOALS_DESC = [
  * End score board.
  * No notifications.
  */
-var EndScore = /** @class */ (function () {
-    function EndScore(game, players, 
+var ScoreBoard = /** @class */ (function () {
+    function ScoreBoard(game, players, 
     /** bestScore is the top score for the game */
     bestScore) {
         var _this = this;
@@ -3147,14 +3165,14 @@ var EndScore = /** @class */ (function () {
         this.bestScore = bestScore;
         var headers = document.getElementById('scoretr');
         if (!headers.childElementCount) {
-            dojo.place("\n                <th colspan=\"3\">_(\"Round\u202F1\")</th>\n                <th colspan=\"3\">_(\"Round\u202F2\")</th>\n                <th colspan=\"3\">_(\"Round\u202F3\")</th>\n                <th colspan=\"4\">_(\"Round\u202F4\")</th>\n                <th colspan=\"4\">_(\"Round\u202F5\")</th>\n                <th id=\"th-total-score\" class=\"\">_(\"Total\")</th>\n            ", headers);
-            console.log("parentNode", headers.parentNode);
-            console.log("parentElement", headers.parentElement);
-            dojo.place("\n                <thead>\n                <tr>\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"></th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"></th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n                <tr/>\n                <thead/>\n            ", headers.parentElement, "after");
+            dojo.place("\n                <th> </th>\n                <th colspan=\"3\">".concat(_("Round 1"), "</th>\n                <th colspan=\"3\">").concat(_("Round 2"), "</th>\n                <th colspan=\"3\">").concat(_("Round 3"), "</th>\n                <th colspan=\"4\">").concat(_("Round 4"), "</th>\n                <th colspan=\"4\">").concat(_("Round 5"), "</th>\n                <th id=\"th-total-score\" class=\"\">").concat(_("Total"), "</th>\n            "), headers);
+            console.log('parentNode', headers.parentNode);
+            console.log('parentElement', headers.parentElement);
+            dojo.place("\n                <thead>\n                    <th> </th>\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"></th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"></th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n                <thead/>\n            ", headers.parentElement, 'after');
         }
         players.forEach(function (player) {
             var playerId = Number(player.id);
-            dojo.place("<tr id=\"score".concat(player.id, "\">\n                    <td id=\"score-name-").concat(player.id, "\" class=\"player-name\" style=\"color: #").concat(player.color, "\"><span id=\"score-winner-").concat(player.id, "\"/> <span>").concat(player.name, "</span></td>\n                    <td id=\"destination-reached").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"revealed-tokens-back").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"destination-unreached").concat(player.id, "\" class=\"score-number\">").concat(_this.preventMinusZero(0), "</td>\n                    <td id=\"revealed-tokens-left").concat(player.id, "\" class=\"score-number\">").concat(_this.preventMinusZero(0), "</td>\n                    <td id=\"total").concat(player.id, "\" class=\"score-number total\">").concat(player.score, "</td>\n                </tr>"), "score-table-body");
+            dojo.place("<tr id=\"score".concat(player.id, "\">\n                    <td id=\"score-name-").concat(player.id, "\" class=\"player-name\" style=\"color: #").concat(player.color, "\">\n                        <span id=\"score-winner-").concat(player.id, "\"/> <span>").concat(player.name, "</span>\n                    </td>\n                    <td id=\"round-1-goal-2-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"round-1-goal-1-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"total-round-1-").concat(player.id, "\" class=\"score-number total\">0</td>\n\n                    <td id=\"round-2-goal-1-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"round-2-goal-4-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"total-round-2-").concat(player.id, "\" class=\"score-number total\">0</td>\n\n                    <td id=\"round-3-goal-2-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"round-3-goal-3-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"total-round-3-").concat(player.id, "\" class=\"score-number total\">0</td>\n\n                    <td id=\"round-4-goal-1-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"round-4-goal-4-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"round-4-goal-3-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"total-round-4-").concat(player.id, "\" class=\"score-number total\">0</td>\n\n                    <td id=\"round-5-goal-2-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"round-5-goal-3-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"round-5-goal-4-").concat(player.id, "\" class=\"score-number\">").concat(0, "</td>\n                    <td id=\"total-round-5-").concat(player.id, "\" class=\"score-number total\">0</td>\n                    \n                    <td id=\"total-").concat(player.id, "\" class=\"score-number total\">").concat(player.score, "</td>\n                </tr>"), 'score-table-body');
         });
         this.setBestScore(bestScore);
         players.forEach(function (player) {
@@ -3163,7 +3181,7 @@ var EndScore = /** @class */ (function () {
             }
         });
     }
-    EndScore.prototype.updateScores = function (players) {
+    ScoreBoard.prototype.updateScores = function (players) {
         /*players.forEach((p) => {
             document.getElementById(`destination-reached${p.id}`).innerHTML = (
                 p.completedDestinations.length + p.sharedCompletedDestinationsCount
@@ -3178,7 +3196,10 @@ var EndScore = /** @class */ (function () {
             document.getElementById(`total${p.id}`).innerHTML = p.score.toString();
         });*/
     };
-    EndScore.prototype.preventMinusZero = function (score) {
+    ScoreBoard.prototype.updateScore = function (playerId, scoreType, score) {
+        dojo.byId(scoreType).innerHTML = score.toString();
+    };
+    ScoreBoard.prototype.preventMinusZero = function (score) {
         if (score === 0) {
             return '0';
         }
@@ -3187,17 +3208,17 @@ var EndScore = /** @class */ (function () {
     /**
      * Add trophee icon to top score player(s)
      */
-    EndScore.prototype.highlightWinnerScore = function (playerId) {
+    ScoreBoard.prototype.highlightWinnerScore = function (playerId) {
         document.getElementById("score".concat(playerId)).classList.add('highlight');
         document.getElementById("score-winner-".concat(playerId)).classList.add('fa', 'fa-trophy', 'fa-lg');
     };
     /**
      * Save best score.
      */
-    EndScore.prototype.setBestScore = function (bestScore) {
+    ScoreBoard.prototype.setBestScore = function (bestScore) {
         this.bestScore = bestScore;
     };
-    return EndScore;
+    return ScoreBoard;
 }());
 /**
  * Player table.
