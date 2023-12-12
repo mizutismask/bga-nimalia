@@ -2601,6 +2601,7 @@ var Nimalia = /** @class */ (function () {
                 removeClass('animatedScore');
                 break;
         }
+        //removeClass("local-change");
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -3323,7 +3324,7 @@ var PlayerTable = /** @class */ (function () {
             return;
         }
         // Add the target element's id to the data transfer object
-        (_a = evt.dataTransfer) === null || _a === void 0 ? void 0 : _a.setData('text/plain', evt.target.id);
+        (_a = evt.dataTransfer) === null || _a === void 0 ? void 0 : _a.setData('text/plain', evt.target.id); //we move the whole card
         //evt.dataTransfer.effectAllowed = 'move'
         //console.log('drag', evt.target.id)
     };
@@ -3337,6 +3338,7 @@ var PlayerTable = /** @class */ (function () {
         if (cardId && square) {
             this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement;
             square.appendChild($(cardId));
+            $(cardId).classList.add("local-change");
             /*this.handStock.removeCard(
                 this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
             )*/
@@ -3348,7 +3350,12 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.onCardDropOver = function (evt) {
         evt.preventDefault();
-        evt.dataTransfer.dropEffect = 'move';
+        if (evt.target.classList && evt.target.classList.contains('dropzone')) {
+            evt.dataTransfer.dropEffect = 'move';
+        }
+        else {
+            evt.dataTransfer.dropEffect = 'none';
+        }
         console.log('onCardDropOver');
     };
     return PlayerTable;

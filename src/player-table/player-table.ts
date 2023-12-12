@@ -101,7 +101,7 @@ class PlayerTable {
 			return
 		}
 		// Add the target element's id to the data transfer object
-		evt.dataTransfer?.setData('text/plain', evt.target.id)
+		evt.dataTransfer?.setData('text/plain', evt.target.id)//we move the whole card
 		//evt.dataTransfer.effectAllowed = 'move'
 		//console.log('drag', evt.target.id)
 	}
@@ -116,6 +116,7 @@ class PlayerTable {
 		if (cardId && square) {
 			this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement
 			square.appendChild($(cardId))
+			$(cardId).classList.add("local-change")
 			/*this.handStock.removeCard(
 				this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
 			)*/
@@ -128,7 +129,11 @@ class PlayerTable {
 
 	private onCardDropOver(evt) {
 		evt.preventDefault()
-		evt.dataTransfer.dropEffect = 'move'
+		if (evt.target.classList && evt.target.classList.contains('dropzone')) {
+			evt.dataTransfer.dropEffect = 'move'
+		} else {
+			evt.dataTransfer.dropEffect = 'none'
+		}
 		console.log('onCardDropOver')
 	}
 }

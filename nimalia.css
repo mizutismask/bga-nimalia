@@ -356,7 +356,7 @@
   border: 1px inset lightblue;
   box-sizing: border-box;
 }
-.player-table .nml-reserve .nml-square .nimalia-card {
+.player-table .nml-reserve .nml-square .nimalia-card:not(.local-change) {
   pointer-events: none;
 }
 .player-table .nml-reserve .nml-card-order-1 {
@@ -385,6 +385,7 @@
   top: 50%;
   position: absolute;
   transform-style: preserve-3d;
+  z-index: 101;
 }
 .player-table .nml-rotate.nml-rotate-left {
   left: 2%;
@@ -532,6 +533,11 @@ html {
 
 .card .card-sides .card-side.front .card-info {
   pointer-events: all;
+}
+
+.card {
+  width: 200px;
+  height: 200px;
 }
 
 .card-side.front {

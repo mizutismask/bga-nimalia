@@ -353,6 +353,7 @@ class Nimalia implements NimaliaGame {
 				removeClass('animatedScore')
 				break
 		}
+		//removeClass("local-change");
 	}
 
 	// onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
