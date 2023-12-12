@@ -386,7 +386,7 @@ class Nimalia implements NimaliaGame {
 			switch (stateName) {
 				case 'placeCard':
 					;(this as any).addActionButton(
-						'undo_button',
+						'undo_place_card_button',
 						_('Undo'),
 						() => this.takeAction('undoPlaceCard'),
 						null,

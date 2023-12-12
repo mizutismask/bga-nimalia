@@ -80,6 +80,7 @@ class PlayerTable {
 
 	public replaceCardsInHand(cards: Array<NimaliaCard>) {
 		console.log('add cards', cards)
+		this.restoreMovedCardIntoHand()
 		this.handStock.removeAll()
 		this.handStock.addCards(cards)
 		cards.forEach((c) => {
@@ -150,14 +151,12 @@ class PlayerTable {
 
 		if (!myOwnMove) {
 			const id = this.createCardInGrid(playerId, playedCard)
-			removeClass("last-move");
+			removeClass('last-move')
 			$(id).classList.add('last-move')
 		} else {
 			//console.log('this.game.clientActionData', this.game.clientActionData)
 			if (this.game.clientActionData.previousCardParentInHand) {
-				this.game.clientActionData.previousCardParentInHand.appendChild(
-					$(this.game.clientActionData.placedCardId)
-				)
+				this.restoreMovedCardIntoHand()
 				this.handStock.removeCard(
 					this.handStock
 						.getCards()
@@ -167,6 +166,12 @@ class PlayerTable {
 				)
 				this.createCardInGrid(playerId, playedCard)
 			}
+		}
+	}
+
+	public restoreMovedCardIntoHand() {
+		if (this.game.clientActionData?.previousCardParentInHand) {
+			this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId))
 		}
 	}
 }

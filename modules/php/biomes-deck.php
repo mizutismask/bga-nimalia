@@ -188,7 +188,7 @@ trait BiomesCardTrait {
         $this->updatePlayer($playerId, PLAYER_FIELD_LAST_PLACED_CARD, 0);
         $recipient = $this->getRecipientPlayer($playerId);
         $this->biomesCards->moveAllCardsInLocation('nextchoice', 'hand', $recipient, $playerId);
-        self::notifyPlayer($playerId, 'cardsMove', "", ["playerId" => $playerId, "added" => $this->getBiomesCardFromDb($this->biomesCards->getCard($cardId))]);;
+        self::notifyPlayer($playerId, 'cardsMove', "", ["playerId" => $playerId, "added" => [$this->getBiomesCardFromDb($this->biomesCards->getCard($cardId))]]);
     }
 
     public function draftCards() {

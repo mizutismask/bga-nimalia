@@ -2630,7 +2630,7 @@ var Nimalia = /** @class */ (function () {
             switch (stateName) {
                 case 'placeCard':
                     ;
-                    this.addActionButton('undo_button', _('Undo'), function () { return _this.takeAction('undoPlaceCard'); }, null, null, 'red');
+                    this.addActionButton('undo_place_card_button', _('Undo'), function () { return _this.takeAction('undoPlaceCard'); }, null, null, 'red');
                     break;
             }
         }
@@ -3306,6 +3306,7 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.replaceCardsInHand = function (cards) {
         var _this = this;
         console.log('add cards', cards);
+        this.restoreMovedCardIntoHand();
         this.handStock.removeAll();
         this.handStock.addCards(cards);
         cards.forEach(function (c) {
@@ -3374,18 +3375,24 @@ var PlayerTable = /** @class */ (function () {
         //console.log('show move', playerId, playedCard, myOwnMove)
         if (!myOwnMove) {
             var id = this.createCardInGrid(playerId, playedCard);
-            removeClass("last-move");
+            removeClass('last-move');
             $(id).classList.add('last-move');
         }
         else {
             //console.log('this.game.clientActionData', this.game.clientActionData)
             if (this.game.clientActionData.previousCardParentInHand) {
-                this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId));
+                this.restoreMovedCardIntoHand();
                 this.handStock.removeCard(this.handStock
                     .getCards()
                     .filter(function (c) { return c.id == _this.game.getPart(_this.game.clientActionData.placedCardId, -1); })[0]);
                 this.createCardInGrid(playerId, playedCard);
             }
+        }
+    };
+    PlayerTable.prototype.restoreMovedCardIntoHand = function () {
+        var _a;
+        if ((_a = this.game.clientActionData) === null || _a === void 0 ? void 0 : _a.previousCardParentInHand) {
+            this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId));
         }
     };
     return PlayerTable;
