@@ -16,12 +16,12 @@ class ScoreBoard {
 			dojo.place(
 				`
                 <th> </th>
-                <th colspan="3">${_("Round 1")}</th>
-                <th colspan="3">${_("Round 2")}</th>
-                <th colspan="3">${_("Round 3")}</th>
-                <th colspan="4">${_("Round 4")}</th>
-                <th colspan="4">${_("Round 5")}</th>
-                <th id="th-total-score" class="">${_("Total")}</th>
+                <th colspan="3">${_('Round 1')}</th>
+                <th colspan="3">${_('Round 2')}</th>
+                <th colspan="3">${_('Round 3')}</th>
+                <th colspan="4">${_('Round 4')}</th>
+                <th colspan="4">${_('Round 5')}</th>
+                <th id="th-total-score" class="">${_('Total')}</th>
             `,
 				headers
 			)
@@ -121,7 +121,11 @@ class ScoreBoard {
 	}
 
 	public updateScore(playerId: number, scoreType: string, score: number) {
-		dojo.byId(scoreType).innerHTML = score.toString()
+		const elt = dojo.byId(scoreType)
+		//if (elt.innerHTML != score.toString()) {
+			elt.innerHTML = score.toString()
+            dojo.addClass(scoreType, "animatedScore")
+		//}
 	}
 
 	private preventMinusZero(score: number) {

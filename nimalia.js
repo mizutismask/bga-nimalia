@@ -2417,6 +2417,7 @@ var Nimalia = /** @class */ (function () {
         this.setupTooltips();
         this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players), undefined);
         this.gamedatas.scores.forEach(function (s) { return _this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score); });
+        removeClass('animatedScore');
         console.log('Ending game setup');
     };
     Nimalia.prototype.setupGoals = function (goals) {
@@ -2597,6 +2598,7 @@ var Nimalia = /** @class */ (function () {
             break;
         */
             case 'seeScore':
+                removeClass('animatedScore');
                 break;
         }
     };
@@ -3158,6 +3160,17 @@ var GOALS_DESC = [
     'The player with the most crocodiles gets 5 points (2nd gets 2 points ). The player with the fewest flamingoes gets 5 points (2nd gets 2 points)',
     '2 points per crocodile orthogonally adjacent to at least one giraffe'
 ];
+function addTemporaryClass(element, className, removalDelay) {
+    dojo.addClass(element, className);
+    setTimeout(function () { return dojo.removeClass(element, className); }, removalDelay);
+}
+function removeClass(className, rootNode) {
+    if (!rootNode)
+        rootNode = document;
+    else
+        rootNode = rootNode;
+    rootNode.querySelectorAll('.' + className).forEach(function (item) { return item.classList.remove(className); });
+}
 /**
  * End score board.
  * No notifications.
@@ -3172,7 +3185,7 @@ var ScoreBoard = /** @class */ (function () {
         this.bestScore = bestScore;
         var headers = document.getElementById('scoretr');
         if (!headers.childElementCount) {
-            dojo.place("\n                <th> </th>\n                <th colspan=\"3\">".concat(_("Round 1"), "</th>\n                <th colspan=\"3\">").concat(_("Round 2"), "</th>\n                <th colspan=\"3\">").concat(_("Round 3"), "</th>\n                <th colspan=\"4\">").concat(_("Round 4"), "</th>\n                <th colspan=\"4\">").concat(_("Round 5"), "</th>\n                <th id=\"th-total-score\" class=\"\">").concat(_("Total"), "</th>\n            "), headers);
+            dojo.place("\n                <th> </th>\n                <th colspan=\"3\">".concat(_('Round 1'), "</th>\n                <th colspan=\"3\">").concat(_('Round 2'), "</th>\n                <th colspan=\"3\">").concat(_('Round 3'), "</th>\n                <th colspan=\"4\">").concat(_('Round 4'), "</th>\n                <th colspan=\"4\">").concat(_('Round 5'), "</th>\n                <th id=\"th-total-score\" class=\"\">").concat(_('Total'), "</th>\n            "), headers);
             console.log('parentNode', headers.parentNode);
             console.log('parentElement', headers.parentElement);
             dojo.place("\n                <thead>\n                    <th> </th>\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"></th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"></th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n                <thead/>\n            ", headers.parentElement, 'after');
@@ -3204,7 +3217,11 @@ var ScoreBoard = /** @class */ (function () {
         });*/
     };
     ScoreBoard.prototype.updateScore = function (playerId, scoreType, score) {
-        dojo.byId(scoreType).innerHTML = score.toString();
+        var elt = dojo.byId(scoreType);
+        //if (elt.innerHTML != score.toString()) {
+        elt.innerHTML = score.toString();
+        dojo.addClass(scoreType, "animatedScore");
+        //}
     };
     ScoreBoard.prototype.preventMinusZero = function (score) {
         if (score === 0) {

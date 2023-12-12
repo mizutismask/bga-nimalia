@@ -321,16 +321,23 @@
 #score #table-wrapper table .score-goal-green {
   background-color: rgb(78, 114, 32);
 }
+#score .score-number {
+  transition: color 0.5s ease-in-out;
+}
+#score .score-number.animatedScore {
+  color: red !important;
+  /*animation:  grow-then-shrink-animation 3s ;*/
+}
 
-@keyframes bonus-card-animation {
+@keyframes grow-then-shrink-animation {
   0% {
-    transform: scale(0.15);
-  }
-  50% {
     transform: scale(1);
   }
+  50% {
+    transform: scale(1.5);
+  }
   100% {
-    transform: scale(0.15);
+    transform: scale(1);
   }
 }
 .player-table {
@@ -561,8 +568,8 @@ html {
   justify-content: center;
 }
 #goals #goals-wrapper .nml-goal {
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
   border-radius: 6px;
   box-shadow: 0 0 8px 1px black;
   display: inline-block;

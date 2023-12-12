@@ -95,6 +95,7 @@ class Nimalia implements NimaliaGame {
 		this.setupTooltips()
 		this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players), undefined)
 		this.gamedatas.scores.forEach((s) => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score))
+		removeClass('animatedScore')
 
 		console.log('Ending game setup')
 	}
@@ -349,6 +350,7 @@ class Nimalia implements NimaliaGame {
         */
 
 			case 'seeScore':
+				removeClass('animatedScore')
 				break
 		}
 	}

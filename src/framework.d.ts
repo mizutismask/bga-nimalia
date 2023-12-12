@@ -29,9 +29,9 @@ interface Dojo {
 	style: Function
 	hitch: Function
 	hasClass: (nodeId: string, className: string) => boolean
-	addClass: (nodeId: string, className: string) => void
-	removeClass: (nodeId: string, className?: string) => void
-	toggleClass: (nodeId: string, className: string, forceValue?: boolean) => void
+	addClass: (nodeId: string | HTMLElement, className: string) => void
+	removeClass: (nodeId: string | HTMLElement, className?: string) => void
+	toggleClass: (nodeId: string | HTMLElement, className: string, forceValue?: boolean) => void
 	connect: Function
 	disconnect: Function
 	query: Function
@@ -46,7 +46,7 @@ interface Dojo {
 	forEach: Function
 	xhrGet: Function
 	empty: (nodeId: string) => void
-	byId: (nodeId: string) => HTMLElement
+	byId: (nodeId: string | HTMLElement) => HTMLElement
 }
 
 interface Player {
