@@ -893,7 +893,7 @@ class Nimalia implements NimaliaGame {
 		this.scoreBoard.updateScore(
 			notif.args.playerId,
 			notif.args.scoreType,
-			notif.args.delta > 0 ? notif.args.delta : notif.args.points
+			notif.args.scoreType === 'total-' + notif.args.playerId ? notif.args.points : notif.args.delta
 		)
 	}
 

@@ -3025,7 +3025,7 @@ var Nimalia = /** @class */ (function () {
     Nimalia.prototype.notif_points = function (notif) {
         //console.log('notif_points', notif)
         this.setPoints(notif.args.playerId, notif.args.points);
-        this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.delta > 0 ? notif.args.delta : notif.args.points);
+        this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.scoreType === 'total-' + notif.args.playerId ? notif.args.points : notif.args.delta);
     };
     /**
      * Updates a total or subtotal
