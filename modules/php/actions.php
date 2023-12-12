@@ -43,7 +43,7 @@ trait ActionTrait {
 
 
     public function undoPlaceCard() {
-        self::checkAction('undoPlaceCard');
+        $this->gamestate->checkPossibleAction('undoPlaceCard');
         $playerId = intval(self::getCurrentPlayerId());
         $cardId = $this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD);
         if (!$cardId) {
