@@ -36,12 +36,36 @@ trait ArgsTrait {
     function getPossibleSquares() {
         $squares = [];
         $playersIds = $this->getPlayersIds();
+        $terrainType = FAKE_LAND;
         foreach ($playersIds as $playerId) {
             $squares[$playerId] = [];
-            //$grid = $this->getGrid();
-            for ($i = 1; $i <= 36; $i++) {
-                $squares[$playerId][] = "square-" . $playerId . "-" . $i;
+            $grid = $this->getGrid($playerId);
+
+            // every row except the last one
+            for ($row = 0; $row < GRID_SIZE - 1; $row++) {
+                //  every column except the last one
+                for ($col = 0; $col < GRID_SIZE - 1; $col++) {
+                    // check current squares and right, bottom, right diagonal
+                    if (
+                        $grid[$row][$col]->land != $terrainType ||
+                        $grid[$row][$col + 1]->land != $terrainType ||
+                        $grid[$row + 1][$col]->land != $terrainType ||
+                        $grid[$row + 1][$col + 1]->land != $terrainType
+                    ) {
+                        $squares[$playerId][] = "square-" . $playerId . "-" . ($row * GRID_SIZE + $col + 1);
+                    }
+                }
             }
+
+            //beginning of the game, everything in the grid is possible
+            if (count($squares[$playerId]) == 0) {
+                for ($row = 0; $row < GRID_SIZE - 1; $row++) {
+                    for ($col = 0; $col < GRID_SIZE - 1; $col++) {
+                        $squares[$playerId][] = "square-" . $playerId . "-" . ($row * GRID_SIZE + $col + 1);
+                    }
+                }
+            }
+            //self::dump('*******************possible', $specialCases);
         }
         return $squares;
     }
