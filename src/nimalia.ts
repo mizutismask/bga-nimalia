@@ -882,7 +882,13 @@ class Nimalia implements NimaliaGame {
 	}
 
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
-		this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added)
+		if (notif.args.added) this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added)
+		if (notif.args.playedCard) {
+			this.playerTables[notif.args.playerId].showMove(
+				notif.args.playerId,
+				notif.args.playedCard,
+			)
+		}
 	}
 
 	/**

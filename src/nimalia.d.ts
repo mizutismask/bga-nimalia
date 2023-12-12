@@ -81,7 +81,8 @@ interface EnteringPlaceCardArgs {
 
 interface CardsMoveArgs {
 	playerId: number
-	added: Array<NimaliaCard>
+	added?: Array<NimaliaCard>//to hand
+	playedCard?:NimaliaCard
 }
 
 interface NewRoundArgs{

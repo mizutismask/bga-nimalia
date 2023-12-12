@@ -1,23 +1,24 @@
 <?php
- /**
-  *------
-  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
-  * Nimalia implementation : © <Your name here> <Your email address here>
-  * 
-  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
-  * See http://en.boardgamearena.com/#!doc/Studio for more information.
-  * -----
-  * 
-  * nimalia.game.php
-  *
-  * This is the main file for your game logic.
-  *
-  * In this PHP file, you are going to defines the rules of the game.
-  *
-  */
+
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * Nimalia implementation : © <Your name here> <Your email address here>
+ * 
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ * 
+ * nimalia.game.php
+ *
+ * This is the main file for your game logic.
+ *
+ * In this PHP file, you are going to defines the rules of the game.
+ *
+ */
 
 
-require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
+require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 require_once('modules/php/constants.inc.php');
 require_once('modules/php/utils.php');
 require_once('modules/php/states.php');
@@ -28,8 +29,7 @@ require_once('modules/php/goals.php');
 require_once('modules/php/debug-util.php');
 require_once('modules/php/expansion.php');
 
-class Nimalia extends Table
-{
+class Nimalia extends Table {
     use UtilTrait;
     use ActionTrait;
     use StateTrait;
@@ -39,8 +39,7 @@ class Nimalia extends Table
     use ExpansionTrait;
     use GoalTrait;
 
-	function __construct( )
-	{
+    function __construct() {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
         //  You can use any number of global variables with IDs between 10 and 99.
@@ -48,8 +47,8 @@ class Nimalia extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
-        
-        self::initGameStateLabels( array( 
+
+        self::initGameStateLabels(array(
             LAST_TURN => 10, // last turn is the id of the last player, 0 if it's not last turn
             ROUND => 11, // round number, from 1 to 5
             PLAYER_FIELD_LAST_PLACED_CARD => 12, // last card played, to enable undo
@@ -58,17 +57,16 @@ class Nimalia extends Table
             GOAL_LEVEL => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-        ) );  
+        ));
         $this->biomesCards = $this->getNew("module.common.deck");
         $this->biomesCards->init("card");
-        $this->biomesCards->autoreshuffle = true; 
-	}
-	
-    protected function getGameName( )
-    {
-		// Used for translations and stuff. Please do not modify.
+        $this->biomesCards->autoreshuffle = true;
+    }
+
+    protected function getGameName() {
+        // Used for translations and stuff. Please do not modify.
         return "nimalia";
-    }	
+    }
 
     /*
         setupNewGame:
@@ -77,28 +75,26 @@ class Nimalia extends Table
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame( $players, $options = array() )
-    {    
+    protected function setupNewGame($players, $options = array()) {
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
- 
+
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
         $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
         $values = array();
-        foreach( $players as $player_id => $player )
-        {
-            $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+        foreach ($players as $player_id => $player) {
+            $color = array_shift($default_colors);
+            $values[] = "('" . $player_id . "','$color','" . $player['player_canal'] . "','" . addslashes($player['player_name']) . "','" . addslashes($player['player_avatar']) . "')";
         }
-        $sql .= implode( ',', $values );
-        self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
+        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
         self::reloadPlayersBasicInfos();
-        
+
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
@@ -107,7 +103,7 @@ class Nimalia extends Table
         //foreach ($this->GAMESTATELABELS as $value_label => $ID) if ($ID >= 10 && $ID < 90) $this->setGameStateInitialValue($value_label, 0);
 
         $this->initStats();
-        
+
         // TODO: setup the initial game situation here
         $this->selectGoals();
         $this->createBiomes();
@@ -127,20 +123,19 @@ class Nimalia extends Table
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas()
-    {
+    protected function getAllDatas() {
         $stateName = $this->gamestate->state()['name'];
         $isEnd = $stateName === 'endScore' || $stateName === 'gameEnd' || $stateName === 'debugGameEnd';
 
         $result = [];
-    
+
         $currentPlayerId = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
-    
+
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
-        
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_is_multiactive multiactive FROM player ";
+        $result['players'] = self::getCollectionFromDb($sql);
+
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['expansion'] = EXPANSION;
         if ($isEnd) {
@@ -148,20 +143,24 @@ class Nimalia extends Table
         } else {
             $result['lastTurn'] = $this->getGameStateValue(LAST_TURN) > 0;
         }
-        
+
         // shared information
         $result['turnOrderClockwise'] = true;
         $result['round'] = $this->getRoundArgs();
-        $result["goals"]= $this->getGameGoals();
-        $result["scores"]= $this->getScoreArgs();
+        $result["goals"] = $this->getGameGoals();
+        $result["scores"] = $this->getScoreArgs();
         foreach ($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
             $result['grids'][$playerId] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid$playerId", null, "card_order_in_grid"));
+            if ($stateName === "placeCard" && !$player["multiactive"] && $currentPlayerId != $playerId) {
+                //do not show unrevealed last card
+                $result['grids'][$playerId] = array_filter($result['grids'][$playerId], fn ($card) => $card->id != $this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD));
+            }
         }
-        
+
         // private data : current player hidden informations
         $result['hand'] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $currentPlayerId));
-        
+
         return $result;
     }
 
@@ -175,8 +174,7 @@ class Nimalia extends Table
         This method is called each time we are in a game state with the "updateGameProgression" property set to true 
         (see states.inc.php)
     */
-    function getGameProgression()
-    {
+    function getGameProgression() {
         $stateName = $this->gamestate->state()['name'];
         if ($stateName === 'endScore' || $stateName === 'gameEnd') {
             // game is over
@@ -187,17 +185,17 @@ class Nimalia extends Table
     }
 
 
-//////////////////////////////////////////////////////////////////////////////
-//////////// Utility functions
-////////////    
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Utility functions
+    ////////////    
 
     /*
         In this space, you can put any utility methods useful for your game logic
     */
 
-//////////////////////////////////////////////////////////////////////////////
-//////////// Zombie
-////////////
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Zombie
+    ////////////
 
     /*
         zombieTurn:
@@ -212,15 +210,14 @@ class Nimalia extends Table
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn( $state, $active_player )
-    {
-    	$statename = $state['name'];
-    	
+    function zombieTurn($state, $active_player) {
+        $statename = $state['name'];
+
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
                 default:
-                    $this->gamestate->nextState( "zombiePass" );
-                	break;
+                    $this->gamestate->nextState("zombiePass");
+                    break;
             }
 
             return;
@@ -228,17 +225,17 @@ class Nimalia extends Table
 
         if ($state['type'] === "multipleactiveplayer") {
             // Make sure player is in a non blocking status for role turn
-            $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
-            
+            $this->gamestate->setPlayerNonMultiactive($active_player, '');
+
             return;
         }
 
-        throw new feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new feException("Zombie mode not supported at this game state: " . $statename);
     }
-    
-///////////////////////////////////////////////////////////////////////////////////:
-////////// DB upgrade
-//////////
+
+    ///////////////////////////////////////////////////////////////////////////////////:
+    ////////// DB upgrade
+    //////////
 
     /*
         upgradeTableDb:
@@ -250,10 +247,10 @@ class Nimalia extends Table
         update the game database and allow the game to continue to run with your new version.
     
     */
-    
+
     function upgradeTableDb($from_version) {
         $changes = [
-           // [2307071828, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (24, 0)"], 
+            // [2307071828, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (24, 0)"], 
         ];
 
         foreach ($changes as [$version, $sql]) {

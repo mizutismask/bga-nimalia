@@ -84,6 +84,14 @@ trait BiomesCardTrait {
         return $this->getBiomesCardFromDb($this->biomesCards->getCard($cardId));
     }
 
+    public function getLastCardPlayed(): array {
+        $cards = [];
+        foreach ($this->getPlayersIds() as $playerId) {
+            $cards[$playerId] = $this->getBiomesCardFromDb($this->biomesCards->getCard($this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD)));
+        }
+        return $cards;
+    }
+
     /**
      * get remaining cards in deck.
      */
@@ -149,7 +157,7 @@ trait BiomesCardTrait {
      */
     private function keepCards(int $playerId, array $ids) {
         $this->biomesCards->moveCards($ids, 'hand', $playerId);
-       /* $this->notifyAllPlayers('cardsPicked', clienttranslate('${player_name} gets ${count} card(s)'), [
+        /* $this->notifyAllPlayers('cardsPicked', clienttranslate('${player_name} gets ${count} card(s)'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'count' => count($ids),
@@ -161,8 +169,7 @@ trait BiomesCardTrait {
                 ],
             ],
         ]);*/
-        self::notifyPlayer($playerId, 'cardsMove',"", ["playerId" => $playerId, "added" => $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId))]);;
-       
+        self::notifyPlayer($playerId, 'cardsMove', "", ["playerId" => $playerId, "added" => $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId))]);
     }
 
     public function moveCardToReserve(int $playerId, int $cardId, int $squareId, int $rotation) {
@@ -181,11 +188,10 @@ trait BiomesCardTrait {
         $this->updatePlayer($playerId, PLAYER_FIELD_LAST_PLACED_CARD, 0);
         $recipient = $this->getRecipientPlayer($playerId);
         $this->biomesCards->moveAllCardsInLocation('nextchoice', 'hand', $recipient, $playerId);
-        self::notifyPlayer($playerId, 'cardsMove',"", ["playerId" => $playerId, "added" => $this->getBiomesCardFromDb($this->biomesCards->getCard($cardId))]);;
-        
+        self::notifyPlayer($playerId, 'cardsMove', "", ["playerId" => $playerId, "added" => $this->getBiomesCardFromDb($this->biomesCards->getCard($cardId))]);;
     }
 
-    public function getDraftedCards() {
+    public function draftCards() {
         $this->biomesCards->moveAllCardsInLocationKeepOrder('nextchoice', 'hand');
         $players = $this->loadPlayersBasicInfos();
         foreach ($players as $playerId => $player) {

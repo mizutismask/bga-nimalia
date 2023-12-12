@@ -22,7 +22,14 @@ trait StateTrait {
     /** Notifies everyone’s move at the same time when everyone has finished his move. Also gets drafted cards for the next move. */
     function stMoveReveal() {
         $playersIds = $this->getPlayersIds();
-        $this->getDraftedCards();
+        $lastCards = $this->getLastCardPlayed();
+        foreach ($playersIds as $playerId) {
+            self::notifyAllPlayers('cardsMove', "", [
+                "playerId" => $playerId,
+                "playedCard" =>  $lastCards[$playerId]
+            ]);
+        }
+        $this->draftCards();
         if (count($this->getPlayerCards(array_pop($playersIds))) == 0) {
             $this->gamestate->nextState("endScore");
         } else {

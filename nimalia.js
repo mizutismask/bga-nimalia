@@ -3018,7 +3018,11 @@ var Nimalia = /** @class */ (function () {
         activeGoals.forEach(function (g) { return dojo.query("#goal_".concat(g.id)).addClass('nml-active-goal'); });
     };
     Nimalia.prototype.notif_cardsMove = function (notif) {
-        this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added);
+        if (notif.args.added)
+            this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added);
+        if (notif.args.playedCard) {
+            this.playerTables[notif.args.playerId].showMove(notif.args.playerId, notif.args.playedCard);
+        }
     };
     /**
      * Update player goal score.
@@ -3286,13 +3290,18 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         dojo.query("#reserve-".concat(player.id, " .nml-square")).empty();
         cards.forEach(function (c) {
-            dojo.create('div', {
-                id: _this.game.cardsManager.getId(c),
-                style: getBackgroundInlineStyleForNimaliaCard(c),
-                class: 'nimalia-card card-side front nml-card-order-' + c.order,
-                'data-rotation': c.rotation
-            }, "square-".concat(player.id, "-").concat(c.location_arg));
+            _this.createCardInGrid(parseInt(player.id), c);
         });
+    };
+    PlayerTable.prototype.createCardInGrid = function (playerId, card) {
+        var divId = this.game.cardsManager.getId(card);
+        dojo.create('div', {
+            id: this.game.cardsManager.getId(card),
+            style: getBackgroundInlineStyleForNimaliaCard(card),
+            class: 'nimalia-card card-side front nml-card-order-' + card.order,
+            'data-rotation': card.rotation
+        }, "square-".concat(playerId, "-").concat(card.location_arg));
+        return divId;
     };
     PlayerTable.prototype.replaceCardsInHand = function (cards) {
         var _this = this;
@@ -3332,13 +3341,14 @@ var PlayerTable = /** @class */ (function () {
         // Add the target element's id to the data transfer object
         evt.dataTransfer.effectAllowed = 'move';
         evt.preventDefault();
+        evt.stopPropagation();
         var cardId = evt.dataTransfer.getData('text/plain');
         var square = evt.target.closest('.nml-square');
         console.log('drop', cardId, 'to', square.id);
         if (cardId && square) {
             this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement;
             square.appendChild($(cardId));
-            $(cardId).classList.add("local-change");
+            $(cardId).classList.add('local-change');
             /*this.handStock.removeCard(
                 this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
             )*/
@@ -3350,13 +3360,33 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.onCardDropOver = function (evt) {
         evt.preventDefault();
+        evt.stopPropagation();
         if (evt.target.classList && evt.target.classList.contains('dropzone')) {
             evt.dataTransfer.dropEffect = 'move';
         }
         else {
             evt.dataTransfer.dropEffect = 'none';
         }
-        console.log('onCardDropOver');
+    };
+    PlayerTable.prototype.showMove = function (playerId, playedCard) {
+        var _this = this;
+        var myOwnMove = playerId == this.game.getPlayerId();
+        //console.log('show move', playerId, playedCard, myOwnMove)
+        if (!myOwnMove) {
+            var id = this.createCardInGrid(playerId, playedCard);
+            removeClass("last-move");
+            $(id).classList.add('last-move');
+        }
+        else {
+            //console.log('this.game.clientActionData', this.game.clientActionData)
+            if (this.game.clientActionData.previousCardParentInHand) {
+                this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId));
+                this.handStock.removeCard(this.handStock
+                    .getCards()
+                    .filter(function (c) { return c.id == _this.game.getPart(_this.game.clientActionData.placedCardId, -1); })[0]);
+                this.createCardInGrid(playerId, playedCard);
+            }
+        }
     };
     return PlayerTable;
 }());

@@ -57,19 +57,25 @@ class PlayerTable {
 	}
 
 	public displayGrid(player: NimaliaPlayer, cards: Array<NimaliaCard>) {
-		dojo.query(`#reserve-${player.id} .nml-square`).empty();
+		dojo.query(`#reserve-${player.id} .nml-square`).empty()
 		cards.forEach((c) => {
-			dojo.create(
-				'div',
-				{
-					id: this.game.cardsManager.getId(c),
-					style: getBackgroundInlineStyleForNimaliaCard(c),
-					class: 'nimalia-card card-side front nml-card-order-' + c.order,
-					'data-rotation': c.rotation
-				},
-				`square-${player.id}-${c.location_arg}`
-			)
+			this.createCardInGrid(parseInt(player.id), c)
 		})
+	}
+
+	public createCardInGrid(playerId: number, card: NimaliaCard): string {
+		const divId = this.game.cardsManager.getId(card)
+		dojo.create(
+			'div',
+			{
+				id: this.game.cardsManager.getId(card),
+				style: getBackgroundInlineStyleForNimaliaCard(card),
+				class: 'nimalia-card card-side front nml-card-order-' + card.order,
+				'data-rotation': card.rotation
+			},
+			`square-${playerId}-${card.location_arg}`
+		)
+		return divId
 	}
 
 	public replaceCardsInHand(cards: Array<NimaliaCard>) {
@@ -101,7 +107,7 @@ class PlayerTable {
 			return
 		}
 		// Add the target element's id to the data transfer object
-		evt.dataTransfer?.setData('text/plain', evt.target.id)//we move the whole card
+		evt.dataTransfer?.setData('text/plain', evt.target.id) //we move the whole card
 		//evt.dataTransfer.effectAllowed = 'move'
 		//console.log('drag', evt.target.id)
 	}
@@ -110,13 +116,14 @@ class PlayerTable {
 		// Add the target element's id to the data transfer object
 		evt.dataTransfer.effectAllowed = 'move'
 		evt.preventDefault()
+		evt.stopPropagation()
 		const cardId = evt.dataTransfer.getData('text/plain')
 		const square = (evt.target as HTMLElement).closest('.nml-square')
 		console.log('drop', cardId, 'to', square.id)
 		if (cardId && square) {
 			this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement
 			square.appendChild($(cardId))
-			$(cardId).classList.add("local-change")
+			$(cardId).classList.add('local-change')
 			/*this.handStock.removeCard(
 				this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
 			)*/
@@ -129,11 +136,37 @@ class PlayerTable {
 
 	private onCardDropOver(evt) {
 		evt.preventDefault()
+		evt.stopPropagation()
 		if (evt.target.classList && evt.target.classList.contains('dropzone')) {
 			evt.dataTransfer.dropEffect = 'move'
 		} else {
 			evt.dataTransfer.dropEffect = 'none'
 		}
-		console.log('onCardDropOver')
+	}
+
+	public showMove(playerId: number, playedCard: NimaliaCard) {
+		const myOwnMove = playerId == this.game.getPlayerId()
+		//console.log('show move', playerId, playedCard, myOwnMove)
+
+		if (!myOwnMove) {
+			const id = this.createCardInGrid(playerId, playedCard)
+			removeClass("last-move");
+			$(id).classList.add('last-move')
+		} else {
+			//console.log('this.game.clientActionData', this.game.clientActionData)
+			if (this.game.clientActionData.previousCardParentInHand) {
+				this.game.clientActionData.previousCardParentInHand.appendChild(
+					$(this.game.clientActionData.placedCardId)
+				)
+				this.handStock.removeCard(
+					this.handStock
+						.getCards()
+						.filter(
+							(c) => c.id == (this.game as any).getPart(this.game.clientActionData.placedCardId, -1)
+						)[0]
+				)
+				this.createCardInGrid(playerId, playedCard)
+			}
+		}
 	}
 }

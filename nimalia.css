@@ -355,6 +355,11 @@
   height: 100px;
   border: 1px inset lightblue;
   box-sizing: border-box;
+  display: grid;
+}
+.player-table .nml-reserve .nml-square > .nimalia-card {
+  grid-row: 1;
+  grid-column: 1;
 }
 .player-table .nml-reserve .nml-square .nimalia-card:not(.local-change) {
   pointer-events: none;
@@ -370,6 +375,9 @@
 }
 .player-table .nml-reserve .nml-card-order-100 {
   z-index: 100;
+}
+.player-table .nml-reserve .last-move {
+  box-shadow: 0 0 8px 1px greenyellow;
 }
 .player-table .nml-player-name {
   bottom: 8px;
