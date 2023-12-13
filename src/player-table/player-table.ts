@@ -28,13 +28,22 @@ class PlayerTable {
 	}
 
 	private initHand(player: NimaliaPlayer) {
-		var stockSettings = {
+		const smallWidth = window.matchMedia('(max-width: 830px)').matches
+		var baseSettings = {
 			center: true,
-			gap: '100px',
-			direction: 'row' as 'row',
-			wrap: 'wrap' as 'wrap'
+			gap: '10px',
 		}
-		this.handStock = new LineStock<NimaliaCard>(this.game.cardsManager, $('hand-' + player.id), stockSettings)
+		if (smallWidth) {
+			baseSettings['direction'] = 'row' as 'row'
+			baseSettings['wrap']= 'nowrap' as 'nowrap'
+		} else {
+			baseSettings['direction'] = 'col' as 'col'
+			baseSettings['wrap']= 'wrap' as 'wrap'
+		}
+
+		//console.log('smallWidth', smallWidth, baseSettings)
+
+		this.handStock = new LineStock<NimaliaCard>(this.game.cardsManager, $('hand-' + player.id), baseSettings)
 		this.handStock.setSelectionMode('single')
 	}
 

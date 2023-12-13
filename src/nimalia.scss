@@ -18,6 +18,7 @@ $goal-green-color: rgb(78, 114, 32);
 @import 'score/score';
 @import 'player-table/player-table';
 @import 'settings';
+@import "../node_modules/bga-cards/bga-cards";
 
 html {
 	background-image: url("img/background.jpg");

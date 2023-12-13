@@ -3293,13 +3293,21 @@ var PlayerTable = /** @class */ (function () {
         }
     }
     PlayerTable.prototype.initHand = function (player) {
-        var stockSettings = {
+        var smallWidth = window.matchMedia('(max-width: 830px)').matches;
+        var baseSettings = {
             center: true,
-            gap: '100px',
-            direction: 'row',
-            wrap: 'wrap'
+            gap: '10px',
         };
-        this.handStock = new LineStock(this.game.cardsManager, $('hand-' + player.id), stockSettings);
+        if (smallWidth) {
+            baseSettings['direction'] = 'row';
+            baseSettings['wrap'] = 'nowrap';
+        }
+        else {
+            baseSettings['direction'] = 'col';
+            baseSettings['wrap'] = 'wrap';
+        }
+        //console.log('smallWidth', smallWidth, baseSettings)
+        this.handStock = new LineStock(this.game.cardsManager, $('hand-' + player.id), baseSettings);
         this.handStock.setSelectionMode('single');
     };
     PlayerTable.prototype.setupReserve = function (player) {

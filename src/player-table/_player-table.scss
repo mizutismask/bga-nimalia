@@ -1,3 +1,24 @@
+@media only screen and (max-width: 830px) {
+	#player-tables {
+		.player-table {
+			grid-template-columns: 1fr !important;
+
+			.nml-player-hand {
+				grid-column: 1 !important;
+				grid-row: 1 !important;
+			}
+			.nml-reserve {
+				grid-column: 1 !important;
+				grid-row: 2 !important;
+			}
+			.nml-player-name {
+				grid-column: 1 !important;
+				grid-row: 3 !important;
+			}
+		}
+	}
+}
+
 #player-tables {
 	display: flex;
 	flex-wrap: wrap;
@@ -11,11 +32,11 @@
 		grid-template-columns: 1fr 1fr;
 		width: min-content;
 
-		.nml-player-hand{
+		.nml-player-hand {
 			grid-column: 1;
 			grid-row: 1;
 		}
-		.nml-player-name{
+		.nml-player-name {
 			grid-column: 2;
 			grid-row: 2;
 		}
@@ -27,6 +48,8 @@
 			grid-template-rows: repeat(6, 1fr);
 			grid-gap: 0px;
 			background-color: #008abe;
+			margin-left: 10px;//because of horizontal hand gap
+			margin-right: 10px;//because of horizontal hand gap
 
 			.nml-square {
 				width: 100px;
@@ -79,7 +102,7 @@
 			cursor: pointer;
 			box-shadow: 0 0 10px 7px white;
 
-			&:hover{
+			&:hover {
 				scale: 1.2;
 			}
 
