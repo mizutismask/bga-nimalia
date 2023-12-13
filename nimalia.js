@@ -2515,10 +2515,7 @@ var Nimalia = /** @class */ (function () {
     };
     Nimalia.prototype.updateTurnOrder = function (player) {
         var surroundingPlayers = this.getSurroundingPlayersIds(player);
-        var previousId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[0] : surroundingPlayers[1];
         var nextId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[1] : surroundingPlayers[0];
-        $('previous-player-draft').innerHTML = previousId;
-        $('next-player-draft').innerHTML = nextId;
         $('draft-recipient').innerHTML = this.getPlayerName(nextId);
     };
     Nimalia.prototype.getPlayerName = function (playerId) {
@@ -3290,8 +3287,8 @@ var PlayerTable = /** @class */ (function () {
         dojo.place(html, 'player-tables');
         this.setupReserve(player);
         if (isMyTable) {
-            var handHtml = "\n\t\t\t<div id=\"previous-player-draft\" class=\"nml-player-draft nml-previous-player\"></div>\n\t\t\t<div id=\"hand-".concat(player.id, "\" class=\"nml-player-hand\"></div>\n\t\t\t<div id=\"next-player-draft\" class=\"nml-player-draft nml-next-player\"></div>\n        ");
-            dojo.place(handHtml, "player-table-".concat(player.id), 'last');
+            var handHtml = "\n\t\t\t<div id=\"hand-".concat(player.id, "\" class=\"nml-player-hand\"></div>\n        ");
+            dojo.place(handHtml, "player-table-".concat(player.id), 'first');
             this.initHand(player);
         }
     }

@@ -20,11 +20,9 @@ class PlayerTable {
 
 		if (isMyTable) {
 			const handHtml = `
-			<div id="previous-player-draft" class="nml-player-draft nml-previous-player"></div>
 			<div id="hand-${player.id}" class="nml-player-hand"></div>
-			<div id="next-player-draft" class="nml-player-draft nml-next-player"></div>
         `
-			dojo.place(handHtml, `player-table-${player.id}`, 'last')
+			dojo.place(handHtml, `player-table-${player.id}`, 'first')
 			this.initHand(player)
 		}
 	}

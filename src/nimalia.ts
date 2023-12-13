@@ -276,10 +276,7 @@ class Nimalia implements NimaliaGame {
 
 	public updateTurnOrder(player: NimaliaPlayer) {
 		const surroundingPlayers = this.getSurroundingPlayersIds(player)
-		const previousId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[0] : surroundingPlayers[1]
 		const nextId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[1] : surroundingPlayers[0]
-		$('previous-player-draft').innerHTML = previousId
-		$('next-player-draft').innerHTML = nextId
 		$('draft-recipient').innerHTML = this.getPlayerName(nextId)
 	}
 
