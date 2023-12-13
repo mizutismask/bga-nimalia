@@ -125,7 +125,7 @@
   box-shadow: 0 0 3px 2px darkslategrey;
 }
 .player-board .pie.active-round {
-  box-shadow: 0 0 3px 2px white;
+  box-shadow: 0 0 3px 2px greenyellow;
 }
 .player-board .pie > div {
   display: inline-block;
