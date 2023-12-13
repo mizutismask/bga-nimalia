@@ -1,13 +1,14 @@
-
-
 #score {
 	display: none;
 	justify-content: center;
+	margin-bottom: 10px;
 
 	#table-wrapper {
-		padding: 40px;
+		padding: 20px;
 		//background: url('img/score-background.png');//todo find something
 		background-size: 100% 100%;
+		background-color: #008abe;
+		border-radius: 15px;
 
 		table {
 			tbody {
@@ -30,11 +31,11 @@
 					text-align: center;
 					color: white;
 					text-shadow: 0px 0px 1px #054259, 0px 0px 2px #054259, 0px 0px 3px #054259;
-					padding: 8px;
+					padding: 6px;
 				}
 
 				td {
-					width: 100px;
+					width: 60px;
 					text-align: center;
 
 					&:not(:first-child) {
@@ -92,10 +93,10 @@
 	}
 }
 .round-tooltip {
-    h1{
-        font-size: 1.5em;
-        color: #016f99;
-    }
+	h1 {
+		font-size: 1.5em;
+		color: #016f99;
+	}
 	.tooltip-score {
 		font-weight: bold;
 
