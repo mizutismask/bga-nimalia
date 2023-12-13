@@ -112,6 +112,35 @@ class Nimalia implements NimaliaGame {
 			;(this as any).addTooltipHtml(divId, this.getGoalTooltip(g))
 		})
 		this.activateGoals(this.gamedatas.round.goals)
+		
+		const clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)')
+		const counterClockwiseMsg = _('You draft your remaining cards to the previous player (counterclockwise)')
+		let tooltip=""
+		tooltip+= this.createRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', "green"], [_('blue'),_('green')])
+		tooltip+=this.createRoundTooltip(_('Round 2'), counterClockwiseMsg, ['green', "yellow"], [_('green'),_('yellow')])
+		tooltip+=this.createRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', "red"], [_('blue'),_('red')])
+		tooltip+=this.createRoundTooltip(_('Round 4'), counterClockwiseMsg, ['green','yellow', "red"], [_('green'),_('yellow'),_('red')])
+		tooltip+=this.createRoundTooltip(_('Round 5'), clockwiseMsg, ['blue', 'red', "yellow"], [_('blue'), _('red'), _('yellow')])
+		
+		; (this as any).addTooltipHtml('round', tooltip)
+	}
+
+	createRoundTooltip(round: string, draftingText: string, colorNames: Array<string>, colorsTranslated: Array<string>) {
+		let list = ""
+		for (let i = 0; i < colorNames.length; i++) {
+			const colorName = colorNames[i];
+			const colorTranslated = colorsTranslated[i];
+			list += `<li><span class="tooltip-score tooltip-goal-${colorName}">${colorTranslated}</span> </li>`
+		}
+		return `
+			<h1>${round}</h1>
+			<p>${draftingText}</p>
+			<p>${_('You’ll score points for goals:')}
+				<ul>
+				${list}
+				<ul>
+			</p>
+		`
 	}
 
 	public getGoalTooltip(card: Goal) {
@@ -884,10 +913,7 @@ class Nimalia implements NimaliaGame {
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
 		if (notif.args.added) this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added)
 		if (notif.args.playedCard) {
-			this.playerTables[notif.args.playerId].showMove(
-				notif.args.playerId,
-				notif.args.playedCard,
-			)
+			this.playerTables[notif.args.playerId].showMove(notif.args.playerId, notif.args.playedCard)
 		}
 	}
 

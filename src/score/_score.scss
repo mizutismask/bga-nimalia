@@ -1,98 +1,120 @@
+$goal-blue-color: rgb(0, 125, 165);
+$goal-red-color: rgb(190, 30, 26);
+$goal-yellow-color: rgb(223, 153, 37);
+$goal-green-color: rgb(78, 114, 32);
+
 #score {
-    display: none;
-    justify-content: center;
+	display: none;
+	justify-content: center;
 
-    #table-wrapper {
-        padding: 40px;
-        //background: url('img/score-background.png');//todo find something
-        background-size: 100% 100%;
+	#table-wrapper {
+		padding: 40px;
+		//background: url('img/score-background.png');//todo find something
+		background-size: 100% 100%;
 
-        table {
-
-            tbody {
-                tr {
-                    border-top: 1px solid #459dbe;
-                }
-            }
-
-            td, th {
-                &:not(:first-child) {
-                    border-left: 1px solid #459dbe;
-                }
-            }
-
-            tr {
-                height: 40px;
-
-                th {
-                    text-align: center;
-                    color: white;
-                    text-shadow: 0px 0px 1px #054259, 0px 0px 2px #054259, 0px 0px 3px #054259;
-                    padding: 8px;
-                }
-
-                td {
-                    width: 100px;
-                    text-align: center;
-
-                    &:not(:first-child) {
-                        font-size: 150%;
-                        color: white;
-                        text-shadow: 0px 0px 1px #054259, 0px 0px 2px #054259, 0px 0px 3px #054259;
-                    }
-
-                    &.player-name {
-                        color: #054259;
-                        width: 181px;
-                        font-weight: bold;
-                        text-shadow: 0px 0px 1px white, 0px 0px 2px white, 0px 0px 3px white;
-                        word-break: break-all;
-                        text-overflow: ellipsis;
-                        font-size: 120%;
-                    }
-
-                    &.total {
-                        font-weight: bold;
-                    }
-
-                    
-                }
-                &.highlight {
-					
+		table {
+			tbody {
+				tr {
+					border-top: 1px solid #459dbe;
 				}
-            }
+			}
 
-            .score-goal{
-                width: 10px;
-                height: 10px;
-                //border: 2px solid white;
-            }
+			td,
+			th {
+				&:not(:first-child) {
+					border-left: 1px solid #459dbe;
+				}
+			}
 
-            .score-goal-blue{
-                background-color:rgb(0,125,165) ;
-            }
-            .score-goal-yellow{
-                background-color:rgb(223,153,37) ;
-            }
-            .score-goal-red{
-                background-color:rgb(190,30,26) ;
-            }
-            .score-goal-green {
-                background-color:rgb(78,114,32) ;
-            }
-        }
-    }
+			tr {
+				height: 40px;
 
-    .score-number{
-        transition: color .5s ease-in-out;
+				th {
+					text-align: center;
+					color: white;
+					text-shadow: 0px 0px 1px #054259, 0px 0px 2px #054259, 0px 0px 3px #054259;
+					padding: 8px;
+				}
 
-        &.animatedScore{
-            color: red !important;
-            /*animation:  grow-then-shrink-animation 3s ;*/
-        }
-    }
+				td {
+					width: 100px;
+					text-align: center;
+
+					&:not(:first-child) {
+						font-size: 150%;
+						color: white;
+						text-shadow: 0px 0px 1px #054259, 0px 0px 2px #054259, 0px 0px 3px #054259;
+					}
+
+					&.player-name {
+						color: #054259;
+						width: 181px;
+						font-weight: bold;
+						text-shadow: 0px 0px 1px white, 0px 0px 2px white, 0px 0px 3px white;
+						word-break: break-all;
+						text-overflow: ellipsis;
+						font-size: 120%;
+					}
+
+					&.total {
+						font-weight: bold;
+					}
+				}
+				&.highlight {
+				}
+			}
+
+			.score-goal {
+				width: 10px;
+				height: 10px;
+				//border: 2px solid white;
+			}
+
+			.score-goal-blue {
+				background-color: $goal-blue-color;
+			}
+			.score-goal-yellow {
+				background-color: $goal-yellow-color;
+			}
+			.score-goal-red {
+				background-color: $goal-red-color;
+			}
+			.score-goal-green {
+				background-color: $goal-green-color;
+			}
+		}
+	}
+
+	.score-number {
+		transition: color 0.5s ease-in-out;
+
+		&.animatedScore {
+			color: red !important;
+			/*animation:  grow-then-shrink-animation 3s ;*/
+		}
+	}
 }
+.round-tooltip {
+    h1{
+        font-size: 1.5em;
+    }
+	.tooltip-score {
+		font-weight: bold;
 
+		&.tooltip-goal-blue {
+			color: $goal-blue-color;
+		}
+		&.tooltip-goal-yellow {
+			color: $goal-yellow-color;
+		}
+		&.tooltip-goal-red {
+			color: $goal-red-color;
+		}
+		&.tooltip-goal-green {
+			color: $goal-green-color;
+		}
+	}
+}
 @keyframes grow-then-shrink-animation {
 	0% {
 		transform: scale(1);

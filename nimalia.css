@@ -272,7 +272,8 @@
 #score #table-wrapper table tbody tr {
   border-top: 1px solid #459dbe;
 }
-#score #table-wrapper table td:not(:first-child), #score #table-wrapper table th:not(:first-child) {
+#score #table-wrapper table td:not(:first-child),
+#score #table-wrapper table th:not(:first-child) {
   border-left: 1px solid #459dbe;
 }
 #score #table-wrapper table tr {
@@ -327,6 +328,25 @@
 #score .score-number.animatedScore {
   color: red !important;
   /*animation:  grow-then-shrink-animation 3s ;*/
+}
+
+.round-tooltip h1 {
+  font-size: 1.5em;
+}
+.round-tooltip .tooltip-score {
+  font-weight: bold;
+}
+.round-tooltip .tooltip-score.tooltip-goal-blue {
+  color: rgb(0, 125, 165);
+}
+.round-tooltip .tooltip-score.tooltip-goal-yellow {
+  color: rgb(223, 153, 37);
+}
+.round-tooltip .tooltip-score.tooltip-goal-red {
+  color: rgb(190, 30, 26);
+}
+.round-tooltip .tooltip-score.tooltip-goal-green {
+  color: rgb(78, 114, 32);
 }
 
 @keyframes grow-then-shrink-animation {
@@ -585,12 +605,10 @@ html {
   width: 160px;
   height: 160px;
   border-radius: 6px;
-  box-shadow: 0 0 8px 1px black;
+  box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.7);
   display: inline-block;
-  filter: grayscale(0.8);
 }
 #goals #goals-wrapper .nml-goal.nml-active-goal {
-  filter: none;
   box-shadow: 0 0 8px 1px greenyellow;
 }
 

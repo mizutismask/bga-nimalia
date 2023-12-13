@@ -2431,6 +2431,24 @@ var Nimalia = /** @class */ (function () {
             _this.addTooltipHtml(divId, _this.getGoalTooltip(g));
         });
         this.activateGoals(this.gamedatas.round.goals);
+        var clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)');
+        var counterClockwiseMsg = _('You draft your remaining cards to the previous player (counterclockwise)');
+        var tooltip = "";
+        tooltip += this.createRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', "green"], [_('blue'), _('green')]);
+        tooltip += this.createRoundTooltip(_('Round 2'), counterClockwiseMsg, ['green', "yellow"], [_('green'), _('yellow')]);
+        tooltip += this.createRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', "red"], [_('blue'), _('red')]);
+        tooltip += this.createRoundTooltip(_('Round 4'), counterClockwiseMsg, ['green', 'yellow', "red"], [_('green'), _('yellow'), _('red')]);
+        tooltip += this.createRoundTooltip(_('Round 5'), clockwiseMsg, ['blue', 'red', "yellow"], [_('blue'), _('red'), _('yellow')]);
+        this.addTooltipHtml('round', tooltip);
+    };
+    Nimalia.prototype.createRoundTooltip = function (round, draftingText, colorNames, colorsTranslated) {
+        var list = "";
+        for (var i = 0; i < colorNames.length; i++) {
+            var colorName = colorNames[i];
+            var colorTranslated = colorsTranslated[i];
+            list += "<li><span class=\"tooltip-score tooltip-goal-".concat(colorName, "\">").concat(colorTranslated, "</span> </li>");
+        }
+        return "\n\t\t\t<h1>".concat(round, "</h1>\n\t\t\t<p>").concat(draftingText, "</p>\n\t\t\t<p>").concat(_('You’ll score points for goals:'), "\n\t\t\t\t<ul>\n\t\t\t\t").concat(list, "\n\t\t\t\t<ul>\n\t\t\t</p>\n\t\t");
     };
     Nimalia.prototype.getGoalTooltip = function (card) {
         var tooltip = "\n\t\t\t<div class=\"nml-goal-tooltip\">\n\t\t\t\t".concat(GOALS_DESC[card.id - 1], "\n\t\t    </div>");
