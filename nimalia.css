@@ -284,10 +284,10 @@
   grid-column: 2 !important;
   z-index: 1;
   justify-self: end;
-  color: #cdcec9;
+  color: #016f99;
 }
 .show-player-tableau a {
-  color: #cdcec9;
+  color: #016f99;
 }
 .show-player-tableau svg {
   height: 100%;
@@ -302,7 +302,7 @@
   margin-top: -40px;
 }
 .anchor-up a {
-  color: #cdcec9;
+  color: #016f99;
 }
 .anchor-up svg {
   height: 100%;
@@ -396,6 +396,7 @@
 
 .round-tooltip h1 {
   font-size: 1.5em;
+  color: #016f99;
 }
 .round-tooltip .tooltip-score {
   font-weight: bold;
@@ -604,14 +605,14 @@ html {
 .css-icon {
   width: 25px;
   height: 25px;
-  background-color: white;
+  background-color: #dce5eb;
   border-radius: 50%;
   text-align: center;
   font-weight: bolder;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  color: rgb(21, 104, 134);
+  color: #016f99;
   cursor: pointer;
   pointer-events: auto;
 }
@@ -679,7 +680,7 @@ html {
 }
 
 .nml-round {
-  width: 2.2em;
-  height: 2.2em;
-  font-size: large;
+  width: 1.3em;
+  height: 1.3em;
+  font-size: xx-large;
 }
