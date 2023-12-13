@@ -925,7 +925,6 @@ class Nimalia implements NimaliaGame {
 		this.gamedatas.turnOrderClockwise = args.clockwise
 		$('roundNumberIcon').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
 		$('roundNumberIcon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
-		$('roundNumberIcon').innerHTML = args.round
 	
 		removeClass("active-round");
 		dojo.query(`.pie:nth-child(${args.round})`).addClass("active-round")
