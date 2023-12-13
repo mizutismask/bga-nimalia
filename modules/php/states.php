@@ -47,7 +47,7 @@ trait StateTrait {
         foreach ($playersIds as $playerId) {
             $this->pickInitialCards($playerId);
         }
-        self::notifyAllPlayers('newRound', "", $this->getRoundArgs());
+        self::notifyAllPlayers('newRound', clienttranslate('Round ${round}'), $this->getRoundArgs());
 
         $this->gamestate->nextState('');
     }

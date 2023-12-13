@@ -194,8 +194,9 @@ trait BiomesCardTrait {
     public function draftCards() {
         $this->biomesCards->moveAllCardsInLocationKeepOrder('nextchoice', 'hand');
         $players = $this->loadPlayersBasicInfos();
+        //Remaining cards are drafted
         foreach ($players as $playerId => $player) {
-            self::notifyPlayer($playerId, 'cardsMove', _("Remaining cards are drafted"), ["playerId" => $playerId, "added" => $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId))]);;
+            self::notifyPlayer($playerId, 'cardsMove', "", ["playerId" => $playerId, "added" => $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId))]);;
         }
     }
 }
