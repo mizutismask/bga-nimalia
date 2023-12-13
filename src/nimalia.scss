@@ -7,6 +7,11 @@ $player-colors: (
 	'purple': '982fff'
 );
 
+$goal-blue-color: rgb(0, 125, 165);
+$goal-red-color: rgb(190, 30, 26);
+$goal-yellow-color: rgb(223, 153, 37);
+$goal-green-color: rgb(78, 114, 32);
+
 @import 'playerboards';
 @import 'game-steps/game-steps';
 @import 'bga-hacks/bga-hacks';

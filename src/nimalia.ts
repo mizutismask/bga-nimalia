@@ -115,21 +115,35 @@ class Nimalia implements NimaliaGame {
 
 		const clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)')
 		const counterClockwiseMsg = _('You draft your remaining cards to the previous player (counterclockwise)')
-		let tooltip=""
-		tooltip+= this.getRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', "green"], [_('blue'),_('green')])
-		tooltip+=this.getRoundTooltip(_('Round 2'), counterClockwiseMsg, ['green', "yellow"], [_('green'),_('yellow')])
-		tooltip+=this.getRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', "red"], [_('blue'),_('red')])
-		tooltip+=this.getRoundTooltip(_('Round 4'), counterClockwiseMsg, ['green','yellow', "red"], [_('green'),_('yellow'),_('red')])
-		tooltip+=this.getRoundTooltip(_('Round 5'), clockwiseMsg, ['blue', 'red', "yellow"], [_('blue'), _('red'), _('yellow')])
-		
-		; (this as any).addTooltipHtml('round', tooltip)
+		let tooltip = ''
+		tooltip += this.getRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', 'green'], [_('blue'), _('green')])
+		tooltip += this.getRoundTooltip(
+			_('Round 2'),
+			counterClockwiseMsg,
+			['green', 'yellow'],
+			[_('green'), _('yellow')]
+		)
+		tooltip += this.getRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', 'red'], [_('blue'), _('red')])
+		tooltip += this.getRoundTooltip(
+			_('Round 4'),
+			counterClockwiseMsg,
+			['green', 'yellow', 'red'],
+			[_('green'), _('yellow'), _('red')]
+		)
+		tooltip += this.getRoundTooltip(
+			_('Round 5'),
+			clockwiseMsg,
+			['blue', 'red', 'yellow'],
+			[_('blue'), _('red'), _('yellow')]
+		)
+		;(this as any).addTooltipHtml('round', tooltip)
 	}
 
 	getRoundTooltip(round: string, draftingText: string, colorNames: Array<string>, colorsTranslated: Array<string>) {
-		let list = ""
+		let list = ''
 		for (let i = 0; i < colorNames.length; i++) {
-			const colorName = colorNames[i];
-			const colorTranslated = colorsTranslated[i];
+			const colorName = colorNames[i]
+			const colorTranslated = colorsTranslated[i]
 			list += `<span class="tooltip-score tooltip-goal-${colorName}">${colorTranslated}</span> `
 		}
 		return `
@@ -232,6 +246,19 @@ class Nimalia implements NimaliaGame {
             </div>
             `,
 				`additional-icons-${player.id}`
+			)
+		}
+
+		if (this.getPlayerId() === playerId) {
+			//add goals pies
+			dojo.place(
+				`<div class="pie pie-2-sections round-1" title="${_("Goals for round 1")}"><div></div></div>
+				<div class="pie pie-2-sections round-2" title="${_("Goals for round 2")}"><div></div></div>
+				<div class="pie pie-2-sections round-3" title="${_("Goals for round 3")}"><div></div></div>
+				<div class="pie pie-3-sections round-4" title="${_("Goals for round 4")}"><div></div><div></div></div>
+				<div class="pie pie-3-sections round-5" title="${_("Goals for round 5")}"><div></div><div></div></div>`,
+				`additional-icons-${player.id}`,
+				`last`
 			)
 		}
 	}
@@ -900,6 +927,10 @@ class Nimalia implements NimaliaGame {
 		$('round').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
 		$('round').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
 		$('round').innerHTML = args.round
+	
+		removeClass("active-round");
+		dojo.query(`.pie:nth-child(${args.round})`).addClass("active-round")
+
 		this.updateTurnOrder(this.getCurrentPlayer())
 		this.setupPlayerOrderHints(this.getCurrentPlayer())
 		this.activateGoals(args.goals)
