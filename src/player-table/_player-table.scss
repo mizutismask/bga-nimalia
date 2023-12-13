@@ -76,6 +76,12 @@
 			position: absolute;
 			transform-style: preserve-3d;
 			z-index: 101;
+			cursor: pointer;
+			box-shadow: 0 0 10px 7px white;
+
+			&:hover{
+				scale: 1.2;
+			}
 
 			&.nml-rotate-left {
 				left: 2%;
