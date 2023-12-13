@@ -3283,7 +3283,7 @@ var PlayerTable = /** @class */ (function () {
         this.game = game;
         var isMyTable = player.id === game.getCurrentPlayer().id;
         var ownClass = isMyTable ? 'own' : '';
-        var html = "\n\t\t\t<a id=\"anchor-player-".concat(player.id, "\"></a>\n\t\t\t<span class=\"nml-player-name\">").concat(player.name, "</span>\n            <div id=\"player-table-").concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n            </div>\n        ");
+        var html = "\n\t\t\t<div id=\"player-table-".concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n\t\t\t\t<a id=\"anchor-player-").concat(player.id, "\"></a>\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n\t\t\t\t<div class=\"nml-player-name\">").concat(player.name, "</div>\n            </div>\n        ");
         dojo.place(html, 'player-tables');
         this.setupReserve(player);
         if (isMyTable) {

@@ -4,12 +4,24 @@
 	justify-content: center;
 
 	.player-table {
-		display: flex;
+		display: grid;
 		z-index: 25; // so new animations are over the map
 		gap: 10px;
 		margin: 10px;
+		grid-template-columns: 1fr 1fr;
+		width: min-content;
 
+		.nml-player-hand{
+			grid-column: 1;
+			grid-row: 1;
+		}
+		.nml-player-name{
+			grid-column: 2;
+			grid-row: 2;
+		}
 		.nml-reserve {
+			grid-column: 2;
+			grid-row: 1;
 			display: grid;
 			grid-template-columns: repeat(6, 1fr);
 			grid-template-rows: repeat(6, 1fr);
@@ -53,7 +65,7 @@
 			z-index: 100;
 			width: 100%;
 			left: 0px;
-			color: #1f273b;
+			color: white;
 			font-weight: bold;
 			text-align: center;
 		}

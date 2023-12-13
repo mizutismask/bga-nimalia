@@ -9,10 +9,10 @@ class PlayerTable {
 		const isMyTable = player.id === game.getCurrentPlayer().id
 		const ownClass = isMyTable ? 'own' : ''
 		let html = `
-			<a id="anchor-player-${player.id}"></a>
-			<span class="nml-player-name">${player.name}</span>
-            <div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${ownClass}">
+			<div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${ownClass}">
+				<a id="anchor-player-${player.id}"></a>
                 <div id="reserve-${player.id}" class="nml-reserve"></div>
+				<div class="nml-player-name">${player.name}</div>
             </div>
         `
 		dojo.place(html, 'player-tables')
