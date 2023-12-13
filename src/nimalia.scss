@@ -99,12 +99,12 @@ html {
 	align-items: center;
 	gap: 10px;
     flex-wrap: wrap;
+    justify-content: center;
 
 	#goals-wrapper {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 10px;
-		justify-content: center;
 
 		.nml-goal {
 			width: 160px;

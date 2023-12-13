@@ -230,7 +230,9 @@ class Nimalia implements NimaliaGame {
 				`last`
 			)
 			dojo.place(
-				`<span id="roundNumberIcon" class="nml-round css-icon fa fa6 fa6-rotate-right"></span>`,
+				`<span id="round-number-icon" class="nml-round css-icon fa fa6 fa6-rotate-right"></span>
+				-> <span id="draft-recipient" title="${_( 'This round, you give your cards to this player')}"></span>
+				`,
 				`additional-icons-${player.id}-0`,
 				`last`
 			)
@@ -259,7 +261,7 @@ class Nimalia implements NimaliaGame {
 			['blue', 'red', 'yellow'],
 			[_('blue'), _('red'), _('yellow')]
 		)
-		;(this as any).addTooltipHtml('roundNumberIcon', tooltip)
+		;(this as any).addTooltipHtml('round-number-icon', tooltip)
 	}
 
 	public setupPlayerOrderHints(player: NimaliaPlayer) {
@@ -278,7 +280,15 @@ class Nimalia implements NimaliaGame {
 		const nextId = this.gamedatas.turnOrderClockwise ? surroundingPlayers[1] : surroundingPlayers[0]
 		$('previous-player-draft').innerHTML = previousId
 		$('next-player-draft').innerHTML = nextId
+		$('draft-recipient').innerHTML = this.getPlayerName(nextId)
 	}
+
+	
+public getPlayerName(playerId: string | number) {
+	console.log("this.gamedatas.players",this.gamedatas.players);
+	
+	return this.gamedatas.players[playerId].name
+}
 
 	public updatePlayerHint(
 		currentPlayer: NimaliaPlayer,
@@ -923,8 +933,8 @@ class Nimalia implements NimaliaGame {
 
 	updateRound(args: NewRoundArgs) {
 		this.gamedatas.turnOrderClockwise = args.clockwise
-		$('roundNumberIcon').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
-		$('roundNumberIcon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
+		$('round-number-icon').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
+		$('round-number-icon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
 	
 		removeClass("active-round");
 		dojo.query(`.pie:nth-child(${args.round})`).addClass("active-round")
