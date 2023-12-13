@@ -3,6 +3,7 @@
 	background: url('img/playerboard-background-bottom.jpg');
 	background-position: bottom;
 	background-size: cover;
+    background-color: #008abe;
 
 	@each $name, $color in $player-colors {
 		&[data-player-color='#{$color}']::before {

@@ -20,9 +20,11 @@ $goal-green-color: rgb(78, 114, 32);
 @import 'settings';
 
 html {
-	background: rgb(21, 104, 134);
-	background-repeat: no-repeat;
-	background-size: 100%;
+	background-image: url("img/background.jpg");
+	background-attachment: fixed;
+	background-position: 50%;
+	background-size: cover;
+
 }
 
 .stockitem {

@@ -3,6 +3,7 @@
   background: url("img/playerboard-background-bottom.jpg");
   background-position: bottom;
   background-size: cover;
+  background-color: #008abe;
 }
 .player-board[data-player-color=ff0000]::before {
   content: "";
@@ -432,6 +433,7 @@
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(6, 1fr);
   grid-gap: 0px;
+  background-color: #008abe;
 }
 .player-table .nml-reserve .nml-square {
   width: 100px;
@@ -584,9 +586,10 @@
 }
 
 html {
-  background: rgb(21, 104, 134);
-  background-repeat: no-repeat;
-  background-size: 100%;
+  background-image: url("img/background.jpg");
+  background-attachment: fixed;
+  background-position: 50%;
+  background-size: cover;
 }
 
 .stockitem {
