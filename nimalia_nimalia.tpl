@@ -16,7 +16,6 @@
 </div>
 
 <div id="goals">
-    <span id="round" class="nml-round css-icon fa fa6 fa6-rotate-right"></span>
     <div id="goals-wrapper"></div>
 </div>
 

@@ -112,31 +112,6 @@ class Nimalia implements NimaliaGame {
 			;(this as any).addTooltipHtml(divId, this.getGoalTooltip(g))
 		})
 		this.activateGoals(this.gamedatas.round.goals)
-
-		const clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)')
-		const counterClockwiseMsg = _('You draft your remaining cards to the previous player (counterclockwise)')
-		let tooltip = ''
-		tooltip += this.getRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', 'green'], [_('blue'), _('green')])
-		tooltip += this.getRoundTooltip(
-			_('Round 2'),
-			counterClockwiseMsg,
-			['green', 'yellow'],
-			[_('green'), _('yellow')]
-		)
-		tooltip += this.getRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', 'red'], [_('blue'), _('red')])
-		tooltip += this.getRoundTooltip(
-			_('Round 4'),
-			counterClockwiseMsg,
-			['green', 'yellow', 'red'],
-			[_('green'), _('yellow'), _('red')]
-		)
-		tooltip += this.getRoundTooltip(
-			_('Round 5'),
-			clockwiseMsg,
-			['blue', 'red', 'yellow'],
-			[_('blue'), _('red'), _('yellow')]
-		)
-		;(this as any).addTooltipHtml('round', tooltip)
 	}
 
 	getRoundTooltip(round: string, draftingText: string, colorNames: Array<string>, colorsTranslated: Array<string>) {
@@ -193,16 +168,10 @@ class Nimalia implements NimaliaGame {
 	private setupMiniPlayerBoard(player: NimaliaPlayer) {
 		const playerId = Number(player.id)
 		dojo.place(
-			`<div class="counters">
-                    <div id="tickets-counter-${player.id}-wrapper" class="counter tickets-counter">
-                        <div class="icon expTicket"></div> 
-                        <span id="tickets-counter-${player.id}"></span>
-                    </div>
-                
-                    <div id="revealed-tokens-back-counter-${player.id}-wrapper" class="counter revealed-tokens-back-counter">
-                        <div class="icon token" data-player-color="${player.color}"></div> 
-                        <span id="revealed-tokens-back-counter-${player.id}"></span> / 4
-                    </div>
+			`
+				<div class="counters"></div>
+				<div id="additional-info-${player.id}-0" class="counters additional-info">
+					<div id="additional-icons-${player.id}-0" class="additional-icons"></div> 
 				</div>
 				<div id="additional-info-${player.id}" class="counters additional-info">
 					<div id="additional-icons-${player.id}" class="additional-icons"></div> 
@@ -260,7 +229,37 @@ class Nimalia implements NimaliaGame {
 				`additional-icons-${player.id}`,
 				`last`
 			)
+			dojo.place(
+				`<span id="roundNumberIcon" class="nml-round css-icon fa fa6 fa6-rotate-right"></span>`,
+				`additional-icons-${player.id}-0`,
+				`last`
+			)
 		}
+
+		const clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)')
+		const counterClockwiseMsg = _('You draft your remaining cards to the previous player (counterclockwise)')
+		let tooltip = ''
+		tooltip += this.getRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', 'green'], [_('blue'), _('green')])
+		tooltip += this.getRoundTooltip(
+			_('Round 2'),
+			counterClockwiseMsg,
+			['green', 'yellow'],
+			[_('green'), _('yellow')]
+		)
+		tooltip += this.getRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', 'red'], [_('blue'), _('red')])
+		tooltip += this.getRoundTooltip(
+			_('Round 4'),
+			counterClockwiseMsg,
+			['green', 'yellow', 'red'],
+			[_('green'), _('yellow'), _('red')]
+		)
+		tooltip += this.getRoundTooltip(
+			_('Round 5'),
+			clockwiseMsg,
+			['blue', 'red', 'yellow'],
+			[_('blue'), _('red'), _('yellow')]
+		)
+		;(this as any).addTooltipHtml('roundNumberIcon', tooltip)
 	}
 
 	public setupPlayerOrderHints(player: NimaliaPlayer) {
@@ -924,9 +923,9 @@ class Nimalia implements NimaliaGame {
 
 	updateRound(args: NewRoundArgs) {
 		this.gamedatas.turnOrderClockwise = args.clockwise
-		$('round').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
-		$('round').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
-		$('round').innerHTML = args.round
+		$('roundNumberIcon').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
+		$('roundNumberIcon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
+		$('roundNumberIcon').innerHTML = args.round
 	
 		removeClass("active-round");
 		dojo.query(`.pie:nth-child(${args.round})`).addClass("active-round")

@@ -2431,15 +2431,6 @@ var Nimalia = /** @class */ (function () {
             _this.addTooltipHtml(divId, _this.getGoalTooltip(g));
         });
         this.activateGoals(this.gamedatas.round.goals);
-        var clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)');
-        var counterClockwiseMsg = _('You draft your remaining cards to the previous player (counterclockwise)');
-        var tooltip = '';
-        tooltip += this.getRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', 'green'], [_('blue'), _('green')]);
-        tooltip += this.getRoundTooltip(_('Round 2'), counterClockwiseMsg, ['green', 'yellow'], [_('green'), _('yellow')]);
-        tooltip += this.getRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', 'red'], [_('blue'), _('red')]);
-        tooltip += this.getRoundTooltip(_('Round 4'), counterClockwiseMsg, ['green', 'yellow', 'red'], [_('green'), _('yellow'), _('red')]);
-        tooltip += this.getRoundTooltip(_('Round 5'), clockwiseMsg, ['blue', 'red', 'yellow'], [_('blue'), _('red'), _('yellow')]);
-        this.addTooltipHtml('round', tooltip);
     };
     Nimalia.prototype.getRoundTooltip = function (round, draftingText, colorNames, colorsTranslated) {
         var list = '';
@@ -2478,7 +2469,7 @@ var Nimalia = /** @class */ (function () {
     };
     Nimalia.prototype.setupMiniPlayerBoard = function (player) {
         var playerId = Number(player.id);
-        dojo.place("<div class=\"counters\">\n                    <div id=\"tickets-counter-".concat(player.id, "-wrapper\" class=\"counter tickets-counter\">\n                        <div class=\"icon expTicket\"></div> \n                        <span id=\"tickets-counter-").concat(player.id, "\"></span>\n                    </div>\n                \n                    <div id=\"revealed-tokens-back-counter-").concat(player.id, "-wrapper\" class=\"counter revealed-tokens-back-counter\">\n                        <div class=\"icon token\" data-player-color=\"").concat(player.color, "\"></div> \n                        <span id=\"revealed-tokens-back-counter-").concat(player.id, "\"></span> / 4\n                    </div>\n\t\t\t\t</div>\n\t\t\t\t<div id=\"additional-info-").concat(player.id, "\" class=\"counters additional-info\">\n\t\t\t\t\t<div id=\"additional-icons-").concat(player.id, "\" class=\"additional-icons\"></div> \n\t\t\t\t</div>\n\t\t\t\t"), "player_board_".concat(player.id));
+        dojo.place("\n\t\t\t\t<div class=\"counters\"></div>\n\t\t\t\t<div id=\"additional-info-".concat(player.id, "-0\" class=\"counters additional-info\">\n\t\t\t\t\t<div id=\"additional-icons-").concat(player.id, "-0\" class=\"additional-icons\"></div> \n\t\t\t\t</div>\n\t\t\t\t<div id=\"additional-info-").concat(player.id, "\" class=\"counters additional-info\">\n\t\t\t\t\t<div id=\"additional-icons-").concat(player.id, "\" class=\"additional-icons\"></div> \n\t\t\t\t</div>\n\t\t\t\t"), "player_board_".concat(player.id));
         /* const revealedTokensBackCounter = new ebg.counter();
             revealedTokensBackCounter.create(`revealed-tokens-back-counter-${player.id}`);
             revealedTokensBackCounter.setValue(player.revealedTokensBackCount);
@@ -2502,7 +2493,17 @@ var Nimalia = /** @class */ (function () {
         if (this.getPlayerId() === playerId) {
             //add goals pies
             dojo.place("<div class=\"pie pie-2-sections round-1\" title=\"".concat(_("Goals for round 1"), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-2-sections round-2\" title=\"").concat(_("Goals for round 2"), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-2-sections round-3\" title=\"").concat(_("Goals for round 3"), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-3-sections round-4\" title=\"").concat(_("Goals for round 4"), "\"><div></div><div></div></div>\n\t\t\t\t<div class=\"pie pie-3-sections round-5\" title=\"").concat(_("Goals for round 5"), "\"><div></div><div></div></div>"), "additional-icons-".concat(player.id), "last");
+            dojo.place("<span id=\"roundNumberIcon\" class=\"nml-round css-icon fa fa6 fa6-rotate-right\"></span>", "additional-icons-".concat(player.id, "-0"), "last");
         }
+        var clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)');
+        var counterClockwiseMsg = _('You draft your remaining cards to the previous player (counterclockwise)');
+        var tooltip = '';
+        tooltip += this.getRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', 'green'], [_('blue'), _('green')]);
+        tooltip += this.getRoundTooltip(_('Round 2'), counterClockwiseMsg, ['green', 'yellow'], [_('green'), _('yellow')]);
+        tooltip += this.getRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', 'red'], [_('blue'), _('red')]);
+        tooltip += this.getRoundTooltip(_('Round 4'), counterClockwiseMsg, ['green', 'yellow', 'red'], [_('green'), _('yellow'), _('red')]);
+        tooltip += this.getRoundTooltip(_('Round 5'), clockwiseMsg, ['blue', 'red', 'yellow'], [_('blue'), _('red'), _('yellow')]);
+        this.addTooltipHtml('roundNumberIcon', tooltip);
     };
     Nimalia.prototype.setupPlayerOrderHints = function (player) {
         var nameDiv = document.querySelector('#player_name_' + player.id + ' a');
@@ -3028,9 +3029,9 @@ var Nimalia = /** @class */ (function () {
     };
     Nimalia.prototype.updateRound = function (args) {
         this.gamedatas.turnOrderClockwise = args.clockwise;
-        $('round').classList.remove('fa6-rotate-right', 'fa6-rotate-left');
-        $('round').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left');
-        $('round').innerHTML = args.round;
+        $('roundNumberIcon').classList.remove('fa6-rotate-right', 'fa6-rotate-left');
+        $('roundNumberIcon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left');
+        $('roundNumberIcon').innerHTML = args.round;
         removeClass("active-round");
         dojo.query(".pie:nth-child(".concat(args.round, ")")).addClass("active-round");
         this.updateTurnOrder(this.getCurrentPlayer());
