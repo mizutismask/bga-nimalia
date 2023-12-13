@@ -112,34 +112,34 @@ class Nimalia implements NimaliaGame {
 			;(this as any).addTooltipHtml(divId, this.getGoalTooltip(g))
 		})
 		this.activateGoals(this.gamedatas.round.goals)
-		
+
 		const clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)')
 		const counterClockwiseMsg = _('You draft your remaining cards to the previous player (counterclockwise)')
 		let tooltip=""
-		tooltip+= this.createRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', "green"], [_('blue'),_('green')])
-		tooltip+=this.createRoundTooltip(_('Round 2'), counterClockwiseMsg, ['green', "yellow"], [_('green'),_('yellow')])
-		tooltip+=this.createRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', "red"], [_('blue'),_('red')])
-		tooltip+=this.createRoundTooltip(_('Round 4'), counterClockwiseMsg, ['green','yellow', "red"], [_('green'),_('yellow'),_('red')])
-		tooltip+=this.createRoundTooltip(_('Round 5'), clockwiseMsg, ['blue', 'red', "yellow"], [_('blue'), _('red'), _('yellow')])
+		tooltip+= this.getRoundTooltip(_('Round 1'), clockwiseMsg, ['blue', "green"], [_('blue'),_('green')])
+		tooltip+=this.getRoundTooltip(_('Round 2'), counterClockwiseMsg, ['green', "yellow"], [_('green'),_('yellow')])
+		tooltip+=this.getRoundTooltip(_('Round 3'), clockwiseMsg, ['blue', "red"], [_('blue'),_('red')])
+		tooltip+=this.getRoundTooltip(_('Round 4'), counterClockwiseMsg, ['green','yellow', "red"], [_('green'),_('yellow'),_('red')])
+		tooltip+=this.getRoundTooltip(_('Round 5'), clockwiseMsg, ['blue', 'red', "yellow"], [_('blue'), _('red'), _('yellow')])
 		
 		; (this as any).addTooltipHtml('round', tooltip)
 	}
 
-	createRoundTooltip(round: string, draftingText: string, colorNames: Array<string>, colorsTranslated: Array<string>) {
+	getRoundTooltip(round: string, draftingText: string, colorNames: Array<string>, colorsTranslated: Array<string>) {
 		let list = ""
 		for (let i = 0; i < colorNames.length; i++) {
 			const colorName = colorNames[i];
 			const colorTranslated = colorsTranslated[i];
-			list += `<li><span class="tooltip-score tooltip-goal-${colorName}">${colorTranslated}</span> </li>`
+			list += `<span class="tooltip-score tooltip-goal-${colorName}">${colorTranslated}</span> `
 		}
 		return `
-			<h1>${round}</h1>
-			<p>${draftingText}</p>
-			<p>${_('You’ll score points for goals:')}
-				<ul>
-				${list}
-				<ul>
-			</p>
+			<div class="round-tooltip">
+				<h1>${round}</h1>
+				<p>${draftingText}</p>
+				<p>${_('You’ll score points for goals:')}
+					${list}
+				</p>
+			</div>
 		`
 	}
 
