@@ -1,80 +1,88 @@
-.player-table {
+#player-tables {
 	display: flex;
-	z-index: 25; // so new animations are over the map
+	flex-wrap: wrap;
+	justify-content: center;
 
-	.nml-reserve {
-		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		grid-template-rows: repeat(6, 1fr);
-		grid-gap: 0px;
-		background-color: #008abe;
+	.player-table {
+		display: flex;
+		z-index: 25; // so new animations are over the map
+		gap: 10px;
+		margin: 10px;
 
-		.nml-square {
-			width: 100px;
-			height: 100px;
-			border: 1px inset lightblue;
-			box-sizing: border-box;
+		.nml-reserve {
 			display: grid;
+			grid-template-columns: repeat(6, 1fr);
+			grid-template-rows: repeat(6, 1fr);
+			grid-gap: 0px;
+			background-color: #008abe;
 
-			> .nimalia-card{
-				grid-row: 1;
-				grid-column: 1;
+			.nml-square {
+				width: 100px;
+				height: 100px;
+				border: 1px inset lightblue;
+				box-sizing: border-box;
+				display: grid;
+
+				> .nimalia-card {
+					grid-row: 1;
+					grid-column: 1;
+				}
+
+				.nimalia-card:not(.local-change) {
+					pointer-events: none;
+				}
 			}
 
-			.nimalia-card:not(.local-change) {
-				pointer-events: none;
+			@for $i from 1 through 3 {
+				.nml-card-order-#{$i} {
+					z-index: $i;
+				}
+			}
+
+			.nml-card-order-100 {
+				z-index: 100;
+			}
+
+			.last-move {
+				box-shadow: 0 0 8px 1px greenyellow;
 			}
 		}
 
-		@for $i from 1 through 3 {
-			.nml-card-order-#{$i} {
-				z-index: $i;
-			}
-		}
-
-		.nml-card-order-100 {
+		.nml-player-name {
+			bottom: 8px;
 			z-index: 100;
+			width: 100%;
+			left: 0px;
+			color: #1f273b;
+			font-weight: bold;
+			text-align: center;
 		}
 
-		.last-move{
-			box-shadow: 0 0 8px 1px greenyellow;
-		}
-	}
+		.nml-rotate {
+			color: #5b1a3d;
+			top: 50%;
+			position: absolute;
+			transform-style: preserve-3d;
+			z-index: 101;
 
-	.nml-player-name {
-		bottom: 8px;
-		z-index: 100;
-		width: 100%;
-		left: 0px;
-		color: #1f273b;
-		font-weight: bold;
-		text-align: center;
-	}
+			&.nml-rotate-left {
+				left: 2%;
+			}
+			&.nml-rotate-right {
+				right: 2%;
+			}
+		}
 
-	.nml-rotate {
-		color: #5b1a3d;
-		top: 50%;
-		position: absolute;
-		transform-style: preserve-3d;
-		z-index: 101;
-
-		&.nml-rotate-left {
-			left: 2%;
-		}
-		&.nml-rotate-right {
-			right: 2%;
-		}
-	}
-
-	.front {
-		&[data-rotation='90'] {
-			rotate: 90deg;
-		}
-		&[data-rotation='180'] {
-			rotate: 180deg;
-		}
-		&[data-rotation='270'] {
-			rotate: 270deg;
+		.front {
+			&[data-rotation='90'] {
+				rotate: 90deg;
+			}
+			&[data-rotation='180'] {
+				rotate: 180deg;
+			}
+			&[data-rotation='270'] {
+				rotate: 270deg;
+			}
 		}
 	}
 }

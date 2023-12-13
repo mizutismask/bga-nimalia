@@ -429,47 +429,54 @@
     transform: scale(1);
   }
 }
-.player-table {
+#player-tables {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+#player-tables .player-table {
   display: flex;
   z-index: 25;
+  gap: 10px;
+  margin: 10px;
 }
-.player-table .nml-reserve {
+#player-tables .player-table .nml-reserve {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(6, 1fr);
   grid-gap: 0px;
   background-color: #008abe;
 }
-.player-table .nml-reserve .nml-square {
+#player-tables .player-table .nml-reserve .nml-square {
   width: 100px;
   height: 100px;
   border: 1px inset lightblue;
   box-sizing: border-box;
   display: grid;
 }
-.player-table .nml-reserve .nml-square > .nimalia-card {
+#player-tables .player-table .nml-reserve .nml-square > .nimalia-card {
   grid-row: 1;
   grid-column: 1;
 }
-.player-table .nml-reserve .nml-square .nimalia-card:not(.local-change) {
+#player-tables .player-table .nml-reserve .nml-square .nimalia-card:not(.local-change) {
   pointer-events: none;
 }
-.player-table .nml-reserve .nml-card-order-1 {
+#player-tables .player-table .nml-reserve .nml-card-order-1 {
   z-index: 1;
 }
-.player-table .nml-reserve .nml-card-order-2 {
+#player-tables .player-table .nml-reserve .nml-card-order-2 {
   z-index: 2;
 }
-.player-table .nml-reserve .nml-card-order-3 {
+#player-tables .player-table .nml-reserve .nml-card-order-3 {
   z-index: 3;
 }
-.player-table .nml-reserve .nml-card-order-100 {
+#player-tables .player-table .nml-reserve .nml-card-order-100 {
   z-index: 100;
 }
-.player-table .nml-reserve .last-move {
+#player-tables .player-table .nml-reserve .last-move {
   box-shadow: 0 0 8px 1px greenyellow;
 }
-.player-table .nml-player-name {
+#player-tables .player-table .nml-player-name {
   bottom: 8px;
   z-index: 100;
   width: 100%;
@@ -478,26 +485,26 @@
   font-weight: bold;
   text-align: center;
 }
-.player-table .nml-rotate {
+#player-tables .player-table .nml-rotate {
   color: #5b1a3d;
   top: 50%;
   position: absolute;
   transform-style: preserve-3d;
   z-index: 101;
 }
-.player-table .nml-rotate.nml-rotate-left {
+#player-tables .player-table .nml-rotate.nml-rotate-left {
   left: 2%;
 }
-.player-table .nml-rotate.nml-rotate-right {
+#player-tables .player-table .nml-rotate.nml-rotate-right {
   right: 2%;
 }
-.player-table .front[data-rotation="90"] {
+#player-tables .player-table .front[data-rotation="90"] {
   rotate: 90deg;
 }
-.player-table .front[data-rotation="180"] {
+#player-tables .player-table .front[data-rotation="180"] {
   rotate: 180deg;
 }
-.player-table .front[data-rotation="270"] {
+#player-tables .player-table .front[data-rotation="270"] {
   rotate: 270deg;
 }
 
