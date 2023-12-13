@@ -103,12 +103,10 @@ html {
 			width: 160px;
 			height: 160px;
 			border-radius: 6px;
-			box-shadow: 0 0 8px 1px black;
+			box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.7);
 			display: inline-block;
-			filter: grayscale(0.8);
 
 			&.nml-active-goal {
-				filter: none;
 				box-shadow: 0 0 8px 1px greenyellow;
 			}
 		}
