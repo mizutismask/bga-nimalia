@@ -133,7 +133,7 @@ class Nimalia extends Table {
 
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_is_multiactive multiactive FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
@@ -152,7 +152,7 @@ class Nimalia extends Table {
         foreach ($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
             $result['grids'][$playerId] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid$playerId", null, "card_order_in_grid"));
-            if ($stateName === "placeCard" && !$player["multiactive"] && $currentPlayerId != $playerId) {
+            if ($stateName === "placeCard" && $currentPlayerId != $playerId) {
                 //do not show unrevealed last card
                 $result['grids'][$playerId] = array_filter($result['grids'][$playerId], fn ($card) => $card->id != $this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD));
             }
