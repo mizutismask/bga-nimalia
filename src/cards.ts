@@ -43,10 +43,12 @@ class CardsManager extends CardManager<NimaliaCard> {
 		cardDiv.appendChild(rotate)
 
 		dojo.connect(rotate, 'click', this, (evt) => {
-			const frontDiv = document.querySelector(`#${cardDiv.id} .front`) as HTMLElement
-			const rotation =
-				(parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360
-			frontDiv.dataset.rotation = rotation.toString()
+			if ((this.game as any).isCurrentPlayerActive()) {
+				const frontDiv = document.querySelector(`#${cardDiv.id} .front`) as HTMLElement
+				const rotation =
+					(parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360
+				frontDiv.dataset.rotation = rotation.toString()
+			}
 		})
 	}
 

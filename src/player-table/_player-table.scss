@@ -19,6 +19,12 @@
 	}
 }
 
+.current_player_is_active{
+	.nml-rotate {
+		display: block !important;
+	}
+}
+
 #player-tables {
 	display: flex;
 	flex-wrap: wrap;
@@ -94,6 +100,7 @@
 		}
 
 		.nml-rotate {
+			display: none;
 			color: #5b1a3d;
 			top: 50%;
 			position: absolute;
