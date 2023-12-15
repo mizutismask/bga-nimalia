@@ -446,6 +446,10 @@
     grid-row: 3 !important;
   }
 }
+.current_player_is_active .nml-rotate {
+  display: block !important;
+}
+
 #player-tables {
   display: flex;
   flex-wrap: wrap;
@@ -501,6 +505,42 @@
 #player-tables .player-table .nml-reserve .nml-card-order-3 {
   z-index: 3;
 }
+#player-tables .player-table .nml-reserve .nml-card-order-4 {
+  z-index: 4;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-5 {
+  z-index: 5;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-6 {
+  z-index: 6;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-7 {
+  z-index: 7;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-8 {
+  z-index: 8;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-9 {
+  z-index: 9;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-10 {
+  z-index: 10;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-11 {
+  z-index: 11;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-12 {
+  z-index: 12;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-13 {
+  z-index: 13;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-14 {
+  z-index: 14;
+}
+#player-tables .player-table .nml-reserve .nml-card-order-15 {
+  z-index: 15;
+}
 #player-tables .player-table .nml-reserve .nml-card-order-100 {
   z-index: 100;
 }
@@ -517,6 +557,7 @@
   text-align: center;
 }
 #player-tables .player-table .nml-rotate {
+  display: none;
   color: #5b1a3d;
   top: 50%;
   position: absolute;

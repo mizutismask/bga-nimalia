@@ -25,8 +25,6 @@ class ScoreBoard {
             `,
 				headers
 			)
-			console.log('parentNode', headers.parentNode)
-			console.log('parentElement', headers.parentElement)
 			dojo.place(
 				`
                 <thead>

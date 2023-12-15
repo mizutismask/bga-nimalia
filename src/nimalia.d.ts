@@ -65,6 +65,7 @@ interface NimaliaGame extends Game {
 	animationManager: AnimationManager
 	getCurrentPlayer(): NimaliaPlayer
 	clientActionData: ClientActionData
+	resetClientActionData():void
 	getPlayerId(): number
 	getPlayerScore(playerId: number): number
 	setTooltip(id: string, html: string): void
@@ -82,7 +83,9 @@ interface EnteringPlaceCardArgs {
 interface CardsMoveArgs {
 	playerId: number
 	added?: Array<NimaliaCard>//to hand
-	playedCard?:NimaliaCard
+	playedCard?: NimaliaCard
+	fromUndo?: boolean
+	undoneCard?:NimaliaCard
 }
 
 interface NewRoundArgs{

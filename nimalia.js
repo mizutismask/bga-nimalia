@@ -2289,6 +2289,7 @@ var CardsManager = /** @class */ (function (_super) {
                 /*div.style.width = '200px';
                 div.style.height = '200px';
                 */
+                div.classList.add('nml-card-order-100');
                 _this.addRotateButton(card, div, 'left');
                 _this.addRotateButton(card, div, 'right');
             },
@@ -2297,7 +2298,6 @@ var CardsManager = /** @class */ (function (_super) {
                 _this.setFrontBackground(div, card.type_arg);
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
-                div.classList.add('nml-card-order-100');
                 div.dataset.rotation = '0';
             },
             setupBackDiv: function (card, div) {
@@ -2308,14 +2308,17 @@ var CardsManager = /** @class */ (function (_super) {
         return _this;
     }
     CardsManager.prototype.addRotateButton = function (card, cardDiv, direction) {
+        var _this = this;
         var rotate = document.createElement('div');
         rotate.id = "".concat(_super.prototype.getId.call(this, card), "-rotate-").concat(direction);
         rotate.classList.add('fa', 'fa-solid', "fa-rotate-".concat(direction), "nml-rotate-".concat(direction), 'nml-rotate', 'fa6-2xl');
         cardDiv.appendChild(rotate);
         dojo.connect(rotate, 'click', this, function (evt) {
-            var frontDiv = document.querySelector("#".concat(cardDiv.id, " .front"));
-            var rotation = (parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360;
-            frontDiv.dataset.rotation = rotation.toString();
+            if (_this.game.isCurrentPlayerActive()) {
+                var frontDiv = document.querySelector("#".concat(cardDiv.id, " .front"));
+                var rotation = (parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360;
+                frontDiv.dataset.rotation = rotation.toString();
+            }
         });
     };
     CardsManager.prototype.getCardName = function (cardTypeId) {
@@ -2492,7 +2495,7 @@ var Nimalia = /** @class */ (function () {
         }
         if (this.getPlayerId() === playerId) {
             //add goals pies
-            dojo.place("<div class=\"pie pie-2-sections round-1\" title=\"".concat(_("Goals for round 1"), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-2-sections round-2\" title=\"").concat(_("Goals for round 2"), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-2-sections round-3\" title=\"").concat(_("Goals for round 3"), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-3-sections round-4\" title=\"").concat(_("Goals for round 4"), "\"><div></div><div></div></div>\n\t\t\t\t<div class=\"pie pie-3-sections round-5\" title=\"").concat(_("Goals for round 5"), "\"><div></div><div></div></div>"), "additional-icons-".concat(player.id), "last");
+            dojo.place("<div class=\"pie pie-2-sections round-1\" title=\"".concat(_('Goals for round 1'), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-2-sections round-2\" title=\"").concat(_('Goals for round 2'), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-2-sections round-3\" title=\"").concat(_('Goals for round 3'), "\"><div></div></div>\n\t\t\t\t<div class=\"pie pie-3-sections round-4\" title=\"").concat(_('Goals for round 4'), "\"><div></div><div></div></div>\n\t\t\t\t<div class=\"pie pie-3-sections round-5\" title=\"").concat(_('Goals for round 5'), "\"><div></div><div></div></div>"), "additional-icons-".concat(player.id), "last");
             dojo.place("<span id=\"round-number-icon\" class=\"nml-round css-icon fa fa6 fa6-rotate-right\"></span>\n\t\t\t\t-> <span id=\"draft-recipient\" title=\"".concat(_('This round, you give your cards to this player'), "\"></span>\n\t\t\t\t"), "additional-icons-".concat(player.id, "-0"), "last");
         }
         var clockwiseMsg = _('You draft your remaining cards to the next player (clockwise)');
@@ -2519,7 +2522,6 @@ var Nimalia = /** @class */ (function () {
         $('draft-recipient').innerHTML = this.getPlayerName(nextId);
     };
     Nimalia.prototype.getPlayerName = function (playerId) {
-        console.log("this.gamedatas.players", this.gamedatas.players);
         return this.gamedatas.players[playerId].name;
     };
     Nimalia.prototype.updatePlayerHint = function (currentPlayer, otherPlayerId, divSuffix, titlePrefix, content, parentDivId, location) {
@@ -2569,13 +2571,16 @@ var Nimalia = /** @class */ (function () {
             this.addArrowsToActivePlayer(args);
         }
     };
-    Nimalia.prototype.onEnteringPlaceCard = function (args) {
+    Nimalia.prototype.resetClientActionData = function () {
         this.clientActionData = {
             placedCardId: undefined,
             destinationSquare: undefined,
             previousCardParentInHand: undefined
         };
-        dojo.query('.nml-square[droppable=true]').removeClass('dropzone');
+    };
+    Nimalia.prototype.onEnteringPlaceCard = function (args) {
+        this.resetClientActionData();
+        removeClass('dropzone');
         if (args.possibleSquares[this.getCurrentPlayer().id]) {
             args.possibleSquares[this.getCurrentPlayer().id].forEach(function (droppable) {
                 dojo.addClass(droppable, 'dropzone');
@@ -2979,10 +2984,18 @@ var Nimalia = /** @class */ (function () {
     };
     Nimalia.prototype.cancelPlaceCard = function () {
         //this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
-        this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId));
-        console.log('grid', this.gamedatas.grids[this.getCurrentPlayer().id]);
-        this.playerTables[this.getCurrentPlayer().id].displayGrid(this.getCurrentPlayer(), this.gamedatas.grids[this.getCurrentPlayer().id]);
-        dojo.toggleClass('cancel-button', 'disabled', true);
+        //this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId))
+        //console.log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
+        /*this.playerTables[this.getCurrentPlayer().id].displayGrid(
+            this.getCurrentPlayer(),
+            this.gamedatas.grids[this.getCurrentPlayer().id]
+        )*/
+        var canceled = this.playerTables[this.getCurrentPlayer().id].cancelLocalMove();
+        this.resetClientActionData();
+        if ($('cancel-button')) {
+            dojo.toggleClass('cancel-button', 'disabled', true);
+        }
+        return canceled;
     };
     Nimalia.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -3033,8 +3046,8 @@ var Nimalia = /** @class */ (function () {
         this.gamedatas.turnOrderClockwise = args.clockwise;
         $('round-number-icon').classList.remove('fa6-rotate-right', 'fa6-rotate-left');
         $('round-number-icon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left');
-        removeClass("active-round");
-        dojo.query(".pie:nth-child(".concat(args.round, ")")).addClass("active-round");
+        removeClass('active-round');
+        dojo.query(".pie:nth-child(".concat(args.round, ")")).addClass('active-round');
         this.updateTurnOrder(this.getCurrentPlayer());
         this.setupPlayerOrderHints(this.getCurrentPlayer());
         this.activateGoals(args.goals);
@@ -3044,6 +3057,11 @@ var Nimalia = /** @class */ (function () {
         activeGoals.forEach(function (g) { return dojo.query("#goal_".concat(g.id)).addClass('nml-active-goal'); });
     };
     Nimalia.prototype.notif_cardsMove = function (notif) {
+        //important order !
+        if (notif.args.undoneCard)
+            this.playerTables[notif.args.playerId].removeCardFromGrid(notif.args.undoneCard);
+        if (notif.args.playerId == this.getPlayerId() && !notif.args.playedCard)
+            this.cancelPlaceCard();
         if (notif.args.added)
             this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added);
         if (notif.args.playedCard) {
@@ -3217,8 +3235,6 @@ var ScoreBoard = /** @class */ (function () {
         var headers = document.getElementById('scoretr');
         if (!headers.childElementCount) {
             dojo.place("\n                <th> </th>\n                <th colspan=\"3\">".concat(_('Round 1'), "</th>\n                <th colspan=\"3\">").concat(_('Round 2'), "</th>\n                <th colspan=\"3\">").concat(_('Round 3'), "</th>\n                <th colspan=\"4\">").concat(_('Round 4'), "</th>\n                <th colspan=\"4\">").concat(_('Round 5'), "</th>\n                <th id=\"th-total-score\" class=\"\">").concat(_('Total'), "</th>\n            "), headers);
-            console.log('parentNode', headers.parentNode);
-            console.log('parentElement', headers.parentElement);
             dojo.place("\n                <thead>\n                    <th> </th>\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"></th>\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"></th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-green\" class=\"score-goal score-goal-green\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n\n                    <th id=\"th-score-goal-blue\" class=\"score-goal score-goal-blue\"> </th>\n                    <th id=\"th-score-goal-red\" class=\"score-goal score-goal-red\"> </th>\n                    <th id=\"th-score-goal-yellow\" class=\"score-goal score-goal-yellow\"> </th>\n                    <th id=\"th-round-score\" class=\"\">\u2211</th>\n                <thead/>\n            ", headers.parentElement, 'after');
         }
         players.forEach(function (player) {
@@ -3296,7 +3312,7 @@ var PlayerTable = /** @class */ (function () {
         var smallWidth = window.matchMedia('(max-width: 830px)').matches;
         var baseSettings = {
             center: true,
-            gap: '10px',
+            gap: '10px'
         };
         if (smallWidth) {
             baseSettings['direction'] = 'row';
@@ -3337,18 +3353,15 @@ var PlayerTable = /** @class */ (function () {
         }, "square-".concat(playerId, "-").concat(card.location_arg));
         return divId;
     };
+    PlayerTable.prototype.removeCardFromGrid = function (card) {
+        $(this.game.cardsManager.getId(card)).remove();
+    };
     PlayerTable.prototype.replaceCardsInHand = function (cards) {
         var _this = this;
-        console.log('add cards', cards);
-        this.restoreMovedCardIntoHand();
+        console.log('replaceCardsInHand', cards);
         this.handStock.removeAll();
         this.handStock.addCards(cards);
-        cards.forEach(function (c) {
-            var cardId = _this.game.cardsManager.getId(c);
-            dojo.attr(cardId, 'draggable', true);
-            dojo.connect($(cardId), 'dragstart', _this, dojo.hitch(_this, _this.onCardDragStart));
-            dojo.connect($(cardId), 'touchmove', _this, dojo.hitch(_this, _this.onCardDragStart));
-        });
+        cards.forEach(function (c) { return _this.setupCardInHand(c); });
         /*this.handStock.addCards([{
             "id": 20,
             "location": "hand",
@@ -3358,6 +3371,18 @@ var PlayerTable = /** @class */ (function () {
             order:1,
             rotation:1,
         }])*/
+    };
+    PlayerTable.prototype.addCardsInHand = function (cards) {
+        var _this = this;
+        console.log('add cards', cards);
+        this.handStock.addCards(cards);
+        cards.forEach(function (c) { return _this.setupCardInHand(c); });
+    };
+    PlayerTable.prototype.setupCardInHand = function (c) {
+        var cardId = this.game.cardsManager.getId(c);
+        dojo.attr(cardId, 'draggable', true);
+        dojo.connect($(cardId), 'dragstart', this, dojo.hitch(this, this.onCardDragStart));
+        dojo.connect($(cardId), 'touchmove', this, dojo.hitch(this, this.onCardDragStart));
     };
     PlayerTable.prototype.onCardDragStart = function (evt) {
         var _a;
@@ -3404,30 +3429,40 @@ var PlayerTable = /** @class */ (function () {
         }
     };
     PlayerTable.prototype.showMove = function (playerId, playedCard) {
-        var _this = this;
         var myOwnMove = playerId == this.game.getPlayerId();
-        //console.log('show move', playerId, playedCard, myOwnMove)
+        console.log('show move', playerId, playedCard, myOwnMove);
         if (!myOwnMove) {
             var id = this.createCardInGrid(playerId, playedCard);
             removeClass('last-move');
             $(id).classList.add('last-move');
         }
         else {
-            //console.log('this.game.clientActionData', this.game.clientActionData)
+            console.log('this.game.clientActionData', this.game.clientActionData);
             if (this.game.clientActionData.previousCardParentInHand) {
-                this.restoreMovedCardIntoHand();
-                this.handStock.removeCard(this.handStock
-                    .getCards()
-                    .filter(function (c) { return c.id == _this.game.getPart(_this.game.clientActionData.placedCardId, -1); })[0]);
+                this.cancelLocalMove();
+                this.removeCardFromHand(playedCard.id);
+                console.log('createCardInGrid', playedCard);
                 this.createCardInGrid(playerId, playedCard);
+                this.game.resetClientActionData();
             }
         }
     };
-    PlayerTable.prototype.restoreMovedCardIntoHand = function () {
-        var _a;
-        if ((_a = this.game.clientActionData) === null || _a === void 0 ? void 0 : _a.previousCardParentInHand) {
+    PlayerTable.prototype.removeCardFromHand = function (placedCardId) {
+        this.handStock.removeCard(this.handStock.getCards().filter(function (c) { return c.id == placedCardId; })[0]);
+    };
+    /*private removeCardFromHand(placedCardId: string) {
+        this.handStock.removeCard(
+            this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(placedCardId, -1))[0]
+        )
+    }*/
+    PlayerTable.prototype.cancelLocalMove = function () {
+        var _a, _b, _c;
+        if (((_a = this.game.clientActionData) === null || _a === void 0 ? void 0 : _a.placedCardId) && $(this.game.clientActionData.placedCardId) && ((_b = this.game.clientActionData) === null || _b === void 0 ? void 0 : _b.previousCardParentInHand)) {
+            console.log('restore', this.game.clientActionData.placedCardId, 'inside', (_c = this.game.clientActionData) === null || _c === void 0 ? void 0 : _c.previousCardParentInHand.id);
             this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId));
+            return true;
         }
+        return false;
     };
     return PlayerTable;
 }());

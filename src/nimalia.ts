@@ -221,17 +221,17 @@ class Nimalia implements NimaliaGame {
 		if (this.getPlayerId() === playerId) {
 			//add goals pies
 			dojo.place(
-				`<div class="pie pie-2-sections round-1" title="${_("Goals for round 1")}"><div></div></div>
-				<div class="pie pie-2-sections round-2" title="${_("Goals for round 2")}"><div></div></div>
-				<div class="pie pie-2-sections round-3" title="${_("Goals for round 3")}"><div></div></div>
-				<div class="pie pie-3-sections round-4" title="${_("Goals for round 4")}"><div></div><div></div></div>
-				<div class="pie pie-3-sections round-5" title="${_("Goals for round 5")}"><div></div><div></div></div>`,
+				`<div class="pie pie-2-sections round-1" title="${_('Goals for round 1')}"><div></div></div>
+				<div class="pie pie-2-sections round-2" title="${_('Goals for round 2')}"><div></div></div>
+				<div class="pie pie-2-sections round-3" title="${_('Goals for round 3')}"><div></div></div>
+				<div class="pie pie-3-sections round-4" title="${_('Goals for round 4')}"><div></div><div></div></div>
+				<div class="pie pie-3-sections round-5" title="${_('Goals for round 5')}"><div></div><div></div></div>`,
 				`additional-icons-${player.id}`,
 				`last`
 			)
 			dojo.place(
 				`<span id="round-number-icon" class="nml-round css-icon fa fa6 fa6-rotate-right"></span>
-				-> <span id="draft-recipient" title="${_( 'This round, you give your cards to this player')}"></span>
+				-> <span id="draft-recipient" title="${_('This round, you give your cards to this player')}"></span>
 				`,
 				`additional-icons-${player.id}-0`,
 				`last`
@@ -280,12 +280,9 @@ class Nimalia implements NimaliaGame {
 		$('draft-recipient').innerHTML = this.getPlayerName(nextId)
 	}
 
-	
-public getPlayerName(playerId: string | number) {
-	console.log("this.gamedatas.players",this.gamedatas.players);
-	
-	return this.gamedatas.players[playerId].name
-}
+	public getPlayerName(playerId: string | number) {
+		return this.gamedatas.players[playerId].name
+	}
 
 	public updatePlayerHint(
 		currentPlayer: NimaliaPlayer,
@@ -352,13 +349,17 @@ public getPlayerName(playerId: string | number) {
 		}
 	}
 
-	private onEnteringPlaceCard(args: EnteringPlaceCardArgs) {
+	public resetClientActionData() {
 		this.clientActionData = {
 			placedCardId: undefined,
 			destinationSquare: undefined,
 			previousCardParentInHand: undefined
 		}
-		dojo.query('.nml-square[droppable=true]').removeClass('dropzone')
+	}
+
+	private onEnteringPlaceCard(args: EnteringPlaceCardArgs) {
+		this.resetClientActionData()
+		removeClass('dropzone')
 		if (args.possibleSquares[this.getCurrentPlayer().id]) {
 			args.possibleSquares[this.getCurrentPlayer().id].forEach((droppable) => {
 				dojo.addClass(droppable, 'dropzone')
@@ -867,13 +868,18 @@ public getPlayerName(playerId: string | number) {
 
 	public cancelPlaceCard() {
 		//this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
-		this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId))
-		console.log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
-		this.playerTables[this.getCurrentPlayer().id].displayGrid(
+		//this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId))
+		//console.log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
+		/*this.playerTables[this.getCurrentPlayer().id].displayGrid(
 			this.getCurrentPlayer(),
 			this.gamedatas.grids[this.getCurrentPlayer().id]
-		)
-		dojo.toggleClass('cancel-button', 'disabled', true)
+		)*/
+		const canceled = this.playerTables[this.getCurrentPlayer().id].cancelLocalMove()
+		this.resetClientActionData()
+		if ($('cancel-button')) {
+			dojo.toggleClass('cancel-button', 'disabled', true)
+		}
+		return canceled
 	}
 
 	public takeAction(action: string, data?: any) {
@@ -932,9 +938,9 @@ public getPlayerName(playerId: string | number) {
 		this.gamedatas.turnOrderClockwise = args.clockwise
 		$('round-number-icon').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
 		$('round-number-icon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
-	
-		removeClass("active-round");
-		dojo.query(`.pie:nth-child(${args.round})`).addClass("active-round")
+
+		removeClass('active-round')
+		dojo.query(`.pie:nth-child(${args.round})`).addClass('active-round')
 
 		this.updateTurnOrder(this.getCurrentPlayer())
 		this.setupPlayerOrderHints(this.getCurrentPlayer())
@@ -947,6 +953,9 @@ public getPlayerName(playerId: string | number) {
 	}
 
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
+		//important order !
+		if (notif.args.undoneCard)this.playerTables[notif.args.playerId].removeCardFromGrid(notif.args.undoneCard)
+		if (notif.args.playerId == this.getPlayerId() && !notif.args.playedCard) this.cancelPlaceCard()
 		if (notif.args.added) this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added)
 		if (notif.args.playedCard) {
 			this.playerTables[notif.args.playerId].showMove(notif.args.playerId, notif.args.playedCard)

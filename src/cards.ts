@@ -12,6 +12,7 @@ class CardsManager extends CardManager<NimaliaCard> {
 				/*div.style.width = '200px';
                 div.style.height = '200px';
                 */
+			   	div.classList.add('nml-card-order-100')
 				this.addRotateButton(card, div as HTMLDivElement, 'left')
 				this.addRotateButton(card, div as HTMLDivElement, 'right')
 			},
@@ -20,7 +21,6 @@ class CardsManager extends CardManager<NimaliaCard> {
 				this.setFrontBackground(div as HTMLDivElement, card.type_arg)
 				//this.setDivAsCard(div as HTMLDivElement, card.type);
 				div.id = `${super.getId(card)}-front`
-				div.classList.add('nml-card-order-100')
 				div.dataset.rotation = '0'
 			},
 			setupBackDiv: (card: NimaliaCard, div: HTMLElement) => {

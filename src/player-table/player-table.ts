@@ -31,14 +31,14 @@ class PlayerTable {
 		const smallWidth = window.matchMedia('(max-width: 830px)').matches
 		var baseSettings = {
 			center: true,
-			gap: '10px',
+			gap: '10px'
 		}
 		if (smallWidth) {
 			baseSettings['direction'] = 'row' as 'row'
-			baseSettings['wrap']= 'nowrap' as 'nowrap'
+			baseSettings['wrap'] = 'nowrap' as 'nowrap'
 		} else {
 			baseSettings['direction'] = 'col' as 'col'
-			baseSettings['wrap']= 'wrap' as 'wrap'
+			baseSettings['wrap'] = 'wrap' as 'wrap'
 		}
 
 		//console.log('smallWidth', smallWidth, baseSettings)
@@ -85,17 +85,15 @@ class PlayerTable {
 		return divId
 	}
 
+	public removeCardFromGrid(card: NimaliaCard) {
+		$(this.game.cardsManager.getId(card)).remove()
+	}
+
 	public replaceCardsInHand(cards: Array<NimaliaCard>) {
-		console.log('add cards', cards)
-		this.restoreMovedCardIntoHand()
+		console.log('replaceCardsInHand', cards)
 		this.handStock.removeAll()
 		this.handStock.addCards(cards)
-		cards.forEach((c) => {
-			const cardId = this.game.cardsManager.getId(c)
-			dojo.attr(cardId, 'draggable', true)
-			dojo.connect($(cardId), 'dragstart', this, dojo.hitch(this, this.onCardDragStart))
-			dojo.connect($(cardId), 'touchmove', this, dojo.hitch(this, this.onCardDragStart))
-		})
+		cards.forEach((c) => this.setupCardInHand(c))
 		/*this.handStock.addCards([{
 			"id": 20,
 			"location": "hand",
@@ -105,6 +103,18 @@ class PlayerTable {
 			order:1,
 			rotation:1,
 		}])*/
+	}
+	public addCardsInHand(cards: Array<NimaliaCard>) {
+		console.log('add cards', cards)
+		this.handStock.addCards(cards)
+		cards.forEach((c) => this.setupCardInHand(c))
+	}
+
+	private setupCardInHand(c: NimaliaCard) {
+		const cardId = this.game.cardsManager.getId(c)
+		dojo.attr(cardId, 'draggable', true)
+		dojo.connect($(cardId), 'dragstart', this, dojo.hitch(this, this.onCardDragStart))
+		dojo.connect($(cardId), 'touchmove', this, dojo.hitch(this, this.onCardDragStart))
 	}
 
 	private onCardDragStart(evt) {
@@ -154,31 +164,46 @@ class PlayerTable {
 
 	public showMove(playerId: number, playedCard: NimaliaCard) {
 		const myOwnMove = playerId == this.game.getPlayerId()
-		//console.log('show move', playerId, playedCard, myOwnMove)
+		console.log('show move', playerId, playedCard, myOwnMove)
 
 		if (!myOwnMove) {
 			const id = this.createCardInGrid(playerId, playedCard)
 			removeClass('last-move')
 			$(id).classList.add('last-move')
 		} else {
-			//console.log('this.game.clientActionData', this.game.clientActionData)
+			console.log('this.game.clientActionData', this.game.clientActionData)
 			if (this.game.clientActionData.previousCardParentInHand) {
-				this.restoreMovedCardIntoHand()
-				this.handStock.removeCard(
-					this.handStock
-						.getCards()
-						.filter(
-							(c) => c.id == (this.game as any).getPart(this.game.clientActionData.placedCardId, -1)
-						)[0]
-				)
+				this.cancelLocalMove()
+				this.removeCardFromHand(playedCard.id)
+				console.log('createCardInGrid', playedCard)
 				this.createCardInGrid(playerId, playedCard)
+				this.game.resetClientActionData()
 			}
 		}
 	}
 
-	public restoreMovedCardIntoHand() {
-		if (this.game.clientActionData?.previousCardParentInHand) {
+	private removeCardFromHand(placedCardId: number) {
+		this.handStock.removeCard(this.handStock.getCards().filter((c) => c.id == placedCardId)[0])
+	}
+
+	/*private removeCardFromHand(placedCardId: string) {
+		this.handStock.removeCard(
+			this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(placedCardId, -1))[0]
+		)
+	}*/
+
+	public cancelLocalMove() {
+		if (this.game.clientActionData?.placedCardId && $(this.game.clientActionData.placedCardId) && this.game.clientActionData?.previousCardParentInHand) {
+			console.log(
+				'restore',
+				this.game.clientActionData.placedCardId,
+				'inside',
+				this.game.clientActionData?.previousCardParentInHand.id,
+
+			)
 			this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId))
+			return true
 		}
+		return false
 	}
 }
