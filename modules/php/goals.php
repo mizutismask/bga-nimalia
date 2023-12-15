@@ -19,29 +19,61 @@ trait GoalTrait {
     }
 
     /** Returns only goals that applies to the current round. */
-    public function getRoundGoals($round=null) {
-        if(!$round){
+    public function getRoundGoals($round = null) {
+        if (!$round) {
             $round = intval(self::getGameStateValue(ROUND));
         }
         $goals = $this->getGlobalVariable("GOALS", true);
         switch ($round) {
             case 1:
-                return array_map(fn ($o) => Goal̤::getCastedGoal($o), array_values(array_filter($goals, fn ($g) => $g["color"] == GOAL_BLUE || $g["color"] == GOAL_GREEN)));
+                return $this->filterColorGoals($goals, [GOAL_BLUE, GOAL_GREEN], "round1GoalComparator");
             case 2:
-                return array_map(fn ($o) => Goal̤::getCastedGoal($o), array_values(array_filter($goals, fn ($g) => $g["color"] == GOAL_YELLOW || $g["color"] == GOAL_GREEN)));
+                return $this->filterColorGoals($goals, [GOAL_YELLOW, GOAL_GREEN], "round2GoalComparator");
             case 3:
-                return array_map(fn ($o) => Goal̤::getCastedGoal($o), array_values(array_filter($goals, fn ($g) => $g["color"] == GOAL_BLUE || $g["color"] == GOAL_RED)));
+                return $this->filterColorGoals($goals, [GOAL_BLUE, GOAL_RED], "round3GoalComparator");
             case 4:
-                return array_map(fn ($o) => Goal̤::getCastedGoal($o), array_values(array_filter($goals, fn ($g) => $g["color"] == GOAL_GREEN || $g["color"] == GOAL_YELLOW || $g["color"] == GOAL_RED)));
+                return $this->filterColorGoals($goals, [GOAL_GREEN, GOAL_YELLOW, GOAL_RED], "round4GoalComparator");
             case 5:
-                return array_map(fn ($o) => Goal̤::getCastedGoal($o), array_values(array_filter($goals, fn ($g) => $g["color"] == GOAL_BLUE || $g["color"] == GOAL_YELLOW || $g["color"] == GOAL_RED)));
+                return $this->filterColorGoals($goals, [GOAL_BLUE, GOAL_YELLOW, GOAL_RED], "round5GoalComparator");
 
             default:
                 throw new BgaVisibleSystemException("this round is never supposed to happen : " . $round);
         }
     }
 
-    public function getGameGoals(){
+    function round1GoalComparator($goal1, $goal2) {
+        return $this->compareGoals($goal1, $goal2, [GOAL_BLUE, GOAL_GREEN]);
+    }
+
+    function round2GoalComparator($goal1, $goal2) {
+        return $this->compareGoals($goal1, $goal2, [GOAL_GREEN, GOAL_YELLOW]);
+    }
+
+    function round3GoalComparator($goal1, $goal2) {
+        return $this->compareGoals($goal1, $goal2, [GOAL_BLUE, GOAL_RED]);
+    }
+
+    function round4GoalComparator($goal1, $goal2) {
+        return $this->compareGoals($goal1, $goal2, [GOAL_GREEN, GOAL_YELLOW, GOAL_RED]);
+    }
+
+    function round5GoalComparator($goal1, $goal2) {
+        return $this->compareGoals($goal1, $goal2, [GOAL_BLUE, GOAL_RED, GOAL_YELLOW]);
+    }
+
+    function compareGoals($goal1, $goal2, $expectedOrder) {
+        $colorIndex1 = array_search($goal1->color, $expectedOrder);
+        $colorIndex2 = array_search($goal2->color, $expectedOrder);
+        return $colorIndex1 - $colorIndex2;
+    }
+
+    private function filterColorGoals(array $goals, array $colors, $roundGoalComparator) {
+        $goals = array_map(fn ($o) => Goal̤::getCastedGoal($o), array_values(array_filter($goals, fn ($g) => in_array($g["color"], $colors))));
+        usort($goals, array($this, $roundGoalComparator));
+        return $goals;
+    }
+
+    public function getGameGoals() {
         $goals = $this->getGlobalVariable("GOALS", true);
         return array_map(fn ($g) => Goal̤::getCastedGoal($g), $goals);
     }
