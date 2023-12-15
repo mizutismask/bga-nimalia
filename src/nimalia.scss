@@ -86,6 +86,14 @@ html {
 	}
 }
 
+.bga-cards_selected-card:not(.bga-cards_disabled-card) {
+	box-shadow: 0 0 5px 3px greenyellow;
+
+	.card-side {
+		box-shadow: unset;
+	}
+} 
+
 /*.round-wrapper{
     position: relative;
 

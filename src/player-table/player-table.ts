@@ -59,7 +59,7 @@ class PlayerTable {
 			)
 			dojo.connect($(squareId), 'drop', this, dojo.hitch(this, this.onCardDrop))
 			dojo.connect($(squareId), 'dragover', this, dojo.hitch(this, this.onCardDropOver))
-			dojo.connect($(squareId), 'touchend', this, dojo.hitch(this, this.onCardDropOver))
+			dojo.connect($(squareId), 'click', this, dojo.hitch(this, this.onSquareClick))
 		}
 	}
 
@@ -118,7 +118,7 @@ class PlayerTable {
 	}
 
 	private onCardDragStart(evt) {
-		if (!(this.game as any).isCurrentPlayerActive()) {
+		if (!(this.game as any).isCurrentPlayerActive() || this.game.clientActionData.placedCardId) {
 			evt.dataTransfer.clearData()
 			evt.preventDefault()
 			evt.stopPropagation()
@@ -137,6 +137,19 @@ class PlayerTable {
 		evt.stopPropagation()
 		const cardId = evt.dataTransfer.getData('text/plain')
 		const square = (evt.target as HTMLElement).closest('.nml-square')
+		this.moveCardToGrid(cardId, square)
+	}
+
+	private onSquareClick( evt:MouseEvent) {
+		if (!(this.game as any).isCurrentPlayerActive() || this.game.clientActionData.placedCardId || this.handStock.getSelection().length!==1) {
+			evt.preventDefault()
+			evt.stopPropagation()
+			return
+		}
+		this.moveCardToGrid(this.game.cardsManager.getId(this.handStock.getSelection()[0]), evt.target)
+	}
+
+	private moveCardToGrid(cardId: string, square) {
 		console.log('drop', cardId, 'to', square.id)
 		if (cardId && square) {
 			this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement
@@ -145,11 +158,12 @@ class PlayerTable {
 			/*this.handStock.removeCard(
 				this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
 			)*/
+			this.game.clientActionData.destinationSquare = square.id
+			this.game.clientActionData.placedCardId = cardId
+			this.handStock.setSelectableCards([])//disables all cards
 		}
 		dojo.toggleClass('place-card-button', 'disabled', !cardId || !square)
 		dojo.toggleClass('cancel-button', 'disabled', !cardId || !square)
-		this.game.clientActionData.destinationSquare = square.id
-		this.game.clientActionData.placedCardId = cardId
 	}
 
 	private onCardDropOver(evt) {
@@ -193,6 +207,7 @@ class PlayerTable {
 	}*/
 
 	public cancelLocalMove() {
+		this.handStock.setSelectableCards(this.handStock.getCards())
 		if (this.game.clientActionData?.placedCardId && $(this.game.clientActionData.placedCardId) && this.game.clientActionData?.previousCardParentInHand) {
 			console.log(
 				'restore',

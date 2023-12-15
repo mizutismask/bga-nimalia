@@ -20,8 +20,11 @@
 }
 
 .current_player_is_active{
-	.nml-rotate {
-		display: block !important;
+
+	.nimalia-card:not(.bga-cards_disabled-card){
+		.nml-rotate {
+			display: block !important;
+		}
 	}
 }
 
@@ -98,6 +101,10 @@
 			font-weight: bold;
 			text-align: center;
 		}
+
+		/*.bga-cards_disabled-card{
+			:not(.bga-cards_disabled-card){
+		}*/
 
 		.nml-rotate {
 			display: none;

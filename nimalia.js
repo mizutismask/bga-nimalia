@@ -2315,6 +2315,7 @@ var CardsManager = /** @class */ (function (_super) {
         cardDiv.appendChild(rotate);
         dojo.connect(rotate, 'click', this, function (evt) {
             if (_this.game.isCurrentPlayerActive()) {
+                evt.stopPropagation();
                 var frontDiv = document.querySelector("#".concat(cardDiv.id, " .front"));
                 var rotation = (parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360;
                 frontDiv.dataset.rotation = rotation.toString();
@@ -3333,7 +3334,7 @@ var PlayerTable = /** @class */ (function () {
             dojo.place("\n            <div id=\"".concat(squareId, "\" class=\"nml-square\">\n            "), divId);
             dojo.connect($(squareId), 'drop', this, dojo.hitch(this, this.onCardDrop));
             dojo.connect($(squareId), 'dragover', this, dojo.hitch(this, this.onCardDropOver));
-            dojo.connect($(squareId), 'touchend', this, dojo.hitch(this, this.onCardDropOver));
+            dojo.connect($(squareId), 'click', this, dojo.hitch(this, this.onSquareClick));
         }
     };
     PlayerTable.prototype.displayGrid = function (player, cards) {
@@ -3386,7 +3387,7 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.onCardDragStart = function (evt) {
         var _a;
-        if (!this.game.isCurrentPlayerActive()) {
+        if (!this.game.isCurrentPlayerActive() || this.game.clientActionData.placedCardId) {
             evt.dataTransfer.clearData();
             evt.preventDefault();
             evt.stopPropagation();
@@ -3404,6 +3405,17 @@ var PlayerTable = /** @class */ (function () {
         evt.stopPropagation();
         var cardId = evt.dataTransfer.getData('text/plain');
         var square = evt.target.closest('.nml-square');
+        this.moveCardToGrid(cardId, square);
+    };
+    PlayerTable.prototype.onSquareClick = function (evt) {
+        if (!this.game.isCurrentPlayerActive() || this.game.clientActionData.placedCardId || this.handStock.getSelection().length !== 1) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            return;
+        }
+        this.moveCardToGrid(this.game.cardsManager.getId(this.handStock.getSelection()[0]), evt.target);
+    };
+    PlayerTable.prototype.moveCardToGrid = function (cardId, square) {
         console.log('drop', cardId, 'to', square.id);
         if (cardId && square) {
             this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement;
@@ -3412,11 +3424,12 @@ var PlayerTable = /** @class */ (function () {
             /*this.handStock.removeCard(
                 this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
             )*/
+            this.game.clientActionData.destinationSquare = square.id;
+            this.game.clientActionData.placedCardId = cardId;
+            this.handStock.setSelectableCards([]); //disables all cards
         }
         dojo.toggleClass('place-card-button', 'disabled', !cardId || !square);
         dojo.toggleClass('cancel-button', 'disabled', !cardId || !square);
-        this.game.clientActionData.destinationSquare = square.id;
-        this.game.clientActionData.placedCardId = cardId;
     };
     PlayerTable.prototype.onCardDropOver = function (evt) {
         evt.preventDefault();
@@ -3457,6 +3470,7 @@ var PlayerTable = /** @class */ (function () {
     }*/
     PlayerTable.prototype.cancelLocalMove = function () {
         var _a, _b, _c;
+        this.handStock.setSelectableCards(this.handStock.getCards());
         if (((_a = this.game.clientActionData) === null || _a === void 0 ? void 0 : _a.placedCardId) && $(this.game.clientActionData.placedCardId) && ((_b = this.game.clientActionData) === null || _b === void 0 ? void 0 : _b.previousCardParentInHand)) {
             console.log('restore', this.game.clientActionData.placedCardId, 'inside', (_c = this.game.clientActionData) === null || _c === void 0 ? void 0 : _c.previousCardParentInHand.id);
             this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId));
