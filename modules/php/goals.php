@@ -3,14 +3,18 @@
 require_once(__DIR__ . '/objects/Goal.php');
 trait GoalTrait {
 
-    /** Choose the goals used for the entire game, at the beginning of it, according to level options. */
+    /** 
+     * Choose the goals used for the entire game, at the beginning of it, according to level options. 
+     * Easy includes easy and medium cards. 
+     * Difficult includes medium and difficult cards
+     */
     public function selectGoals() {
         $goals = [];
         foreach (GOAL_COLORS as $color) {
             $matchingGoals = array_values(array_filter($this->GOALS, fn ($g) => $g->color === $color));
             $level  = intval($this->getGameStateValue(GOAL_LEVEL));
             if ($level != LEVEL_RANDOM) {
-                $matchingGoals = array_values(array_filter($matchingGoals, fn ($g) => $g->level === $level));
+                $matchingGoals = array_values(array_filter($matchingGoals, fn ($g) => $g->level === $level || $g->level === $level + 1));
             }
             $randIndex = bga_rand(0, count($matchingGoals) - 1);
             $goals[] = $matchingGoals[$randIndex];
