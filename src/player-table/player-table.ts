@@ -57,9 +57,11 @@ class PlayerTable {
             `,
 				divId
 			)
-			dojo.connect($(squareId), 'drop', this, dojo.hitch(this, this.onCardDrop))
-			dojo.connect($(squareId), 'dragover', this, dojo.hitch(this, this.onCardDropOver))
-			dojo.connect($(squareId), 'click', this, dojo.hitch(this, this.onSquareClick))
+			if (parseInt(player.id) === this.game.getPlayerId()) {
+				dojo.connect($(squareId), 'drop', this, dojo.hitch(this, this.onCardDrop))
+				dojo.connect($(squareId), 'dragover', this, dojo.hitch(this, this.onCardDropOver))
+				dojo.connect($(squareId), 'click', this, dojo.hitch(this, this.onSquareClick))
+			}
 		}
 	}
 
@@ -140,8 +142,12 @@ class PlayerTable {
 		this.moveCardToGrid(cardId, square)
 	}
 
-	private onSquareClick( evt:MouseEvent) {
-		if (!(this.game as any).isCurrentPlayerActive() || this.game.clientActionData.placedCardId || this.handStock.getSelection().length!==1) {
+	private onSquareClick(evt: MouseEvent) {
+		if (
+			!(this.game as any).isCurrentPlayerActive() ||
+			this.game.clientActionData.placedCardId ||
+			this.handStock.getSelection().length !== 1
+		) {
 			evt.preventDefault()
 			evt.stopPropagation()
 			return
@@ -160,7 +166,7 @@ class PlayerTable {
 			)*/
 			this.game.clientActionData.destinationSquare = square.id
 			this.game.clientActionData.placedCardId = cardId
-			this.handStock.setSelectableCards([])//disables all cards
+			this.handStock.setSelectableCards([]) //disables all cards
 		}
 		dojo.toggleClass('place-card-button', 'disabled', !cardId || !square)
 		dojo.toggleClass('cancel-button', 'disabled', !cardId || !square)
@@ -208,13 +214,16 @@ class PlayerTable {
 
 	public cancelLocalMove() {
 		this.handStock.setSelectableCards(this.handStock.getCards())
-		if (this.game.clientActionData?.placedCardId && $(this.game.clientActionData.placedCardId) && this.game.clientActionData?.previousCardParentInHand) {
+		if (
+			this.game.clientActionData?.placedCardId &&
+			$(this.game.clientActionData.placedCardId) &&
+			this.game.clientActionData?.previousCardParentInHand
+		) {
 			console.log(
 				'restore',
 				this.game.clientActionData.placedCardId,
 				'inside',
-				this.game.clientActionData?.previousCardParentInHand.id,
-
+				this.game.clientActionData?.previousCardParentInHand.id
 			)
 			this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId))
 			return true
