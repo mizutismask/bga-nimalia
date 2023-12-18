@@ -91,6 +91,7 @@ trait StateTrait {
         foreach ($this->getRoundGoals() as $goal) {
             foreach ($players as $playerId => $playerDb) {
                 $score = $this->calculateGoalPoints($goal, $playerId);
+                //self::dump('*******************calculateGoalPoints', compact("goal", "score","playerId"));
                 self::incStat($score, "game_pointsRound" . $round . $goal->color, $playerId);
                 $goalColor = $goal->color;
                 $this->incPlayerScore($playerId, $score, clienttranslate('${player_name} gains ${delta} points with the ${color} goal'), ["color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId)]);

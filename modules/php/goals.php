@@ -93,17 +93,17 @@ trait GoalTrait {
             case 3:
                 return $this->calculateGoalLandZonesCount($grid, LAND_JUNGLE);
             case 4:
-                return $this->calculateGoalAnimalTouchingAtLeastOneOtherAnimal($grid, $playerId, ANIMAL_GORILLA, null, LAND_WATER);
+                return $this->calculateGoalAnimalTouchingAtLeastOneKindOfLand($grid, ANIMAL_GORILLA, LAND_WATER);
             case 5:
                 return $this->calculateGoalBiggestSavannah($grid);
             case 6:
-                return $this->calculateGoalLandZonesSize4($grid, $playerId);
+                return $this->calculateGoalLandZonesSize4($grid, LAND_SAVANNAH);
             case 7:
                 return $this->calculateGoal2x2Squares($grid, LAND_SNOW);
             case 8:
                 return $this->calculateGoalAnimalZonesCount($grid, ANIMAL_BEAR);
             case 9:
-                return $this->calculateGoalSmallestLandSquares($grid, $playerId);
+                return $this->calculateGoalSmallestLandSquares($grid);
             case 10:
                 return $this->calculateGoalCompleteSquare($grid);
             case 11:
@@ -130,7 +130,7 @@ trait GoalTrait {
             case 21:
                 return $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_CROCODILE, false, 5, 2) + $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_FLAMINGO, true, 5, 2);
             case 22:
-                return $this->calculateGoalAnimalTouchingAtLeastOneOtherAnimal($grid, $playerId, ANIMAL_CROCODILE, ANIMAL_GIRAFFE, null);
+                return $this->calculateGoalAnimalTouchingAtLeastOneOtherAnimal($grid, ANIMAL_CROCODILE, ANIMAL_GIRAFFE);
 
             default:
                 # code...

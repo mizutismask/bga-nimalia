@@ -342,9 +342,9 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         //$this->displayGrid($grid);
 
         $result = $this->calculateGoal2x2Squares(
-                $grid,
-                LAND_SNOW
-            );
+            $grid,
+            LAND_SNOW
+        );
         $equal = $result == 12;
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
@@ -512,7 +512,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $grid[0][2] = new Biome(ANIMAL_PINGUIN);
 
         $grid[1][0] = new Biome(ANIMAL_LION);
-        $grid[1][1] = new Biome(ANIMAL_OTTER,LAND_SNOW);
+        $grid[1][1] = new Biome(ANIMAL_OTTER, LAND_SNOW);
         $grid[1][2] =  new Biome(ANIMAL_PINGUIN);
 
         $grid[2][0] = new Biome(ANIMAL_LION);
@@ -522,6 +522,29 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $result = $this->calculateGoalSeveralAnimalsTouchingOtter($grid);
         $equal = $result == 2;
         $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function convertNumbersToGrid(string $textGrid) {
+        $grid = $this->initGrid();
+        $rows = preg_split("/\r\n|\n|\r/", trim($textGrid));
+        foreach ($rows as $iRow => $row) {
+            $row = trim($row);
+            self::dump('', compact("iRow", "row"));
+            for ($iCol = 0; $iCol < GRID_SIZE; $iCol++) {
+                $animal = intval($row[$iCol]);
+                self::dump('', compact("iRow", "iCol", "animal"));
+                if ($animal === 0) {
+                    $biome = new Biome(0, -1, 0);
+                } else if ($animal === ANIMAL_OTTER) {
+                    $biome = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+                    self::dump('*******************WARNING, you might have to specify manually land and river for otter in ', compact("iRow", "iCol"));
+                } else {
+                    $biome = new Biome($animal);
+                }
+                $grid[$iRow][$iCol] = $biome;
+            }
+        }
+        $this->displayGrid($grid);
     }
 
     function testAll() {
@@ -551,6 +574,13 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalBiggestSavannah();
         $this->testCalculateGoal2HorizontalAnimals();
         $this->testCalculateGoalSeveralAnimalsTouchingOtter();
+       /* $this->convertNumbersToGrid("
+        000000
+        000000
+        005316
+        004587
+        000000
+        000000");*/
     }
 
     function displayResult($testName, $equal, $result) {
