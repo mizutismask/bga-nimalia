@@ -180,8 +180,7 @@ class Nimalia extends Table {
             // game is over
             return 100;
         }
-        //return 100 * $this->getHighestCompletedDestinationsCount() / $this->getInitialBiomesCardNumber();
-        return 0;
+        return 100 * ($this->biomesCards->countCardInLocation('grid'.self::getCurrentPlayerId())) / (3*5);
     }
 
 
