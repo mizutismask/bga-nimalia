@@ -439,6 +439,8 @@
   #player-tables .player-table .nml-player-hand {
     grid-column: 1 !important;
     grid-row: 1 !important;
+    width: unset !important;
+    height: 200px !important;
   }
   #player-tables .player-table .nml-reserve {
     grid-column: 1 !important;
@@ -472,6 +474,8 @@
 #player-tables .player-table .nml-player-hand {
   grid-column: 1;
   grid-row: 1;
+  width: 200px;
+  height: unset;
 }
 #player-tables .player-table .nml-player-name {
   grid-column: 2;
