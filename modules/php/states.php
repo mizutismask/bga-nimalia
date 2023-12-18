@@ -28,6 +28,7 @@ trait StateTrait {
                 "playerId" => $playerId,
                 "playedCard" =>  $lastCards[$playerId]
             ]);
+            self::giveExtraTime($playerId);
         }
         $this->draftCards();
         if (count($this->getPlayerCards(array_pop($playersIds))) == 0) {
@@ -42,10 +43,10 @@ trait StateTrait {
 
         self::incGameStateValue(ROUND, 1);
 
-
         $playersIds = $this->getPlayersIds();
         foreach ($playersIds as $playerId) {
             $this->pickInitialCards($playerId);
+            self::giveExtraTime($playerId);
         }
         self::notifyAllPlayers('newRound', clienttranslate('Round ${round}'), $this->getRoundArgs());
 
