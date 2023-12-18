@@ -390,6 +390,9 @@
 #score #table-wrapper table .score-goal-green {
   background-color: rgb(78, 114, 32);
 }
+#score #table-wrapper table .total-score {
+  background-color: gray;
+}
 #score .score-number {
   transition: color 0.5s ease-in-out;
 }

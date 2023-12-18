@@ -31,25 +31,27 @@ class ScoreBoard {
                     <th> </th>
                     <th id="th-score-goal-blue" class="score-goal score-goal-blue"></th>
                     <th id="th-score-goal-green" class="score-goal score-goal-green"></th>
-                    <th id="th-round-score" class="">∑</th>
+                    <th id="th-round-score" class="total-score">∑</th>
 
                     <th id="th-score-goal-green" class="score-goal score-goal-green"> </th>
                     <th id="th-score-goal-yellow" class="score-goal score-goal-yellow"> </th>
-                    <th id="th-round-score" class="">∑</th>
+                    <th id="th-round-score" class="total-score">∑</th>
 
                     <th id="th-score-goal-blue" class="score-goal score-goal-blue"> </th>
                     <th id="th-score-goal-red" class="score-goal score-goal-red"> </th>
-                    <th id="th-round-score" class="">∑</th>
+                    <th id="th-round-score" class="total-score">∑</th>
 
                     <th id="th-score-goal-green" class="score-goal score-goal-green"> </th>
                     <th id="th-score-goal-yellow" class="score-goal score-goal-yellow"> </th>
                     <th id="th-score-goal-red" class="score-goal score-goal-red"> </th>
-                    <th id="th-round-score" class="">∑</th>
+                    <th id="th-round-score" class="total-score">∑</th>
 
                     <th id="th-score-goal-blue" class="score-goal score-goal-blue"> </th>
                     <th id="th-score-goal-red" class="score-goal score-goal-red"> </th>
                     <th id="th-score-goal-yellow" class="score-goal score-goal-yellow"> </th>
-                    <th id="th-round-score" class="">∑</th>
+                    <th id="th-round-score" class="total-score">∑</th>
+
+                    <th></th>
                 <thead/>
             `,
 
