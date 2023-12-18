@@ -3054,7 +3054,7 @@ var Nimalia = /** @class */ (function () {
         this.activateGoals(args.goals);
     };
     Nimalia.prototype.activateGoals = function (activeGoals) {
-        dojo.query('nml-active-goal').removeClass('nml-active-goal');
+        removeClass('nml-active-goal');
         activeGoals.forEach(function (g) { return dojo.query("#goal_".concat(g.id)).addClass('nml-active-goal'); });
     };
     Nimalia.prototype.notif_cardsMove = function (notif) {

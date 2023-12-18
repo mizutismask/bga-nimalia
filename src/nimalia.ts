@@ -948,7 +948,7 @@ class Nimalia implements NimaliaGame {
 	}
 
 	activateGoals(activeGoals: Array<Goal>) {
-		dojo.query('nml-active-goal').removeClass('nml-active-goal')
+		removeClass('nml-active-goal')
 		activeGoals.forEach((g) => dojo.query(`#goal_${g.id}`).addClass('nml-active-goal'))
 	}
 

@@ -174,7 +174,7 @@
   transform: skewY(155deg);
 }
 .player-board .pie-3-sections.round-5 > div:nth-child(2) {
-  background: rgb(78, 114, 32);
+  background: rgb(223, 153, 37);
   transform: skewY(-155deg);
 }
 
