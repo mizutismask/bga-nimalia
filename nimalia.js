@@ -2294,7 +2294,7 @@ var CardsManager = /** @class */ (function (_super) {
                 _this.addRotateButton(card, div, 'right');
             },
             setupFrontDiv: function (card, div) {
-                console.log('setupFrontDiv', card.type_arg);
+                log('setupFrontDiv', card.type_arg);
                 _this.setFrontBackground(div, card.type_arg);
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
@@ -2375,7 +2375,7 @@ var Nimalia = /** @class */ (function () {
         this.isTouch = window.matchMedia('(hover: none)').matches;
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         this.settings = [new Setting('customSounds', 'pref', 1)];
-        console.log('nimalia constructor');
+        log('nimalia constructor');
         // Here, you can init the global variables of your user interface
         // Example:
         // this.myGlobalValue = 0;
@@ -2420,7 +2420,7 @@ var Nimalia = /** @class */ (function () {
         this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players));
         this.gamedatas.scores.forEach(function (s) { return _this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score); });
         removeClass('animatedScore');
-        console.log('Ending game setup');
+        log('Ending game setup');
     };
     Nimalia.prototype.setupGoals = function (goals) {
         var _this = this;
@@ -2456,12 +2456,11 @@ var Nimalia = /** @class */ (function () {
         this.setTooltipToClass('player-turn-order', _('First player'));
     };
     Nimalia.prototype.isNotSpectator = function () {
-        console.log('isSpectator', this.isSpectator);
         return (this.isSpectator == false ||
             Object.keys(this.gamedatas.players).includes(this.getPlayerId().toString()));
     };
     Nimalia.prototype.setupPlayer = function (player) {
-        //console.log('setupplayer', player)
+        //log('setupplayer', player)
         document.getElementById("overall_player_board_".concat(player.id)).dataset.playerColor = player.color;
         if (this.gameFeatures.showPlayerOrderHints) {
             this.setupPlayerOrderHints(player);
@@ -2551,7 +2550,7 @@ var Nimalia = /** @class */ (function () {
     //                  You can use this method to perform some user interface changes at this moment.
     //
     Nimalia.prototype.onEnteringState = function (stateName, args) {
-        console.log('Entering state: ' + stateName, args);
+        log('Entering state: ' + stateName, args);
         switch (stateName) {
             /* Example:
         
@@ -2592,7 +2591,7 @@ var Nimalia = /** @class */ (function () {
                 });
             }
             else {
-                console.log('WARNING :no possible move');
+                log('WARNING :no possible move');
             }
         }
         document.getElementById('score').style.display = 'none';
@@ -2622,7 +2621,7 @@ var Nimalia = /** @class */ (function () {
     //                 You can use this method to perform some user interface changes at this moment.
     //
     Nimalia.prototype.onLeavingState = function (stateName) {
-        console.log('Leaving state: ' + stateName);
+        log('Leaving state: ' + stateName);
         switch (stateName) {
             /* Example:
         
@@ -2644,7 +2643,7 @@ var Nimalia = /** @class */ (function () {
     //
     Nimalia.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
-        console.log('onUpdateActionButtons: ' + stateName, 'player active', this.isCurrentPlayerActive());
+        log('onUpdateActionButtons: ' + stateName, 'player active', this.isCurrentPlayerActive());
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'placeCard':
@@ -2993,7 +2992,7 @@ var Nimalia = /** @class */ (function () {
     Nimalia.prototype.cancelPlaceCard = function () {
         //this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
         //this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId))
-        //console.log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
+        //log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
         /*this.playerTables[this.getCurrentPlayer().id].displayGrid(
             this.getCurrentPlayer(),
             this.gamedatas.grids[this.getCurrentPlayer().id]
@@ -3023,7 +3022,7 @@ var Nimalia = /** @class */ (function () {
     */
     Nimalia.prototype.setupNotifications = function () {
         var _this = this;
-        console.log('notifications subscriptions setup');
+        log('notifications subscriptions setup');
         // TODO: here, associate your game notifications with local methods
         // Example 1: standard notification handling
         // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
@@ -3083,7 +3082,7 @@ var Nimalia = /** @class */ (function () {
      * Update player goal score.
      */
     Nimalia.prototype.notif_points = function (notif) {
-        //console.log('notif_points', notif)
+        //log('notif_points', notif)
         this.setPoints(notif.args.playerId, notif.args.points);
         this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.scoreType === 'total-' + notif.args.playerId ? notif.args.points : notif.args.delta);
     };
@@ -3092,7 +3091,7 @@ var Nimalia = /** @class */ (function () {
      * @param notif
      */
     Nimalia.prototype.notif_score = function (notif) {
-        console.log('notif_score', notif);
+        log('notif_score', notif);
         this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.score);
     };
     /**
@@ -3107,7 +3106,7 @@ var Nimalia = /** @class */ (function () {
      */
     Nimalia.prototype.notif_highlightWinnerScore = function (notif) {
         var _a;
-        console.log('notif_highlightWinnerScore', notif);
+        log('notif_highlightWinnerScore', notif);
         (_a = this.scoreBoard) === null || _a === void 0 ? void 0 : _a.highlightWinnerScore(notif.args.playerId);
     };
     /* This enable to inject translatable styled things to logs or action bar */
@@ -3295,7 +3294,7 @@ var PlayerTable = /** @class */ (function () {
             baseSettings['direction'] = 'col';
             baseSettings['wrap'] = 'wrap';
         }
-        //console.log('smallWidth', smallWidth, baseSettings)
+        //log('smallWidth', smallWidth, baseSettings)
         this.handStock = new LineStock(this.game.cardsManager, $('hand-' + player.id), baseSettings);
         this.handStock.setSelectionMode('single');
     };
@@ -3333,7 +3332,7 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.replaceCardsInHand = function (cards) {
         var _this = this;
-        console.log('replaceCardsInHand', cards);
+        log('replaceCardsInHand', cards);
         this.handStock.removeAll();
         this.handStock.addCards(cards);
         cards.forEach(function (c) { return _this.setupCardInHand(c); });
@@ -3349,7 +3348,7 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.addCardsInHand = function (cards) {
         var _this = this;
-        console.log('add cards', cards);
+        log('add cards', cards);
         this.handStock.addCards(cards);
         cards.forEach(function (c) { return _this.setupCardInHand(c); });
     };
@@ -3370,7 +3369,7 @@ var PlayerTable = /** @class */ (function () {
         // Add the target element's id to the data transfer object
         (_a = evt.dataTransfer) === null || _a === void 0 ? void 0 : _a.setData('text/plain', evt.target.id); //we move the whole card
         //evt.dataTransfer.effectAllowed = 'move'
-        //console.log('drag', evt.target.id)
+        //log('drag', evt.target.id)
     };
     PlayerTable.prototype.onCardDrop = function (evt) {
         // Add the target element's id to the data transfer object
@@ -3392,7 +3391,7 @@ var PlayerTable = /** @class */ (function () {
         this.moveCardToGrid(this.game.cardsManager.getId(this.handStock.getSelection()[0]), evt.target);
     };
     PlayerTable.prototype.moveCardToGrid = function (cardId, square) {
-        console.log('drop', cardId, 'to', square.id);
+        log('drop', cardId, 'to', square.id);
         if (cardId && square) {
             this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement;
             square.appendChild($(cardId));
@@ -3419,18 +3418,18 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.showMove = function (playerId, playedCard) {
         var myOwnMove = playerId == this.game.getPlayerId();
-        console.log('show move', playerId, playedCard, myOwnMove);
+        log('show move', playerId, playedCard, myOwnMove);
         if (!myOwnMove || isReadOnly()) {
             var id = this.createCardInGrid(playerId, playedCard);
             removeClass('last-move');
             $(id).classList.add('last-move');
         }
         else {
-            console.log('this.game.clientActionData', this.game.clientActionData);
+            log('this.game.clientActionData', this.game.clientActionData);
             if (this.game.clientActionData.previousCardParentInHand) {
                 this.cancelLocalMove();
                 this.removeCardFromHand(playedCard.id);
-                console.log('createCardInGrid', playedCard);
+                log('createCardInGrid', playedCard);
                 this.createCardInGrid(playerId, playedCard);
                 this.game.resetClientActionData();
             }
@@ -3450,7 +3449,7 @@ var PlayerTable = /** @class */ (function () {
         if (((_a = this.game.clientActionData) === null || _a === void 0 ? void 0 : _a.placedCardId) &&
             $(this.game.clientActionData.placedCardId) &&
             ((_b = this.game.clientActionData) === null || _b === void 0 ? void 0 : _b.previousCardParentInHand)) {
-            console.log('restore', this.game.clientActionData.placedCardId, 'inside', (_c = this.game.clientActionData) === null || _c === void 0 ? void 0 : _c.previousCardParentInHand.id);
+            log('restore', this.game.clientActionData.placedCardId, 'inside', (_c = this.game.clientActionData) === null || _c === void 0 ? void 0 : _c.previousCardParentInHand.id);
             this.game.clientActionData.previousCardParentInHand.appendChild($(this.game.clientActionData.placedCardId));
             return true;
         }

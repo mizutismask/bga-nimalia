@@ -17,7 +17,7 @@ class CardsManager extends CardManager<NimaliaCard> {
 				this.addRotateButton(card, div as HTMLDivElement, 'right')
 			},
 			setupFrontDiv: (card: NimaliaCard, div: HTMLElement) => {
-				console.log('setupFrontDiv', card.type_arg)
+				log('setupFrontDiv', card.type_arg)
 				this.setFrontBackground(div as HTMLDivElement, card.type_arg)
 				//this.setDivAsCard(div as HTMLDivElement, card.type);
 				div.id = `${super.getId(card)}-front`

@@ -40,7 +40,7 @@ class PlayerTable {
 			baseSettings['wrap'] = 'wrap' as 'wrap'
 		}
 
-		//console.log('smallWidth', smallWidth, baseSettings)
+		//log('smallWidth', smallWidth, baseSettings)
 
 		this.handStock = new LineStock<NimaliaCard>(this.game.cardsManager, $('hand-' + player.id), baseSettings)
 		this.handStock.setSelectionMode('single')
@@ -91,7 +91,7 @@ class PlayerTable {
 	}
 
 	public replaceCardsInHand(cards: Array<NimaliaCard>) {
-		console.log('replaceCardsInHand', cards)
+		log('replaceCardsInHand', cards)
 		this.handStock.removeAll()
 		this.handStock.addCards(cards)
 		cards.forEach((c) => this.setupCardInHand(c))
@@ -106,7 +106,7 @@ class PlayerTable {
 		}])*/
 	}
 	public addCardsInHand(cards: Array<NimaliaCard>) {
-		console.log('add cards', cards)
+		log('add cards', cards)
 		this.handStock.addCards(cards)
 		cards.forEach((c) => this.setupCardInHand(c))
 	}
@@ -128,7 +128,7 @@ class PlayerTable {
 		// Add the target element's id to the data transfer object
 		evt.dataTransfer?.setData('text/plain', evt.target.id) //we move the whole card
 		//evt.dataTransfer.effectAllowed = 'move'
-		//console.log('drag', evt.target.id)
+		//log('drag', evt.target.id)
 	}
 
 	private onCardDrop(evt) {
@@ -155,7 +155,7 @@ class PlayerTable {
 	}
 
 	private moveCardToGrid(cardId: string, square) {
-		console.log('drop', cardId, 'to', square.id)
+		log('drop', cardId, 'to', square.id)
 		if (cardId && square) {
 			this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement
 			square.appendChild($(cardId))
@@ -183,18 +183,18 @@ class PlayerTable {
 
 	public showMove(playerId: number, playedCard: NimaliaCard) {
 		const myOwnMove = playerId == this.game.getPlayerId()
-		console.log('show move', playerId, playedCard, myOwnMove)
+		log('show move', playerId, playedCard, myOwnMove)
 
 		if (!myOwnMove || isReadOnly()) {
 			const id = this.createCardInGrid(playerId, playedCard)
 			removeClass('last-move')
 			$(id).classList.add('last-move')
 		} else {
-			console.log('this.game.clientActionData', this.game.clientActionData)
+			log('this.game.clientActionData', this.game.clientActionData)
 			if (this.game.clientActionData.previousCardParentInHand) {
 				this.cancelLocalMove()
 				this.removeCardFromHand(playedCard.id)
-				console.log('createCardInGrid', playedCard)
+				log('createCardInGrid', playedCard)
 				this.createCardInGrid(playerId, playedCard)
 				this.game.resetClientActionData()
 			}
@@ -218,7 +218,7 @@ class PlayerTable {
 			$(this.game.clientActionData.placedCardId) &&
 			this.game.clientActionData?.previousCardParentInHand
 		) {
-			console.log(
+			log(
 				'restore',
 				this.game.clientActionData.placedCardId,
 				'inside',

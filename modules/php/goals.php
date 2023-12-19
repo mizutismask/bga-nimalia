@@ -178,7 +178,7 @@ trait GoalTrait {
             }
             $str .= $row . "\n";
         }
-        self::dump('*******************grid', $str);
+        //self::dump('*******************grid', $str);
     }
 
     function displayRiverGrid(array $grid) {
@@ -201,7 +201,7 @@ trait GoalTrait {
             }
             $str .= $row . "\n";
         }
-        self::dump('*******************grid', $str);
+        //self::dump('*******************grid', $str);
     }
 
     function getRotatedBiomes(BiomeCard $card) {

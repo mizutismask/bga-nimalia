@@ -44,7 +44,7 @@ class Nimalia implements NimaliaGame {
 	public clientActionData: ClientActionData
 
 	constructor() {
-		console.log('nimalia constructor')
+		log('nimalia constructor')
 
 		// Here, you can init the global variables of your user interface
 		// Example:
@@ -97,7 +97,7 @@ class Nimalia implements NimaliaGame {
 		this.gamedatas.scores.forEach((s) => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score))
 		removeClass('animatedScore')
 
-		console.log('Ending game setup')
+		log('Ending game setup')
 	}
 
 	private setupGoals(goals: Goal[]) {
@@ -151,7 +151,6 @@ class Nimalia implements NimaliaGame {
 	}
 
 	public isNotSpectator() {
-		console.log('isSpectator', (this as any).isSpectator)
 		return (
 			(this as any).isSpectator == false ||
 			Object.keys(this.gamedatas.players).includes(this.getPlayerId().toString())
@@ -159,7 +158,7 @@ class Nimalia implements NimaliaGame {
 	}
 
 	private setupPlayer(player: NimaliaPlayer) {
-		//console.log('setupplayer', player)
+		//log('setupplayer', player)
 
 		document.getElementById(`overall_player_board_${player.id}`).dataset.playerColor = player.color
 		if (this.gameFeatures.showPlayerOrderHints) {
@@ -331,7 +330,7 @@ class Nimalia implements NimaliaGame {
 	//                  You can use this method to perform some user interface changes at this moment.
 	//
 	public onEnteringState(stateName: string, args: any) {
-		console.log('Entering state: ' + stateName, args)
+		log('Entering state: ' + stateName, args)
 
 		switch (stateName) {
 			/* Example:
@@ -376,7 +375,7 @@ class Nimalia implements NimaliaGame {
 					dojo.addClass(droppable, 'dropzone')
 				})
 			} else {
-				console.log('WARNING :no possible move')
+				log('WARNING :no possible move')
 			}
 		}
 		document.getElementById('score').style.display = 'none'
@@ -411,7 +410,7 @@ class Nimalia implements NimaliaGame {
 	//                 You can use this method to perform some user interface changes at this moment.
 	//
 	public onLeavingState(stateName: string) {
-		console.log('Leaving state: ' + stateName)
+		log('Leaving state: ' + stateName)
 
 		switch (stateName) {
 			/* Example:
@@ -435,7 +434,7 @@ class Nimalia implements NimaliaGame {
 	//                        action status bar (ie: the HTML links in the status bar).
 	//
 	public onUpdateActionButtons(stateName: string, args: any) {
-		console.log('onUpdateActionButtons: ' + stateName, 'player active', (this as any).isCurrentPlayerActive())
+		log('onUpdateActionButtons: ' + stateName, 'player active', (this as any).isCurrentPlayerActive())
 		if ((this as any).isCurrentPlayerActive()) {
 			switch (stateName) {
 				case 'placeCard':
@@ -883,7 +882,7 @@ class Nimalia implements NimaliaGame {
 	public cancelPlaceCard() {
 		//this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
 		//this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId))
-		//console.log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
+		//log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
 		/*this.playerTables[this.getCurrentPlayer().id].displayGrid(
 			this.getCurrentPlayer(),
 			this.gamedatas.grids[this.getCurrentPlayer().id]
@@ -914,7 +913,7 @@ class Nimalia implements NimaliaGame {
     
     */
 	setupNotifications() {
-		console.log('notifications subscriptions setup')
+		log('notifications subscriptions setup')
 
 		// TODO: here, associate your game notifications with local methods
 
@@ -982,7 +981,7 @@ class Nimalia implements NimaliaGame {
 	 * Update player goal score.
 	 */
 	notif_points(notif: Notif<NotifPointsArgs>) {
-		//console.log('notif_points', notif)
+		//log('notif_points', notif)
 		this.setPoints(notif.args.playerId, notif.args.points)
 		this.scoreBoard.updateScore(
 			notif.args.playerId,
@@ -996,7 +995,7 @@ class Nimalia implements NimaliaGame {
 	 * @param notif
 	 */
 	notif_score(notif: Notif<NotifScoreArgs>) {
-		console.log('notif_score', notif)
+		log('notif_score', notif)
 		this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.score)
 	}
 
@@ -1016,7 +1015,7 @@ class Nimalia implements NimaliaGame {
 	 * Highlight winner for end score.
 	 */
 	notif_highlightWinnerScore(notif: Notif<NotifWinnerArgs>) {
-		console.log('notif_highlightWinnerScore', notif)
+		log('notif_highlightWinnerScore', notif)
 
 		this.scoreBoard?.highlightWinnerScore(notif.args.playerId)
 	}
