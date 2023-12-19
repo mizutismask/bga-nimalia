@@ -920,8 +920,8 @@ class Nimalia implements NimaliaGame {
 			['newRound', 1],
 			['points', ANIMATION_MS],
 			['score', ANIMATION_MS],
+			['highlightWinnerScore', ANIMATION_MS],
 			['lastTurn', 1],
-			['bestScore', 1]
 		]
 
 		notifs.forEach((notif) => {
@@ -997,19 +997,11 @@ class Nimalia implements NimaliaGame {
 	}
 
 	/**
-	 * Save best score for end score animations.
-	 */
-
-	notif_bestScore(notif: Notif<NotifBestScoreArgs>) {
-		this.gamedatas.bestScore = notif.args.bestScore
-		this.scoreBoard?.setBestScore(notif.args.bestScore)
-		this.scoreBoard?.updateScores(notif.args.players)
-	}
-
-	/**
 	 * Highlight winner for end score.
 	 */
-	notif_highlightWinnerScore(notif: Notif<NotifLongestPathArgs>) {
+	notif_highlightWinnerScore(notif: Notif<NotifWinnerArgs>) {
+		console.log("notif_highlightWinnerScore", notif);
+		
 		this.scoreBoard?.highlightWinnerScore(notif.args.playerId)
 	}
 

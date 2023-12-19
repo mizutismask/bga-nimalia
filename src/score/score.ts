@@ -8,8 +8,6 @@ class ScoreBoard {
 	constructor(
 		private game: NimaliaGame,
 		private players: NimaliaPlayer[],
-		/** bestScore is the top score for the game */
-		private bestScore: number
 	) {
 		const headers = document.getElementById('scoretr')
 		if (!headers.childElementCount) {
@@ -96,28 +94,7 @@ class ScoreBoard {
 			)
 		})
 
-		this.setBestScore(bestScore)
-		players.forEach((player) => {
-			if (Number(player.score) == bestScore) {
-				this.highlightWinnerScore(player.id)
-			}
-		})
-	}
-
-	public updateScores(players: NimaliaPlayer[]) {
-		/*players.forEach((p) => {
-            document.getElementById(`destination-reached${p.id}`).innerHTML = (
-                p.completedDestinations.length + p.sharedCompletedDestinationsCount
-            ).toString();
-            document.getElementById(`revealed-tokens-back${p.id}`).innerHTML = p.revealedTokensBackCount.toString();
-            document.getElementById(`destination-unreached${p.id}`).innerHTML = this.preventMinusZero(
-                p.uncompletedDestinations?.length
-            );
-            document.getElementById(`revealed-tokens-left${p.id}`).innerHTML = this.preventMinusZero(
-                p.revealedTokensLeftCount
-            );
-            document.getElementById(`total${p.id}`).innerHTML = p.score.toString();
-        });*/
+		//todo highlight winners
 	}
 
 	public updateScore(playerId: number, scoreType: string, score: number) {
@@ -128,25 +105,13 @@ class ScoreBoard {
 		//}
 	}
 
-	private preventMinusZero(score: number) {
-		if (score === 0) {
-			return '0'
-		}
-		return '-' + score.toString()
-	}
-
 	/**
 	 * Add trophee icon to top score player(s)
 	 */
-	public highlightWinnerScore(playerId: number | string) {
-		document.getElementById(`score${playerId}`).classList.add('highlight')
+    public highlightWinnerScore(playerId: number | string) {
+        console.log(playerId)
+        console.log(`total-${playerId}`)
+		document.getElementById(`total-${playerId}`).classList.add('highlight')
 		document.getElementById(`score-winner-${playerId}`).classList.add('fa', 'fa-trophy', 'fa-lg')
-	}
-
-	/**
-	 * Save best score.
-	 */
-	public setBestScore(bestScore: number) {
-		this.bestScore = bestScore
 	}
 }

@@ -24,11 +24,11 @@ trait StateTrait {
         $playersIds = $this->getPlayersIds();
         $lastCards = $this->getLastCardPlayed();
         foreach ($playersIds as $playerId) {
-                            self::notifyAllPlayers('cardsMove', "", [
-                    "playerId" => $playerId,
-                    "playedCard" =>  $lastCards[$playerId]
-                ]);
-                        self::giveExtraTime($playerId);
+            self::notifyAllPlayers('cardsMove', "", [
+                "playerId" => $playerId,
+                "playedCard" =>  $lastCards[$playerId]
+            ]);
+            self::giveExtraTime($playerId);
         }
         $this->draftCards();
         if (count($this->getPlayerCards(array_pop($playersIds))) == 0) {
@@ -106,40 +106,58 @@ trait StateTrait {
         }
 
         //round winner
-        $this->notifyWinner($players, $roundScores);
-
-        if ($round == 5) {
-            //game winner
-            $this->notifyWinner($players, $totalScore);
-        }
+        //$this->notifyWinner($roundScores);
 
         //total from the beginning
         foreach ($players as $playerId => $playerDb) {
             $this->incPlayerScore($playerId, 0, null, ["scoreType" => "total-$playerId"]);
         }
+
+        if ($round == 5) {
+            //game winner
+            $this->notifyWinner($totalScore, true);
+        }
+
         $this->gamestate->nextState("seeScore");
     }
 
-    function notifyWinner($players, $roundScores) {
+    function notifyWinner($roundScores, bool $tie = false) {
         $bestScore = max($roundScores);
-        $playersWithScore = [];
-        foreach ($players as $playerId => &$player) {
-            $player['playerNo'] = intval($player['playerNo']);
-            $player['score'] = $roundScores[$playerId];
-            $playersWithScore[$playerId] = $player;
+        $winners = array_keys(array_filter($roundScores, fn ($p) => $p == $bestScore));
+        if ($tie) {
+            $winners = $this->computeTie($winners);
         }
-        self::notifyAllPlayers('bestScore', '', [
-            'bestScore' => $bestScore,
-            'players' => array_values($playersWithScore),
-        ]);
 
         // highlight winner(s)
-        foreach ($roundScores as $playerId => $playerScore) {
-            if ($playerScore == $bestScore) {
-                self::notifyAllPlayers('highlightWinnerScore', '', [
-                    'playerId' => $playerId,
-                ]);
+        foreach ($winners as $playerId) {
+            self::notifyAllPlayers('highlightWinnerScore', '', [
+                'playerId' => $playerId,
+            ]);
+        }
+    }
+
+    function computeTie($tiedPlayers) {
+        $winners = [];
+        $maxAnimals = [];
+        foreach ($tiedPlayers as $playerId) {
+            $grid = $this->getGrid($playerId);
+            foreach (ANIMALS as $anml) {
+                if (!isset($maxAnimals[$playerId])) {
+                    $maxAnimals[$playerId] = 0;
+                }
+                $count = $this->countAnimals($grid, $anml);
+                if ($count > $maxAnimals[$playerId]) {
+                    $maxAnimals[$playerId] = $count;
+                }
             }
         }
+        $maxNumber = max($maxAnimals);
+        foreach ($maxAnimals as $playerId => $anmlCount) {
+            self::DbQuery("UPDATE player SET `player_score_aux` = $anmlCount where `player_id` = $playerId");
+            if ($anmlCount == $maxNumber) {
+                $winners[] = $playerId;
+            }
+        }
+        return $winners;
     }
 }

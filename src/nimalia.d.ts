@@ -107,12 +107,7 @@ interface NotifScoreArgs {
 	scoreType:string
 }
 
-interface NotifBestScoreArgs {
-	bestScore: number
-	players: NimaliaPlayer[]
-}
-
-interface NotifLongestPathArgs {
+interface NotifWinnerArgs {
 	playerId: number
 }
 
