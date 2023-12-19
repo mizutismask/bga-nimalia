@@ -40,6 +40,7 @@ interface NimaliaGamedatas {
 	neutralized_player_id: string
 	notifications: { last_packet_id: string; move_nbr: string }
 	playerorder: (string | number)[]
+	playerOrderWorkingWithSpectators: number[]
 	players: { [playerId: number]: NimaliaPlayer }
 	tablespeed: string
 	lastTurn: boolean
@@ -49,15 +50,15 @@ interface NimaliaGamedatas {
 	// Add here variables you set up in getAllDatas
 	hand: Array<NimaliaCard>
 	goals: Array<Goal>
-	round: { round: number, clockwise: boolean, goals: Array<Goal> }
+	round: { round: number; clockwise: boolean; goals: Array<Goal> }
 	grids: { [playerId: number]: Array<NimaliaCard> }
-	scores:Array<NotifScoreArgs>
+	scores: Array<NotifScoreArgs>
 }
 
 interface ClientActionData {
 	placedCardId: string
 	destinationSquare: string
-	previousCardParentInHand:HTMLElement
+	previousCardParentInHand: HTMLElement
 }
 
 interface NimaliaGame extends Game {
@@ -65,7 +66,7 @@ interface NimaliaGame extends Game {
 	animationManager: AnimationManager
 	getCurrentPlayer(): NimaliaPlayer
 	clientActionData: ClientActionData
-	resetClientActionData():void
+	resetClientActionData(): void
 	getPlayerId(): number
 	getPlayerScore(playerId: number): number
 	setTooltip(id: string, html: string): void
@@ -82,29 +83,29 @@ interface EnteringPlaceCardArgs {
 
 interface CardsMoveArgs {
 	playerId: number
-	added?: Array<NimaliaCard>//to hand
+	added?: Array<NimaliaCard> //to hand
 	playedCard?: NimaliaCard
 	fromUndo?: boolean
-	undoneCard?:NimaliaCard
+	undoneCard?: NimaliaCard
 }
 
-interface NewRoundArgs{
+interface NewRoundArgs {
 	round: number
 	clockwise: boolean
-	goals:Array<Goal>
+	goals: Array<Goal>
 }
 
 interface NotifPointsArgs {
 	playerId: number
 	points: number
 	delta: number
-	scoreType:string
+	scoreType: string
 }
 
 interface NotifScoreArgs {
 	playerId: number
 	score: number
-	scoreType:string
+	scoreType: string
 }
 
 interface NotifWinnerArgs {

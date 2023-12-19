@@ -2,11 +2,10 @@
  * Player table.
  */
 class PlayerTable {
-	/** Stock for destinations in "done" column */
 	private handStock: LineStock<NimaliaCard>
 
 	constructor(private game: NimaliaGame, player: NimaliaPlayer) {
-		const isMyTable = player.id === game.getCurrentPlayer().id
+		const isMyTable = player.id === game.getPlayerId().toString();
 		const ownClass = isMyTable ? 'own' : ''
 		let html = `
 			<div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${ownClass}">

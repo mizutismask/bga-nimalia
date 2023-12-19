@@ -83,9 +83,9 @@ class Nimalia implements NimaliaGame {
 		this.setupNotifications()
 
 		this.setupGoals(this.gamedatas.goals)
-		this.setupPlayer(this.getCurrentPlayer())
-		Object.values(this.gamedatas.players).forEach((p) => {
-			if (p.id != this.getCurrentPlayer().id) this.setupPlayer(p)
+
+		Object.values(this.gamedatas.playerOrderWorkingWithSpectators).forEach((p) => {
+			this.setupPlayer(this.gamedatas.players[p])
 		})
 
 		$('overall-content').classList.add(`player-count-${this.getPlayersCount()}`)
@@ -93,7 +93,7 @@ class Nimalia implements NimaliaGame {
 		this.setupSettingsIconInMainBar()
 		this.setupPreferences()
 		this.setupTooltips()
-		this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players), undefined)
+		this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players))
 		this.gamedatas.scores.forEach((s) => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score))
 		removeClass('animatedScore')
 
@@ -150,19 +150,29 @@ class Nimalia implements NimaliaGame {
 		this.setTooltipToClass('player-turn-order', _('First player'))
 	}
 
+	public isNotSpectator() {
+		console.log('isSpectator', (this as any).isSpectator)
+		return (
+			(this as any).isSpectator == false ||
+			Object.keys(this.gamedatas.players).includes(this.getPlayerId().toString())
+		)
+	}
+
 	private setupPlayer(player: NimaliaPlayer) {
+		//console.log('setupplayer', player)
+
 		document.getElementById(`overall_player_board_${player.id}`).dataset.playerColor = player.color
 		if (this.gameFeatures.showPlayerOrderHints) {
 			this.setupPlayerOrderHints(player)
 		}
-		this.setupMiniPlayerBoard(player)
-		if (!(this as any).isSpectator) {
-			this.playerTables[player.id] = new PlayerTable(this, player)
-			console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id)
+		this.playerTables[player.id] = new PlayerTable(this, player)
+		this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id])
+
+		if (this.isNotSpectator()) {
+			this.setupMiniPlayerBoard(player)
 			if (player.id === this.getCurrentPlayer().id)
 				this.playerTables[player.id].replaceCardsInHand(this.gamedatas.hand)
 		}
-		this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id])
 	}
 
 	private setupMiniPlayerBoard(player: NimaliaPlayer) {
@@ -358,14 +368,16 @@ class Nimalia implements NimaliaGame {
 	}
 
 	private onEnteringPlaceCard(args: EnteringPlaceCardArgs) {
-		this.resetClientActionData()
-		removeClass('dropzone')
-		if (args.possibleSquares[this.getCurrentPlayer().id]) {
-			args.possibleSquares[this.getCurrentPlayer().id].forEach((droppable) => {
-				dojo.addClass(droppable, 'dropzone')
-			})
-		} else {
-			console.log('WARNING :no possible move')
+		if (this.isNotSpectator()) {
+			this.resetClientActionData()
+			removeClass('dropzone')
+			if (args.possibleSquares[this.getCurrentPlayer().id]) {
+				args.possibleSquares[this.getCurrentPlayer().id].forEach((droppable) => {
+					dojo.addClass(droppable, 'dropzone')
+				})
+			} else {
+				console.log('WARNING :no possible move')
+			}
 		}
 		document.getElementById('score').style.display = 'none'
 	}
@@ -446,17 +458,19 @@ class Nimalia implements NimaliaGame {
 					break
 			}
 		} else {
-			switch (stateName) {
-				case 'placeCard':
-					;(this as any).addActionButton(
-						'undo_place_card_button',
-						_('Undo'),
-						() => this.takeAction('undoPlaceCard'),
-						null,
-						null,
-						'red'
-					)
-					break
+			if (this.isNotSpectator()) {
+				switch (stateName) {
+					case 'placeCard':
+						;(this as any).addActionButton(
+							'undo_place_card_button',
+							_('Undo'),
+							() => this.takeAction('undoPlaceCard'),
+							null,
+							null,
+							'red'
+						)
+						break
+				}
 			}
 		}
 	}
@@ -921,7 +935,7 @@ class Nimalia implements NimaliaGame {
 			['points', ANIMATION_MS],
 			['score', ANIMATION_MS],
 			['highlightWinnerScore', ANIMATION_MS],
-			['lastTurn', 1],
+			['lastTurn', 1]
 		]
 
 		notifs.forEach((notif) => {
@@ -936,14 +950,16 @@ class Nimalia implements NimaliaGame {
 
 	updateRound(args: NewRoundArgs) {
 		this.gamedatas.turnOrderClockwise = args.clockwise
-		$('round-number-icon').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
-		$('round-number-icon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
 
-		removeClass('active-round')
-		dojo.query(`.pie:nth-child(${args.round})`).addClass('active-round')
-
-		this.updateTurnOrder(this.getCurrentPlayer())
-		this.setupPlayerOrderHints(this.getCurrentPlayer())
+		if (this.isNotSpectator()) {
+			//those are in the player panel, so not available for a spectator
+			$('round-number-icon').classList.remove('fa6-rotate-right', 'fa6-rotate-left')
+			$('round-number-icon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left')
+			removeClass('active-round')
+			dojo.query(`.pie:nth-child(${args.round})`).addClass('active-round')
+			this.updateTurnOrder(this.getCurrentPlayer())
+			this.setupPlayerOrderHints(this.getCurrentPlayer())
+		}
 		this.activateGoals(args.goals)
 	}
 
@@ -954,7 +970,7 @@ class Nimalia implements NimaliaGame {
 
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
 		//important order !
-		if (notif.args.undoneCard)this.playerTables[notif.args.playerId].removeCardFromGrid(notif.args.undoneCard)
+		if (notif.args.undoneCard) this.playerTables[notif.args.playerId].removeCardFromGrid(notif.args.undoneCard)
 		if (notif.args.playerId == this.getPlayerId() && !notif.args.playedCard) this.cancelPlaceCard()
 		if (notif.args.added) this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added)
 		if (notif.args.playedCard) {
@@ -1000,8 +1016,8 @@ class Nimalia implements NimaliaGame {
 	 * Highlight winner for end score.
 	 */
 	notif_highlightWinnerScore(notif: Notif<NotifWinnerArgs>) {
-		console.log("notif_highlightWinnerScore", notif);
-		
+		console.log('notif_highlightWinnerScore', notif)
+
 		this.scoreBoard?.highlightWinnerScore(notif.args.playerId)
 	}
 

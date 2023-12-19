@@ -2409,17 +2409,15 @@ var Nimalia = /** @class */ (function () {
         }
         this.setupNotifications();
         this.setupGoals(this.gamedatas.goals);
-        this.setupPlayer(this.getCurrentPlayer());
-        Object.values(this.gamedatas.players).forEach(function (p) {
-            if (p.id != _this.getCurrentPlayer().id)
-                _this.setupPlayer(p);
+        Object.values(this.gamedatas.playerOrderWorkingWithSpectators).forEach(function (p) {
+            _this.setupPlayer(_this.gamedatas.players[p]);
         });
         $('overall-content').classList.add("player-count-".concat(this.getPlayersCount()));
         this.updateRound(gamedatas.round);
         this.setupSettingsIconInMainBar();
         this.setupPreferences();
         this.setupTooltips();
-        this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players), undefined);
+        this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players));
         this.gamedatas.scores.forEach(function (s) { return _this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score); });
         removeClass('animatedScore');
         console.log('Ending game setup');
@@ -2457,19 +2455,24 @@ var Nimalia = /** @class */ (function () {
         this.setTooltipToClass('xpd-help-icon-mini', "<div class=\"help-card verso\"></div>");
         this.setTooltipToClass('player-turn-order', _('First player'));
     };
+    Nimalia.prototype.isNotSpectator = function () {
+        console.log('isSpectator', this.isSpectator);
+        return (this.isSpectator == false ||
+            Object.keys(this.gamedatas.players).includes(this.getPlayerId().toString()));
+    };
     Nimalia.prototype.setupPlayer = function (player) {
+        //console.log('setupplayer', player)
         document.getElementById("overall_player_board_".concat(player.id)).dataset.playerColor = player.color;
         if (this.gameFeatures.showPlayerOrderHints) {
             this.setupPlayerOrderHints(player);
         }
-        this.setupMiniPlayerBoard(player);
-        if (!this.isSpectator) {
-            this.playerTables[player.id] = new PlayerTable(this, player);
-            console.log('player.id', player.id, 'this.getCurrentPlayer().id', this.getCurrentPlayer().id);
+        this.playerTables[player.id] = new PlayerTable(this, player);
+        this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id]);
+        if (this.isNotSpectator()) {
+            this.setupMiniPlayerBoard(player);
             if (player.id === this.getCurrentPlayer().id)
                 this.playerTables[player.id].replaceCardsInHand(this.gamedatas.hand);
         }
-        this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id]);
     };
     Nimalia.prototype.setupMiniPlayerBoard = function (player) {
         var playerId = Number(player.id);
@@ -2580,15 +2583,17 @@ var Nimalia = /** @class */ (function () {
         };
     };
     Nimalia.prototype.onEnteringPlaceCard = function (args) {
-        this.resetClientActionData();
-        removeClass('dropzone');
-        if (args.possibleSquares[this.getCurrentPlayer().id]) {
-            args.possibleSquares[this.getCurrentPlayer().id].forEach(function (droppable) {
-                dojo.addClass(droppable, 'dropzone');
-            });
-        }
-        else {
-            console.log('WARNING :no possible move');
+        if (this.isNotSpectator()) {
+            this.resetClientActionData();
+            removeClass('dropzone');
+            if (args.possibleSquares[this.getCurrentPlayer().id]) {
+                args.possibleSquares[this.getCurrentPlayer().id].forEach(function (droppable) {
+                    dojo.addClass(droppable, 'dropzone');
+                });
+            }
+            else {
+                console.log('WARNING :no possible move');
+            }
         }
         document.getElementById('score').style.display = 'none';
     };
@@ -2658,11 +2663,13 @@ var Nimalia = /** @class */ (function () {
             }
         }
         else {
-            switch (stateName) {
-                case 'placeCard':
-                    ;
-                    this.addActionButton('undo_place_card_button', _('Undo'), function () { return _this.takeAction('undoPlaceCard'); }, null, null, 'red');
-                    break;
+            if (this.isNotSpectator()) {
+                switch (stateName) {
+                    case 'placeCard':
+                        ;
+                        this.addActionButton('undo_place_card_button', _('Undo'), function () { return _this.takeAction('undoPlaceCard'); }, null, null, 'red');
+                        break;
+                }
             }
         }
     };
@@ -3033,7 +3040,7 @@ var Nimalia = /** @class */ (function () {
             ['points', ANIMATION_MS],
             ['score', ANIMATION_MS],
             ['highlightWinnerScore', ANIMATION_MS],
-            ['lastTurn', 1],
+            ['lastTurn', 1]
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -3045,12 +3052,15 @@ var Nimalia = /** @class */ (function () {
     };
     Nimalia.prototype.updateRound = function (args) {
         this.gamedatas.turnOrderClockwise = args.clockwise;
-        $('round-number-icon').classList.remove('fa6-rotate-right', 'fa6-rotate-left');
-        $('round-number-icon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left');
-        removeClass('active-round');
-        dojo.query(".pie:nth-child(".concat(args.round, ")")).addClass('active-round');
-        this.updateTurnOrder(this.getCurrentPlayer());
-        this.setupPlayerOrderHints(this.getCurrentPlayer());
+        if (this.isNotSpectator()) {
+            //those are in the player panel, so not available for a spectator
+            $('round-number-icon').classList.remove('fa6-rotate-right', 'fa6-rotate-left');
+            $('round-number-icon').classList.add(args.clockwise ? 'fa6-rotate-right' : 'fa6-rotate-left');
+            removeClass('active-round');
+            dojo.query(".pie:nth-child(".concat(args.round, ")")).addClass('active-round');
+            this.updateTurnOrder(this.getCurrentPlayer());
+            this.setupPlayerOrderHints(this.getCurrentPlayer());
+        }
         this.activateGoals(args.goals);
     };
     Nimalia.prototype.activateGoals = function (activeGoals) {
@@ -3097,7 +3107,7 @@ var Nimalia = /** @class */ (function () {
      */
     Nimalia.prototype.notif_highlightWinnerScore = function (notif) {
         var _a;
-        console.log("notif_highlightWinnerScore", notif);
+        console.log('notif_highlightWinnerScore', notif);
         (_a = this.scoreBoard) === null || _a === void 0 ? void 0 : _a.highlightWinnerScore(notif.args.playerId);
     };
     /* This enable to inject translatable styled things to logs or action bar */
@@ -3243,8 +3253,6 @@ var ScoreBoard = /** @class */ (function () {
      * Add trophee icon to top score player(s)
      */
     ScoreBoard.prototype.highlightWinnerScore = function (playerId) {
-        console.log(playerId);
-        console.log("total-".concat(playerId));
         document.getElementById("total-".concat(playerId)).classList.add('highlight');
         document.getElementById("score-winner-".concat(playerId)).classList.add('fa', 'fa-trophy', 'fa-lg');
     };
@@ -3256,7 +3264,7 @@ var ScoreBoard = /** @class */ (function () {
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         this.game = game;
-        var isMyTable = player.id === game.getCurrentPlayer().id;
+        var isMyTable = player.id === game.getPlayerId().toString();
         var ownClass = isMyTable ? 'own' : '';
         var html = "\n\t\t\t<div id=\"player-table-".concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n\t\t\t\t<a id=\"anchor-player-").concat(player.id, "\"></a>\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n\t\t\t\t<div class=\"nml-player-name\">").concat(player.name, "</div>\n            </div>\n        ");
         dojo.place(html, 'player-tables');

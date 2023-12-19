@@ -109,8 +109,6 @@ class ScoreBoard {
 	 * Add trophee icon to top score player(s)
 	 */
     public highlightWinnerScore(playerId: number | string) {
-        console.log(playerId)
-        console.log(`total-${playerId}`)
 		document.getElementById(`total-${playerId}`).classList.add('highlight')
 		document.getElementById(`score-winner-${playerId}`).classList.add('fa', 'fa-trophy', 'fa-lg')
 	}
