@@ -165,6 +165,18 @@ trait UtilTrait {
         return array_keys($this->loadPlayersBasicInfos());
     }
 
+    function getPlayerIdsInOrder($starting) {
+        $player_ids = $this->getPlayersIds();
+        $rotate_count = array_search($starting, $player_ids);
+        if ($rotate_count === false) {
+            return $player_ids;
+        }
+        for ($i = 0; $i < $rotate_count; $i++) {
+            array_push($player_ids, array_shift($player_ids));
+        }
+        return $player_ids;
+    }
+
     function getPlayerCount() {
         return count($this->getPlayersIds());
     }
@@ -202,7 +214,7 @@ trait UtilTrait {
         if($this->getPlayerScore($playerId)<0){
             self::DbQuery("UPDATE player SET `player_score` = 0 where `player_id` = $playerId");
 
-            self::notifyAllPlayers('points',clienttranslate("Score can’t be negative, reset to 0 for {player_name}"), [
+            self::notifyAllPlayers('points',clienttranslate('Score can not be negative, reset to 0 for ${player_name}'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'points' => $this->getPlayerScore($playerId),
