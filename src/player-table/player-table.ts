@@ -185,7 +185,7 @@ class PlayerTable {
 		const myOwnMove = playerId == this.game.getPlayerId()
 		console.log('show move', playerId, playedCard, myOwnMove)
 
-		if (!myOwnMove) {
+		if (!myOwnMove || isReadOnly()) {
 			const id = this.createCardInGrid(playerId, playedCard)
 			removeClass('last-move')
 			$(id).classList.add('last-move')

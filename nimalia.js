@@ -3223,6 +3223,12 @@ function removeClass(className, rootNode) {
         rootNode = rootNode;
     rootNode.querySelectorAll('.' + className).forEach(function (item) { return item.classList.remove(className); });
 }
+/*
+ * Detect if spectator or replay
+ */
+function isReadOnly() {
+    return this.isSpectator || typeof this.g_replayFrom != 'undefined' || this.g_archive_mode;
+}
 /**
  * End score board.
  * No notifications.
@@ -3414,7 +3420,7 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.showMove = function (playerId, playedCard) {
         var myOwnMove = playerId == this.game.getPlayerId();
         console.log('show move', playerId, playedCard, myOwnMove);
-        if (!myOwnMove) {
+        if (!myOwnMove || isReadOnly()) {
             var id = this.createCardInGrid(playerId, playedCard);
             removeClass('last-move');
             $(id).classList.add('last-move');
