@@ -1022,7 +1022,7 @@ html {
   display: inline-block;
 }
 #goals #goals-wrapper .nml-goal.nml-active-goal {
-  box-shadow: 0 0 8px 1px greenyellow;
+  box-shadow: 0 0 8px 4px greenyellow;
 }
 
 .nml-round {
