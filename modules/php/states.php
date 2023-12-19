@@ -24,11 +24,11 @@ trait StateTrait {
         $playersIds = $this->getPlayersIds();
         $lastCards = $this->getLastCardPlayed();
         foreach ($playersIds as $playerId) {
-            self::notifyAllPlayers('cardsMove', "", [
-                "playerId" => $playerId,
-                "playedCard" =>  $lastCards[$playerId]
-            ]);
-            self::giveExtraTime($playerId);
+                            self::notifyAllPlayers('cardsMove', "", [
+                    "playerId" => $playerId,
+                    "playedCard" =>  $lastCards[$playerId]
+                ]);
+                        self::giveExtraTime($playerId);
         }
         $this->draftCards();
         if (count($this->getPlayerCards(array_pop($playersIds))) == 0) {
@@ -48,7 +48,7 @@ trait StateTrait {
             $this->pickInitialCards($playerId);
             self::giveExtraTime($playerId);
         }
-        self::notifyAllPlayers('newRound', clienttranslate('Round ${round}'), $this->getRoundArgs());
+        self::notifyAllPlayers('newRound', clienttranslate('&#10148; Round ${round}'), $this->getRoundArgs());
 
         $this->gamestate->nextState('');
     }
