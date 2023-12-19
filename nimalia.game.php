@@ -180,7 +180,8 @@ class Nimalia extends Table {
             // game is over
             return 100;
         }
-        return 100 * ($this->biomesCards->countCardInLocation('grid'.self::getCurrentPlayerId())) / (3*5);
+        $playerIds = $this->getNonZombiePlayersIds();
+        return 100 * ($this->biomesCards->countCardInLocation('grid' . $playerIds[0])) / (3 * 5);
     }
 
 
@@ -208,9 +209,23 @@ class Nimalia extends Table {
         As a consequence, there is no current player associated to this action. In your zombieTurn function,
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
-
     function zombieTurn($state, $active_player) {
         $statename = $state['name'];
+        if ($statename === "seeScore") {
+            $this->gamestate->setPlayerNonMultiactive($active_player, $this->getScoreSeenNextState($active_player));
+            return;
+        }
+        if ($statename === "placeCard") {
+            //plays a random move so that cards are drafted and everyone has the same amount of cards
+            $zombieHand = $this->biomesCards->getPlayerHand($active_player);
+            if (count($zombieHand)) {
+                $squareId = intval($this->getPart(array_pop($this->getPossibleSquares()[$active_player]), -1, false, "-"));
+                $cardId = intval(array_pop($zombieHand)["id"]);
+                $this->moveCardToReserve($active_player,  $cardId,  $squareId,  0);
+            }
+            $this->gamestate->setPlayerNonMultiactive($active_player, 'cardPlaced');
+            return;
+        }
 
         if ($state['type'] === "activeplayer") {
             switch ($statename) {

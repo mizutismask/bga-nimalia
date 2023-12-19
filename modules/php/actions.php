@@ -44,6 +44,11 @@ trait ActionTrait {
 
     public function undoPlaceCard() {
         $this->gamestate->checkPossibleAction('undoPlaceCard');
+        $activePlayers = $this->getNonZombiePlayersIds();
+        if(!in_array(self::getCurrentPlayerId(), $activePlayers)){
+            throw new BgaUserException("You left the game and thus can not play");
+        }
+
         $playerId = intval(self::getCurrentPlayerId());
         $cardId = $this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD);
         if (!$cardId) {
@@ -56,6 +61,11 @@ trait ActionTrait {
     public function scoreSeen() {
         self::checkAction('seen');
         $playerId = intval(self::getCurrentPlayerId());
+        $nextState = $this->getScoreSeenNextState($playerId);
+        $this->gamestate->setPlayerNonMultiactive($playerId, $nextState);
+    }
+
+    public function getScoreSeenNextState($playerId){
         $nextState = 'nextRound';
 
         if ($this->hasReachedEndOfGameRequirements(null)) {
@@ -65,7 +75,6 @@ trait ActionTrait {
                 $this->gamestate->nextState('endGame');
             }
         }
-
-        $this->gamestate->setPlayerNonMultiactive($playerId, $nextState);
+        return $nextState;
     }
 }

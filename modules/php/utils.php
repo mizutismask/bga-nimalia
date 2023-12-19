@@ -279,8 +279,8 @@ trait UtilTrait {
         return $length === 0 || (substr($haystack, -$length) === $needle);
     }
 
-    function getPart(string $haystack, int $i, bool $noException = false): string {
-        $parts = explode('_', $haystack);
+    function getPart(string $haystack, int $i, bool $noException = false, string $separator='_'): string {
+        $parts = explode($separator, $haystack);
         $len = count($parts);
         if ($noException && $i >= $len)
             return "";

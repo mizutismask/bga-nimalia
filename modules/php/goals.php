@@ -158,7 +158,7 @@ trait GoalTrait {
             $grid[$anchorRow + 1][$anchorCol] = $biomes[2];
             $grid[$anchorRow + 1][$anchorCol + 1] = $biomes[3];
         }
-        $this->displayGrid($grid);
+        //$this->displayGrid($grid);
         return $grid;
     }
 
