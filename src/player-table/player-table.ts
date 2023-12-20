@@ -5,7 +5,7 @@ class PlayerTable {
 	private handStock: LineStock<NimaliaCard>
 
 	constructor(private game: NimaliaGame, player: NimaliaPlayer) {
-		const isMyTable = player.id === game.getPlayerId().toString();
+		const isMyTable = player.id === game.getPlayerId().toString()
 		const ownClass = isMyTable ? 'own' : ''
 		let html = `
 			<div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${ownClass}">
@@ -145,7 +145,8 @@ class PlayerTable {
 		if (
 			!(this.game as any).isCurrentPlayerActive() ||
 			this.game.clientActionData.placedCardId ||
-			this.handStock.getSelection().length !== 1
+			this.handStock.getSelection().length !== 1 ||
+			!(evt.target as HTMLElement).classList.contains('dropzone')
 		) {
 			evt.preventDefault()
 			evt.stopPropagation()

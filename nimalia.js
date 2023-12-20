@@ -3383,7 +3383,8 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.onSquareClick = function (evt) {
         if (!this.game.isCurrentPlayerActive() ||
             this.game.clientActionData.placedCardId ||
-            this.handStock.getSelection().length !== 1) {
+            this.handStock.getSelection().length !== 1 ||
+            !evt.target.classList.contains('dropzone')) {
             evt.preventDefault();
             evt.stopPropagation();
             return;
