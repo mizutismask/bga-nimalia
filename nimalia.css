@@ -374,6 +374,9 @@
 #score #table-wrapper table tr td.total {
   font-weight: bold;
 }
+#score #table-wrapper table tr td.highlight {
+  color: gold;
+}
 #score #table-wrapper table .score-goal {
   width: 10px;
   height: 10px;
