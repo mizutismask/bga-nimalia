@@ -455,6 +455,13 @@
   display: block !important;
 }
 
+.gamestate_placeCard .nml-card-selected .nml-square:not(.dropzone) {
+  cursor: not-allowed;
+}
+.gamestate_placeCard .nml-card-selected .dropzone {
+  cursor: pointer;
+}
+
 #player-tables {
   display: flex;
   flex-wrap: wrap;

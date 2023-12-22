@@ -3297,6 +3297,9 @@ var PlayerTable = /** @class */ (function () {
         //log('smallWidth', smallWidth, baseSettings)
         this.handStock = new LineStock(this.game.cardsManager, $('hand-' + player.id), baseSettings);
         this.handStock.setSelectionMode('single');
+        this.handStock.onSelectionChange = function (selection, lastChange) {
+            dojo.toggleClass("player-table-".concat(player.id), "nml-card-selected", selection.length > 0);
+        };
     };
     PlayerTable.prototype.setupReserve = function (player) {
         var divId = "reserve-".concat(player.id);

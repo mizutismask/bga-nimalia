@@ -44,6 +44,9 @@ class PlayerTable {
 
 		this.handStock = new LineStock<NimaliaCard>(this.game.cardsManager, $('hand-' + player.id), baseSettings)
 		this.handStock.setSelectionMode('single')
+		this.handStock.onSelectionChange = (selection: Array<NimaliaCard>, lastChange: NimaliaCard) => {
+			dojo.toggleClass(`player-table-${player.id}`, "nml-card-selected", selection.length > 0);
+		}
 	}
 
 	private setupReserve(player: NimaliaPlayer) {
