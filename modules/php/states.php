@@ -95,14 +95,14 @@ trait StateTrait {
                 //self::dump('*******************calculateGoalPoints', compact("goal", "score","playerId"));
                 self::incStat($score, "game_pointsRound" . $round . $goal->color, $playerId);
                 $goalColor = $goal->color;
-                $this->incPlayerScore($playerId, $score, clienttranslate('${player_name} gains ${delta} points with the ${color} goal'), ["color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId)]);
+                $this->incPlayerScore($playerId, $score, clienttranslate('${player_name} scores ${delta} points with the ${color} goal'), ["color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId)]);
                 $roundScores[$playerId] += $score;
                 $totalScore[$playerId] += $score;
             }
         }
 
         foreach ($players as $playerId => $playerDb) {
-            $this->notifyPlayerScore($playerId, $roundScores[$playerId], clienttranslate('${player_name} gains a total of ${score} points for the round ${round}'), ["round" => $round, "scoreType" => $this->getTotalType($round, $playerId)]);
+            $this->notifyPlayerScore($playerId, $roundScores[$playerId], clienttranslate('${player_name} scores a total of ${score} points for the round ${round}'), ["round" => $round, "scoreType" => $this->getTotalType($round, $playerId)]);
         }
 
         //round winner
