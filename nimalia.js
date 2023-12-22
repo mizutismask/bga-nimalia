@@ -2419,6 +2419,9 @@ var Nimalia = /** @class */ (function () {
         this.setupTooltips();
         this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players));
         this.gamedatas.scores.forEach(function (s) { return _this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score); });
+        if (this.gamedatas.winners) {
+            this.gamedatas.winners.forEach(function (pId) { return _this.scoreBoard.highlightWinnerScore(pId); });
+        }
         removeClass('animatedScore');
         log('Ending game setup');
     };

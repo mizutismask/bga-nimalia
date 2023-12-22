@@ -95,6 +95,9 @@ class Nimalia implements NimaliaGame {
 		this.setupTooltips()
 		this.scoreBoard = new ScoreBoard(this, Object.values(this.gamedatas.players))
 		this.gamedatas.scores.forEach((s) => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score))
+		if (this.gamedatas.winners) {
+			this.gamedatas.winners.forEach((pId) => this.scoreBoard.highlightWinnerScore(pId))
+		}
 		removeClass('animatedScore')
 
 		log('Ending game setup')

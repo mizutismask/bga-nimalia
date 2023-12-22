@@ -125,7 +125,7 @@ class Nimalia extends Table {
     */
     protected function getAllDatas() {
         $stateName = $this->gamestate->state()['name'];
-        $isEnd = $stateName === 'endScore' || $stateName === 'gameEnd' || $stateName === 'debugGameEnd';
+        $isEnd = $stateName === 'endScore' || $stateName === 'gameEnd' || $stateName === 'debugGameEnd' || $stateName === 'seeScore' && self::getGameStateValue(ROUND) == 5;
 
         $result = [];
 
@@ -133,14 +133,22 @@ class Nimalia extends Table {
 
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_score_aux scoreAux, player_no playerNo FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
         $result['playerOrderWorkingWithSpectators'] = $this->getPlayerIdsInOrder($currentPlayerId);
-        
+
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['expansion'] = EXPANSION;
         if ($isEnd) {
-            $result['bestScore'] = max(array_map(fn ($player) => intval($player['score']), $result['players']));
+            if ($stateName === "seeScore") {
+                $maxScore = max(array_map(fn ($player) => intval($player['score']), $result['players']));
+                $result['winners'] = array_keys(array_filter($result['players'], fn ($player) => intval($player['score'] == $maxScore)));
+                if (count($result['winners']) > 1) {
+                    $tieWinners =  array_filter($result['players'], fn ($player) => in_array($player["id"], $result['winners']));
+                    $maxScore = max(array_map(fn ($player) => intval($player['scoreAux']),$tieWinners));
+                    $result['winners'] = array_keys(array_filter($tieWinners, fn ($player) => intval($player['scoreAux'] == $maxScore )));
+                }
+            }
         } else {
             $result['lastTurn'] = $this->getGameStateValue(LAST_TURN) > 0;
         }
@@ -150,7 +158,7 @@ class Nimalia extends Table {
         $result['round'] = $this->getRoundArgs();
         $result["goals"] = $this->getGameGoals();
         $result["scores"] = $this->getScoreArgs();
-       foreach ($result['players'] as $playerId => &$player) {
+        foreach ($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
             $result['grids'][$playerId] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid$playerId", null, "card_order_in_grid"));
             if ($stateName === "placeCard" && $currentPlayerId != $playerId) {

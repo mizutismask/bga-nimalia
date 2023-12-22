@@ -46,7 +46,7 @@ interface NimaliaGamedatas {
 	lastTurn: boolean
 	turnOrderClockwise: boolean
 	// counters
-	bestScore: number
+	winners: number[]
 	// Add here variables you set up in getAllDatas
 	hand: Array<NimaliaCard>
 	goals: Array<Goal>
