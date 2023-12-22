@@ -13,6 +13,8 @@
 			.nml-reserve {
 				grid-column: 1 !important;
 				grid-row: 2 !important;
+				margin-left: 10px; //because of horizontal hand gap
+				margin-right: 10px; //because of horizontal hand gap
 			}
 			.nml-player-name {
 				grid-column: 1 !important;
@@ -30,12 +32,12 @@
 	}
 }
 
-.gamestate_placeCard{
-	.nml-card-selected{
-		.nml-square:not(.dropzone){
+.gamestate_placeCard {
+	.nml-card-selected {
+		.nml-square:not(.dropzone) {
 			cursor: not-allowed;
 		}
-		.dropzone{
+		.dropzone {
 			cursor: pointer;
 		}
 	}
@@ -72,8 +74,8 @@
 			grid-template-rows: repeat(6, 1fr);
 			grid-gap: 0px;
 			background-color: #008abe;
-			margin-left: 10px; //because of horizontal hand gap
-			margin-right: 10px; //because of horizontal hand gap
+			margin-top: 10px; //because of vertical hand gap
+			margin-bottom: 10px; //because of vertical hand gap
 
 			.nml-square {
 				width: 100px;

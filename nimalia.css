@@ -448,6 +448,8 @@
   #player-tables .player-table .nml-reserve {
     grid-column: 1 !important;
     grid-row: 2 !important;
+    margin-left: 10px;
+    margin-right: 10px;
   }
   #player-tables .player-table .nml-player-name {
     grid-column: 1 !important;
@@ -499,8 +501,8 @@
   grid-template-rows: repeat(6, 1fr);
   grid-gap: 0px;
   background-color: #008abe;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 #player-tables .player-table .nml-reserve .nml-square {
   width: 100px;
