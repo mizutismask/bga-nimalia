@@ -1,8 +1,12 @@
+const GRID_SIZE = 6
+const SQUARE_WIDTH = 100
 /**
  * Player table.
  */
 class PlayerTable {
 	private handStock: LineStock<NimaliaCard>
+	private dragOffsetX: number
+	private dragOffsetY: number
 
 	constructor(private game: NimaliaGame, player: NimaliaPlayer) {
 		const isMyTable = player.id === game.getPlayerId().toString()
@@ -45,7 +49,7 @@ class PlayerTable {
 		this.handStock = new LineStock<NimaliaCard>(this.game.cardsManager, $('hand-' + player.id), baseSettings)
 		this.handStock.setSelectionMode('single')
 		this.handStock.onSelectionChange = (selection: Array<NimaliaCard>, lastChange: NimaliaCard) => {
-			dojo.toggleClass(`player-table-${player.id}`, "nml-card-selected", selection.length > 0);
+			dojo.toggleClass(`player-table-${player.id}`, 'nml-card-selected', selection.length > 0)
 		}
 	}
 
@@ -130,18 +134,62 @@ class PlayerTable {
 		}
 		// Add the target element's id to the data transfer object
 		evt.dataTransfer?.setData('text/plain', evt.target.id) //we move the whole card
-		//evt.dataTransfer.effectAllowed = 'move'
-		//log('drag', evt.target.id)
+		this.dragOffsetX = evt.offsetX
+		this.dragOffsetY = evt.offsetY
+		//log('drag', evt.target.id, evt.offsetX)
 	}
 
-	private onCardDrop(evt) {
+	private onCardDropOver(evt) {
+		evt.preventDefault()
+		evt.stopPropagation()
+		const square = this.getDropTarget(evt as DragEvent)
+		if (square && square.classList?.contains('dropzone')) {
+			evt.dataTransfer.dropEffect = 'move'
+		} else {
+			evt.dataTransfer.dropEffect = 'none'
+		}
+	}
+
+	private onCardDrop(evt: DragEvent) {
 		// Add the target element's id to the data transfer object
 		evt.dataTransfer.effectAllowed = 'move'
 		evt.preventDefault()
 		evt.stopPropagation()
 		const cardId = evt.dataTransfer.getData('text/plain')
-		const square = (evt.target as HTMLElement).closest('.nml-square')
-		this.moveCardToGrid(cardId, square)
+		const square = this.getDropTarget(evt as DragEvent)
+		if (square) this.moveCardToGrid(cardId, square)
+		this.dragOffsetX = 0
+		this.dragOffsetY = 0
+	}
+
+	private getDropTarget(evt: DragEvent) {
+		const evtTarget = evt.target as HTMLElement
+		const droppedTarget = evtTarget.closest('.nml-square')
+		let square = droppedTarget
+		
+		if (this.dragOffsetX > SQUARE_WIDTH || this.dragOffsetY > SQUARE_WIDTH) {
+			const squareName = droppedTarget.id
+			const squareNumber = (this.game as any).getPart(squareName, -1) - 1
+			let row = Math.floor(squareNumber / GRID_SIZE) //coords starting at 0
+			let col = squareNumber % GRID_SIZE //starting at 0
+			//distance between the drag click and top left corner of the card is greater than a square, so the drop target is not correct
+			//target should be at the top left of the card but is where the user is dropping with the mouse
+
+			//log('avnt', 'row', row, 'col', col, squareNumber)
+			if (this.dragOffsetX > 100) col--
+			if (this.dragOffsetY > 100) row--
+			let newSquareNumber = (row * GRID_SIZE + col + 1).toString() //square corresponding to the top left corner
+			//log('après', 'row', row, 'col', col, newSquareNumber)
+
+			const newSquareName = replaceAfterLastDash(squareName, newSquareNumber)
+			if (droppedTarget.id !== newSquareName && $(newSquareName)) {
+				square = $(newSquareName)
+				//log('target', droppedTarget.id, 'replaced by', square.id)
+			} else {
+				square = undefined
+			}
+		}
+		return square
 	}
 
 	private onSquareClick(evt: MouseEvent) {
@@ -173,16 +221,6 @@ class PlayerTable {
 		}
 		dojo.toggleClass('place-card-button', 'disabled', !cardId || !square)
 		dojo.toggleClass('cancel-button', 'disabled', !cardId || !square)
-	}
-
-	private onCardDropOver(evt) {
-		evt.preventDefault()
-		evt.stopPropagation()
-		if (evt.target.classList && evt.target.classList.contains('dropzone')) {
-			evt.dataTransfer.dropEffect = 'move'
-		} else {
-			evt.dataTransfer.dropEffect = 'none'
-		}
 	}
 
 	public showMove(playerId: number, playedCard: NimaliaCard) {

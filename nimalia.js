@@ -3231,6 +3231,9 @@ function removeClass(className, rootNode) {
 function isReadOnly() {
     return this.isSpectator || typeof this.g_replayFrom != 'undefined' || this.g_archive_mode;
 }
+function replaceAfterLastDash(inputString, replacement) {
+    return inputString.replace(/[^-]*$/, replacement);
+}
 /**
  * End score board.
  * No notifications.
@@ -3266,6 +3269,8 @@ var ScoreBoard = /** @class */ (function () {
     };
     return ScoreBoard;
 }());
+var GRID_SIZE = 6;
+var SQUARE_WIDTH = 100;
 /**
  * Player table.
  */
@@ -3301,7 +3306,7 @@ var PlayerTable = /** @class */ (function () {
         this.handStock = new LineStock(this.game.cardsManager, $('hand-' + player.id), baseSettings);
         this.handStock.setSelectionMode('single');
         this.handStock.onSelectionChange = function (selection, lastChange) {
-            dojo.toggleClass("player-table-".concat(player.id), "nml-card-selected", selection.length > 0);
+            dojo.toggleClass("player-table-".concat(player.id), 'nml-card-selected', selection.length > 0);
         };
     };
     PlayerTable.prototype.setupReserve = function (player) {
@@ -3374,8 +3379,21 @@ var PlayerTable = /** @class */ (function () {
         }
         // Add the target element's id to the data transfer object
         (_a = evt.dataTransfer) === null || _a === void 0 ? void 0 : _a.setData('text/plain', evt.target.id); //we move the whole card
-        //evt.dataTransfer.effectAllowed = 'move'
-        //log('drag', evt.target.id)
+        this.dragOffsetX = evt.offsetX;
+        this.dragOffsetY = evt.offsetY;
+        //log('drag', evt.target.id, evt.offsetX)
+    };
+    PlayerTable.prototype.onCardDropOver = function (evt) {
+        var _a;
+        evt.preventDefault();
+        evt.stopPropagation();
+        var square = this.getDropTarget(evt);
+        if (square && ((_a = square.classList) === null || _a === void 0 ? void 0 : _a.contains('dropzone'))) {
+            evt.dataTransfer.dropEffect = 'move';
+        }
+        else {
+            evt.dataTransfer.dropEffect = 'none';
+        }
     };
     PlayerTable.prototype.onCardDrop = function (evt) {
         // Add the target element's id to the data transfer object
@@ -3383,8 +3401,40 @@ var PlayerTable = /** @class */ (function () {
         evt.preventDefault();
         evt.stopPropagation();
         var cardId = evt.dataTransfer.getData('text/plain');
-        var square = evt.target.closest('.nml-square');
-        this.moveCardToGrid(cardId, square);
+        var square = this.getDropTarget(evt);
+        if (square)
+            this.moveCardToGrid(cardId, square);
+        this.dragOffsetX = 0;
+        this.dragOffsetY = 0;
+    };
+    PlayerTable.prototype.getDropTarget = function (evt) {
+        var evtTarget = evt.target;
+        var droppedTarget = evtTarget.closest('.nml-square');
+        var square = droppedTarget;
+        if (this.dragOffsetX > SQUARE_WIDTH || this.dragOffsetY > SQUARE_WIDTH) {
+            var squareName = droppedTarget.id;
+            var squareNumber = this.game.getPart(squareName, -1) - 1;
+            var row = Math.floor(squareNumber / GRID_SIZE); //coords starting at 0
+            var col = squareNumber % GRID_SIZE; //starting at 0
+            //distance between the drag click and top left corner of the card is greater than a square, so the drop target is not correct
+            //target should be at the top left of the card but is where the user is dropping with the mouse
+            //log('avnt', 'row', row, 'col', col, squareNumber)
+            if (this.dragOffsetX > 100)
+                col--;
+            if (this.dragOffsetY > 100)
+                row--;
+            var newSquareNumber = (row * GRID_SIZE + col + 1).toString(); //square corresponding to the top left corner
+            //log('après', 'row', row, 'col', col, newSquareNumber)
+            var newSquareName = replaceAfterLastDash(squareName, newSquareNumber);
+            if (droppedTarget.id !== newSquareName && $(newSquareName)) {
+                square = $(newSquareName);
+                //log('target', droppedTarget.id, 'replaced by', square.id)
+            }
+            else {
+                square = undefined;
+            }
+        }
+        return square;
     };
     PlayerTable.prototype.onSquareClick = function (evt) {
         if (!this.game.isCurrentPlayerActive() ||
@@ -3412,16 +3462,6 @@ var PlayerTable = /** @class */ (function () {
         }
         dojo.toggleClass('place-card-button', 'disabled', !cardId || !square);
         dojo.toggleClass('cancel-button', 'disabled', !cardId || !square);
-    };
-    PlayerTable.prototype.onCardDropOver = function (evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        if (evt.target.classList && evt.target.classList.contains('dropzone')) {
-            evt.dataTransfer.dropEffect = 'move';
-        }
-        else {
-            evt.dataTransfer.dropEffect = 'none';
-        }
     };
     PlayerTable.prototype.showMove = function (playerId, playedCard) {
         var myOwnMove = playerId == this.game.getPlayerId();
