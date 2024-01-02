@@ -3005,6 +3005,9 @@ var Nimalia = /** @class */ (function () {
         if ($('cancel-button')) {
             dojo.toggleClass('cancel-button', 'disabled', true);
         }
+        if ($('place-card-button')) {
+            dojo.toggleClass('place-card-button', 'disabled', true);
+        }
         return canceled;
     };
     Nimalia.prototype.takeAction = function (action, data) {

@@ -895,6 +895,9 @@ class Nimalia implements NimaliaGame {
 		if ($('cancel-button')) {
 			dojo.toggleClass('cancel-button', 'disabled', true)
 		}
+		if ($('place-card-button')) {
+			dojo.toggleClass('place-card-button', 'disabled', true)
+		}
 		return canceled
 	}
 
