@@ -25,9 +25,16 @@
 }
 
 .current_player_is_active {
-	.nimalia-card:not(.bga-cards_disabled-card) {
-		.nml-rotate {
-			display: block !important;
+	.nimalia-card {
+		&:not(.bga-cards_disabled-card){
+			.nml-rotate {
+				display: block !important;
+			}
+		}
+		&.local-change {
+			.nml-rotate {
+				display: block !important;
+			}
 		}
 	}
 }

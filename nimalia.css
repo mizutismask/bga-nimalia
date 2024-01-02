@@ -459,6 +459,9 @@
 .current_player_is_active .nimalia-card:not(.bga-cards_disabled-card) .nml-rotate {
   display: block !important;
 }
+.current_player_is_active .nimalia-card.local-change .nml-rotate {
+  display: block !important;
+}
 
 .gamestate_placeCard .nml-card-selected .nml-square:not(.dropzone) {
   cursor: not-allowed;
