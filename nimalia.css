@@ -600,6 +600,9 @@
 #player-tables .player-table .nml-rotate.nml-rotate-right {
   right: 2%;
 }
+#player-tables .player-table .front {
+  transition: rotate 0.2s;
+}
 #player-tables .player-table .front[data-rotation="90"] {
   rotate: 90deg;
 }

@@ -153,6 +153,7 @@
 		}
 
 		.front {
+			transition: rotate .2s;
 			&[data-rotation='90'] {
 				rotate: 90deg;
 			}
