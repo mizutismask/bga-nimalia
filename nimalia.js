@@ -3258,10 +3258,9 @@ var ScoreBoard = /** @class */ (function () {
     }
     ScoreBoard.prototype.updateScore = function (playerId, scoreType, score) {
         var elt = dojo.byId(scoreType);
-        //if (elt.innerHTML != score.toString()) {
         elt.innerHTML = score.toString();
-        dojo.addClass(scoreType, "animatedScore");
-        //}
+        dojo.addClass(scoreType, 'animatedScore');
+        //(this.game as any).displayScoring("square-2333092-6", "bb5500f", 2, 10,10,10)
     };
     /**
      * Add trophee icon to top score player(s)
@@ -3331,14 +3330,27 @@ var PlayerTable = /** @class */ (function () {
             _this.createCardInGrid(parseInt(player.id), c);
         });
     };
-    PlayerTable.prototype.createCardInGrid = function (playerId, card) {
+    PlayerTable.prototype.createCardInGrid = function (playerId, card, animate) {
+        if (animate === void 0) { animate = false; }
         var divId = this.game.cardsManager.getId(card);
+        var destination = "square-".concat(playerId, "-").concat(card.location_arg);
+        var creationLocation = destination;
+        if (animate) {
+            creationLocation = "overall_player_board_".concat(playerId);
+        }
+        log('createCardInGrid', divId, creationLocation);
         dojo.create('div', {
-            id: this.game.cardsManager.getId(card),
+            id: divId,
             style: getBackgroundInlineStyleForNimaliaCard(card),
             class: 'nimalia-card card-side front nml-card-order-' + card.order,
             'data-rotation': card.rotation
-        }, "square-".concat(playerId, "-").concat(card.location_arg));
+        }, creationLocation);
+        if (animate) {
+            this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({
+                element: $(divId),
+                zoom: 1
+            }), $(destination));
+        }
         return divId;
     };
     PlayerTable.prototype.removeCardFromGrid = function (card) {
@@ -3448,13 +3460,22 @@ var PlayerTable = /** @class */ (function () {
             evt.stopPropagation();
             return;
         }
-        this.moveCardToGrid(this.game.cardsManager.getId(this.handStock.getSelection()[0]), evt.target);
+        this.moveCardToGrid(this.game.cardsManager.getId(this.handStock.getSelection()[0]), evt.target, true);
     };
-    PlayerTable.prototype.moveCardToGrid = function (cardId, square) {
+    PlayerTable.prototype.moveCardToGrid = function (cardId, square, animation) {
+        if (animation === void 0) { animation = false; }
         log('drop', cardId, 'to', square.id);
         if (cardId && square) {
             this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement;
-            square.appendChild($(cardId));
+            if (animation) {
+                this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({
+                    element: $(cardId),
+                    zoom: 1
+                }), square);
+            }
+            else {
+                square.appendChild($(cardId));
+            }
             $(cardId).classList.add('local-change');
             /*this.handStock.removeCard(
                 this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
@@ -3470,7 +3491,7 @@ var PlayerTable = /** @class */ (function () {
         var myOwnMove = playerId == this.game.getPlayerId();
         log('show move', playerId, playedCard, myOwnMove);
         if (!myOwnMove || isReadOnly()) {
-            var id = this.createCardInGrid(playerId, playedCard);
+            var id = this.createCardInGrid(playerId, playedCard, true);
             removeClass('last-move');
             $(id).classList.add('last-move');
         }

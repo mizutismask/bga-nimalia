@@ -5,10 +5,7 @@ declare const playSound
  * No notifications.
  */
 class ScoreBoard {
-	constructor(
-		private game: NimaliaGame,
-		private players: NimaliaPlayer[],
-	) {
+	constructor(private game: NimaliaGame, private players: NimaliaPlayer[]) {
 		const headers = document.getElementById('scoretr')
 		if (!headers.childElementCount) {
 			dojo.place(
@@ -99,16 +96,15 @@ class ScoreBoard {
 
 	public updateScore(playerId: number, scoreType: string, score: number) {
 		const elt = dojo.byId(scoreType)
-		//if (elt.innerHTML != score.toString()) {
-			elt.innerHTML = score.toString()
-            dojo.addClass(scoreType, "animatedScore")
-		//}
+		elt.innerHTML = score.toString()
+		dojo.addClass(scoreType, 'animatedScore')
+		//(this.game as any).displayScoring("square-2333092-6", "bb5500f", 2, 10,10,10)
 	}
 
 	/**
 	 * Add trophee icon to top score player(s)
 	 */
-    public highlightWinnerScore(playerId: number | string) {
+	public highlightWinnerScore(playerId: number | string) {
 		document.getElementById(`total-${playerId}`).classList.add('highlight')
 		document.getElementById(`score-winner-${playerId}`).classList.add('fa', 'fa-trophy', 'fa-lg')
 	}

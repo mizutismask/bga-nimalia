@@ -78,18 +78,35 @@ class PlayerTable {
 		})
 	}
 
-	public createCardInGrid(playerId: number, card: NimaliaCard): string {
+	public createCardInGrid(playerId: number, card: NimaliaCard, animate: boolean = false): string {
 		const divId = this.game.cardsManager.getId(card)
+		let destination = `square-${playerId}-${card.location_arg}`
+		let creationLocation = destination
+		if (animate) {
+			creationLocation = `overall_player_board_${playerId}`
+		}
+		log('createCardInGrid', divId, creationLocation)
+
 		dojo.create(
 			'div',
 			{
-				id: this.game.cardsManager.getId(card),
+				id: divId,
 				style: getBackgroundInlineStyleForNimaliaCard(card),
 				class: 'nimalia-card card-side front nml-card-order-' + card.order,
 				'data-rotation': card.rotation
 			},
-			`square-${playerId}-${card.location_arg}`
+			creationLocation
 		)
+
+		if (animate) {
+			this.game.animationManager.attachWithAnimation(
+				new BgaSlideAnimation({
+					element: $(divId),
+					zoom: 1
+				}),
+				$(destination)
+			)
+		}
 		return divId
 	}
 
@@ -157,7 +174,7 @@ class PlayerTable {
 		evt.stopPropagation()
 		const cardId = evt.dataTransfer.getData('text/plain')
 		const square = this.getDropTarget(evt as DragEvent)
-		if (square) this.moveCardToGrid(cardId, square)
+		if (square) this.moveCardToGrid(cardId, square as HTMLElement)
 		this.dragOffsetX = 0
 		this.dragOffsetY = 0
 	}
@@ -166,7 +183,7 @@ class PlayerTable {
 		const evtTarget = evt.target as HTMLElement
 		const droppedTarget = evtTarget.closest('.nml-square')
 		let square = droppedTarget
-		
+
 		if (this.dragOffsetX > SQUARE_WIDTH || this.dragOffsetY > SQUARE_WIDTH) {
 			const squareName = droppedTarget.id
 			const squareNumber = (this.game as any).getPart(squareName, -1) - 1
@@ -203,14 +220,28 @@ class PlayerTable {
 			evt.stopPropagation()
 			return
 		}
-		this.moveCardToGrid(this.game.cardsManager.getId(this.handStock.getSelection()[0]), evt.target)
+		this.moveCardToGrid(
+			this.game.cardsManager.getId(this.handStock.getSelection()[0]),
+			evt.target as HTMLElement,
+			true
+		)
 	}
 
-	private moveCardToGrid(cardId: string, square) {
+	private moveCardToGrid(cardId: string, square: HTMLElement, animation: boolean = false) {
 		log('drop', cardId, 'to', square.id)
 		if (cardId && square) {
 			this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement
-			square.appendChild($(cardId))
+			if (animation) {
+				this.game.animationManager.attachWithAnimation(
+					new BgaSlideAnimation({
+						element: $(cardId),
+						zoom: 1
+					}),
+					square
+				)
+			} else {
+				square.appendChild($(cardId))
+			}
 			$(cardId).classList.add('local-change')
 			/*this.handStock.removeCard(
 				this.handStock.getCards().filter((c) => c.id == (this.game as any).getPart(cardId, -1))[0]
@@ -228,7 +259,7 @@ class PlayerTable {
 		log('show move', playerId, playedCard, myOwnMove)
 
 		if (!myOwnMove || isReadOnly()) {
-			const id = this.createCardInGrid(playerId, playedCard)
+			const id = this.createCardInGrid(playerId, playedCard, true)
 			removeClass('last-move')
 			$(id).classList.add('last-move')
 		} else {
