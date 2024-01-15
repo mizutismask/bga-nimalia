@@ -442,7 +442,7 @@ class Nimalia implements NimaliaGame {
 			switch (stateName) {
 				case 'placeCard':
 					;(this as any).addActionButton('place-card-button', _('Validate'), () => this.placeCard())
-					dojo.addClass('place-card-button', 'disabled')
+					
 					;(this as any).addActionButton(
 						'cancel-button',
 						_('Cancel'),
@@ -450,8 +450,13 @@ class Nimalia implements NimaliaGame {
 						null,
 						null,
 						'red'
-					)
-					dojo.addClass('cancel-button', 'disabled')
+						)
+						
+					const changesPending = this.clientActionData !== undefined
+					if (!changesPending) {
+						dojo.addClass('place-card-button', 'disabled')
+						dojo.addClass('cancel-button', 'disabled')
+					}
 					break
 				case 'seeScore':
 					;(this as any).addActionButton('score-seen-button', _('Finished'), () =>

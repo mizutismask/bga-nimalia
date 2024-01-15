@@ -2652,9 +2652,12 @@ var Nimalia = /** @class */ (function () {
                 case 'placeCard':
                     ;
                     this.addActionButton('place-card-button', _('Validate'), function () { return _this.placeCard(); });
-                    dojo.addClass('place-card-button', 'disabled');
                     this.addActionButton('cancel-button', _('Cancel'), function () { return _this.cancelPlaceCard(); }, null, null, 'red');
-                    dojo.addClass('cancel-button', 'disabled');
+                    var changesPending = this.clientActionData !== undefined;
+                    if (!changesPending) {
+                        dojo.addClass('place-card-button', 'disabled');
+                        dojo.addClass('cancel-button', 'disabled');
+                    }
                     break;
                 case 'seeScore':
                     ;
