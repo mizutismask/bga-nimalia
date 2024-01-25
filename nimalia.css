@@ -467,7 +467,7 @@
 .current_player_is_active #player-tables .own .reserve-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  justify-content: center;
+  justify-items: center;
   align-items: center;
 }
 .current_player_is_active #player-tables .own .reserve-wrapper .nml-control {

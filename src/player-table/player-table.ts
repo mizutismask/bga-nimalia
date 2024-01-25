@@ -24,10 +24,10 @@ class PlayerTable {
 
 		if (isMyTable) {
 			let html = `
-				<div id="controlGridLeft" class="nml-control grid-left css-icon" data-direction="left">🠸</div>
-				<div id="controlGridUp" class="nml-control grid-up css-icon" data-direction="up">🠹</div>
-				<div id="controlGridDown" class="nml-control grid-down css-icon" data-direction="down">🠻</div>
-				<div id="controlGridRight" class="nml-control grid-right css-icon" data-direction="right">🠺</div>
+				<div id="controlGridLeft" class="nml-control grid-left css-icon fa6 fa6-circle-chevron-left" data-direction="left"></div>
+				<div id="controlGridUp" class="nml-control grid-up css-icon fa6 fa6-circle-chevron-up" data-direction="up"></div>
+				<div id="controlGridDown" class="nml-control grid-down css-icon fa6 fa6-circle-chevron-down" data-direction="down"></div>
+				<div id="controlGridRight" class="nml-control grid-right css-icon fa6 fa6-circle-chevron-right" data-direction="right"></div>
         `
 			dojo.place(html, `reserve-${player.id}`, 'after')
 
