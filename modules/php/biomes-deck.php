@@ -88,7 +88,7 @@ trait BiomesCardTrait {
         $cards = [];
         foreach ($this->getPlayersIds() as $playerId) {
             $cards[$playerId] = $this->getBiomesCardFromDb($this->biomesCards->getCard($this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD)));
-                    }
+        }
         return $cards;
     }
 
@@ -200,5 +200,53 @@ trait BiomesCardTrait {
         foreach ($players as $playerId => $player) {
             self::notifyPlayer($playerId, 'cardsMove', "", ["playerId" => $playerId, "added" => $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId))]);;
         }
+    }
+
+    public function shiftCards($playerId, string $direction) {
+        $cards = $this->getGridCards(($playerId));
+
+        foreach ($cards as $card) {
+            $cardId = $card->id;
+            switch ($direction) {
+                case 'up':
+                    $this->biomesCards->moveCard($cardId, "grid$playerId", $card->location_arg - GRID_SIZE);
+                    break;
+                case 'down':
+                    $this->biomesCards->moveCard($cardId, "grid$playerId", $card->location_arg + GRID_SIZE);
+                    break;
+                case 'left':
+                    $this->biomesCards->moveCard($cardId, "grid$playerId", $card->location_arg - 1);
+                    break;
+                case 'right':
+                    $this->biomesCards->moveCard($cardId, "grid$playerId", $card->location_arg + 1);
+                    break;
+                default:
+                    //not possible
+            }
+        }
+
+        $canShiftAgain = [];
+        $grid = $this->getGrid($playerId);
+        $canShiftAgain["up"] = $this->canShiftGrid($grid, "up");
+        $canShiftAgain["down"] = $this->canShiftGrid($grid, "down");
+        $canShiftAgain["left"] = $this->canShiftGrid($grid, "left");
+        $canShiftAgain["right"] = $this->canShiftGrid($grid, "right");
+
+        self::notifyAllPlayers('gridMoved', "", [
+            "playerId" => $playerId,
+            "cards" => $this->getPlayerGridCards($playerId),
+            "canShiftGrid" => $canShiftAgain,
+        ]);
+    }
+
+    public function getPlayerGridCards($playerId) {
+        $stateName = $this->gamestate->state()['name'];
+        $currentPlayerId = self::getCurrentPlayerId();
+        $cards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid$playerId", null, "card_order_in_grid"));
+        if ($stateName === "placeCard" && $currentPlayerId != $playerId) {
+            //do not show unrevealed last card
+            $card = array_filter($cards, fn ($card) => $card->id != $this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD));
+        }
+        return $cards;
     }
 }

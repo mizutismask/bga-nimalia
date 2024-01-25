@@ -445,9 +445,11 @@
     width: unset !important;
     height: 200px !important;
   }
-  #player-tables .player-table .nml-reserve {
+  #player-tables .player-table .reserve-wrapper {
     grid-column: 1 !important;
     grid-row: 2 !important;
+  }
+  #player-tables .player-table .nml-reserve {
     margin-left: 10px;
     margin-right: 10px;
   }
@@ -461,6 +463,43 @@
 }
 .current_player_is_active .nimalia-card.local-change .nml-rotate {
   display: block !important;
+}
+.current_player_is_active #player-tables .own .reserve-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: center;
+  align-items: center;
+}
+.current_player_is_active #player-tables .own .reserve-wrapper .nml-control {
+  font-size: xx-large;
+  display: flex;
+  background-color: white;
+  font-weight: bolder;
+  width: 20px;
+  height: 20px;
+}
+.current_player_is_active #player-tables .own .reserve-wrapper .nml-control.grid-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+.current_player_is_active #player-tables .own .reserve-wrapper .nml-control.grid-down {
+  grid-column: 2;
+  grid-row: 3;
+}
+.current_player_is_active #player-tables .own .reserve-wrapper .nml-control.grid-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+.current_player_is_active #player-tables .own .reserve-wrapper .nml-control.grid-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+.current_player_is_active #player-tables .own .reserve-wrapper .nml-control.disabled {
+  background-color: gray;
+}
+.current_player_is_active #player-tables .own .reserve-wrapper .nml-reserve {
+  grid-column: 2;
+  grid-row: 2;
 }
 
 .gamestate_placeCard .nml-card-selected .nml-square:not(.dropzone) {
@@ -496,9 +535,14 @@
   grid-column: 2;
   grid-row: 2;
 }
-#player-tables .player-table .nml-reserve {
+#player-tables .player-table .nml-control {
+  display: none;
+}
+#player-tables .player-table .reserve-wrapper {
   grid-column: 2;
   grid-row: 1;
+}
+#player-tables .player-table .nml-reserve {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(6, 1fr);
@@ -981,6 +1025,10 @@ html {
   left: 10px;
   color: white;
   background-color: rgb(21, 104, 134);
+}
+.css-icon.disabled {
+  filter: grayscale(1);
+  pointer-events: none;
 }
 
 .card .card-sides .card-side.front .card-info {

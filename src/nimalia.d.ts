@@ -62,6 +62,7 @@ interface ClientActionData {
 }
 
 interface NimaliaGame extends Game {
+	shiftGrid(direction: string): void
 	cardsManager: CardsManager
 	animationManager: AnimationManager
 	getCurrentPlayer(): NimaliaPlayer
@@ -79,6 +80,7 @@ interface EnteringChooseActionArgs {
 
 interface EnteringPlaceCardArgs {
 	possibleSquares: { [playerId: number]: Array<String> }
+	canShiftGrid: { [playerId: number]: { [direction: string]: Array<Boolean> } }
 }
 
 interface CardsMoveArgs {
@@ -87,6 +89,12 @@ interface CardsMoveArgs {
 	playedCard?: NimaliaCard
 	fromUndo?: boolean
 	undoneCard?: NimaliaCard
+}
+
+interface GridMovedArgs {
+	playerId: number
+	cards: Array<NimaliaCard>
+	canShiftGrid: { [direction: string]: Array<Boolean> }
 }
 
 interface NewRoundArgs {

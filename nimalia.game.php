@@ -160,12 +160,9 @@ class Nimalia extends Table {
         $result["scores"] = $this->getScoreArgs();
         foreach ($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
-            $result['grids'][$playerId] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("grid$playerId", null, "card_order_in_grid"));
-            if ($stateName === "placeCard" && $currentPlayerId != $playerId) {
-                //do not show unrevealed last card
-                $result['grids'][$playerId] = array_filter($result['grids'][$playerId], fn ($card) => $card->id != $this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD));
-            }
+            $result['grids'][$playerId] = $this->getPlayerGridCards($playerId);
         }
+        $result['canShiftGrid'] = $this->canAllPlayersShiftGrid();
 
         // private data : current player hidden informations
         $result['hand'] = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $currentPlayerId));

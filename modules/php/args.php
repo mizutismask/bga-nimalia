@@ -28,8 +28,10 @@ trait ArgsTrait {
 */
 
     function argPlaceCard() {
+
         return [
             'possibleSquares' => $this->getPossibleSquares(),
+            'canShiftGrid' => $this->canAllPlayersShiftGrid(),
         ];
     }
 
@@ -68,5 +70,63 @@ trait ArgsTrait {
             //self::dump('*******************possible', $specialCases);
         }
         return $squares;
+    }
+
+    function canAllPlayersShiftGrid():array{
+        $canShift=[];
+        $playersIds = $this->getPlayersIds();
+        foreach ($playersIds as $playerId) {
+            $canShift[$playerId] = [];
+            $grid = $this->getGrid($playerId);
+            $canShift[$playerId]["up"]= $this->canShiftGrid($grid, "up");
+            $canShift[$playerId]["down"]= $this->canShiftGrid($grid, "down");
+            $canShift[$playerId]["left"]= $this->canShiftGrid($grid, "left");
+            $canShift[$playerId]["right"]= $this->canShiftGrid($grid, "right");
+        }
+        return $canShift;
+    }
+    
+    function canShiftGrid(array $grid, string $direction): bool {
+        $rows = count($grid);
+        $cols = count($grid[0]);
+
+        switch ($direction) {
+            case 'up':
+                for ($col = 0; $col < $cols; $col++) {
+                    if ($grid[0][$col]->land !== FAKE_LAND) {
+                        return false;
+                    }
+                }
+                break;
+
+            case 'down':
+                for ($col = 0; $col < $cols; $col++) {
+                    if ($grid[$rows - 1][$col]->land !== FAKE_LAND) {
+                        return false;
+                    }
+                }
+                break;
+
+            case 'left':
+                for ($row = 0; $row < $rows; $row++) {
+                    if ($grid[$row][0]->land !== FAKE_LAND) {
+                        return false;
+                    }
+                }
+                break;
+
+            case 'right':
+                for ($row = 0; $row < $rows; $row++) {
+                    if ($grid[$row][$cols - 1]->land !== FAKE_LAND) {
+                        return false;
+                    }
+                }
+                break;
+
+            default:
+                throw new BgaSystemException("Invalid direction: $direction");
+        }
+
+        return true;
     }
 }

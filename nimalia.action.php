@@ -81,4 +81,11 @@ class action_nimalia extends APP_GameAction {
         $this->game->scoreSeen();
         self::ajaxResponse();
     }
+
+    public function shiftGrid() {
+        self::setAjaxMode();
+        $direction = self::getArg("direction", AT_enum, true, null,["up", "down","left", "right"]);
+        $this->game->shiftGrid($direction);
+        self::ajaxResponse();
+    }
 }

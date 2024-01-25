@@ -389,6 +389,8 @@ define('AT_bool', 0);
 define('AT_posint', 0);
 define('AT_numberlist', 0);
 define('AT_base64', 0);
+define('AT_alphanum', 0);
+define('AT_enum', 0);
 class APP_GameAction {
     function setAjaxMode() {}
 

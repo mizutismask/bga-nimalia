@@ -45,7 +45,7 @@ trait ActionTrait {
     public function undoPlaceCard() {
         $this->gamestate->checkPossibleAction('undoPlaceCard');
         $activePlayers = $this->getNonZombiePlayersIds();
-        if(!in_array(self::getCurrentPlayerId(), $activePlayers)){
+        if (!in_array(self::getCurrentPlayerId(), $activePlayers)) {
             throw new BgaUserException("You left the game and thus can not play");
         }
 
@@ -65,7 +65,7 @@ trait ActionTrait {
         $this->gamestate->setPlayerNonMultiactive($playerId, $nextState);
     }
 
-    public function getScoreSeenNextState($playerId){
+    public function getScoreSeenNextState($playerId) {
         $nextState = 'nextRound';
 
         if ($this->hasReachedEndOfGameRequirements(null)) {
@@ -76,5 +76,15 @@ trait ActionTrait {
             }
         }
         return $nextState;
+    }
+
+    public function shiftGrid(string $direction) {
+        self::checkAction('shiftGrid');
+        $playerId = intval(self::getCurrentPlayerId());
+        $grid = $this->getGrid($playerId);
+        if (!$this->canShiftGrid($grid, $direction)) {
+            throw new BgaUserException("You can’t shift the grid in this direction");
+        }
+        $this->shiftCards($playerId, $direction);
     }
 }

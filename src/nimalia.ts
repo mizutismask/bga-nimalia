@@ -151,6 +151,7 @@ class Nimalia implements NimaliaGame {
 		this.setTooltipToClass('xpd-help-icon', `<div class="help-card recto"></div>`)
 		this.setTooltipToClass('xpd-help-icon-mini', `<div class="help-card verso"></div>`)
 		this.setTooltipToClass('player-turn-order', _('First player'))
+		this.setTooltipToClass('nml-control', _('Move all your cards in this direction'))
 	}
 
 	public isNotSpectator() {
@@ -168,7 +169,7 @@ class Nimalia implements NimaliaGame {
 			this.setupPlayerOrderHints(player)
 		}
 		this.playerTables[player.id] = new PlayerTable(this, player)
-		this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id])
+		this.playerTables[player.id].displayGrid(player.id, this.gamedatas.grids[player.id])
 
 		if (this.isNotSpectator()) {
 			this.setupMiniPlayerBoard(player)
@@ -380,8 +381,16 @@ class Nimalia implements NimaliaGame {
 			} else {
 				log('WARNING :no possible move')
 			}
+			this.updateShiftGridButtons(args.canShiftGrid[this.getCurrentPlayer().id])
 		}
 		document.getElementById('score').style.display = 'none'
+	}
+
+	private updateShiftGridButtons(canShiftGrid: { [direction: string]: Array<Boolean> }) {
+		dojo.toggleClass('controlGridUp', 'disabled', !canShiftGrid['up'])
+		dojo.toggleClass('controlGridDown', 'disabled', !canShiftGrid['down'])
+		dojo.toggleClass('controlGridLeft', 'disabled', !canShiftGrid['left'])
+		dojo.toggleClass('controlGridRight', 'disabled', !canShiftGrid['right'])
 	}
 
 	/**
@@ -442,7 +451,6 @@ class Nimalia implements NimaliaGame {
 			switch (stateName) {
 				case 'placeCard':
 					;(this as any).addActionButton('place-card-button', _('Validate'), () => this.placeCard())
-					
 					;(this as any).addActionButton(
 						'cancel-button',
 						_('Cancel'),
@@ -450,8 +458,8 @@ class Nimalia implements NimaliaGame {
 						null,
 						null,
 						'red'
-						)
-						
+					)
+
 					const changesPending = this.clientActionData !== undefined
 					if (!changesPending) {
 						dojo.addClass('place-card-button', 'disabled')
@@ -886,13 +894,25 @@ class Nimalia implements NimaliaGame {
 			'rotation': $(this.clientActionData.placedCardId + '-front').dataset.rotation
 		})
 	}
+	/**
+	 * Validates a placed card.
+	 */
+	public shiftGrid(direction: string) {
+		if (!(this as any).checkAction('shiftGrid')) {
+			return
+		}
+
+		this.takeAction('shiftGrid', {
+			'direction': direction
+		})
+	}
 
 	public cancelPlaceCard() {
 		//this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
 		//this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId))
 		//log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
 		/*this.playerTables[this.getCurrentPlayer().id].displayGrid(
-			this.getCurrentPlayer(),
+			this.getCurrentPlayer().id,
 			this.gamedatas.grids[this.getCurrentPlayer().id]
 		)*/
 		const canceled = this.playerTables[this.getCurrentPlayer().id].cancelLocalMove()
@@ -945,6 +965,7 @@ class Nimalia implements NimaliaGame {
 			['points', ANIMATION_MS],
 			['score', ANIMATION_MS],
 			['highlightWinnerScore', ANIMATION_MS],
+			['gridMoved', 1],
 			['lastTurn', 1]
 		]
 
@@ -985,6 +1006,17 @@ class Nimalia implements NimaliaGame {
 		if (notif.args.added) this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added)
 		if (notif.args.playedCard) {
 			this.playerTables[notif.args.playerId].showMove(notif.args.playerId, notif.args.playedCard)
+		}
+	}
+
+	notif_gridMoved(notif: Notif<GridMovedArgs>) {
+		this.gamedatas.grids[notif.args.playerId] = notif.args.cards
+		this.playerTables[notif.args.playerId].displayGrid(
+			notif.args.playerId,
+			this.gamedatas.grids[notif.args.playerId]
+		)
+		if (notif.args.playerId === this.getPlayerId()) {
+			this.updateShiftGridButtons(notif.args.canShiftGrid)
 		}
 	}
 

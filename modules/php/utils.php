@@ -152,7 +152,7 @@ trait UtilTrait {
     }*/
 
     function isCardCoveringAnotherCard(int $player, BiomeCard $cardId, int $squareId) {
-        return true;
+        return true;//todo use getPossibleSquares
     }
 
     function getNonZombiePlayersIds() {

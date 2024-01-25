@@ -2457,6 +2457,7 @@ var Nimalia = /** @class */ (function () {
         this.setTooltipToClass('xpd-help-icon', "<div class=\"help-card recto\"></div>");
         this.setTooltipToClass('xpd-help-icon-mini', "<div class=\"help-card verso\"></div>");
         this.setTooltipToClass('player-turn-order', _('First player'));
+        this.setTooltipToClass('nml-control', _('Move all your cards in this direction'));
     };
     Nimalia.prototype.isNotSpectator = function () {
         return (this.isSpectator == false ||
@@ -2469,7 +2470,7 @@ var Nimalia = /** @class */ (function () {
             this.setupPlayerOrderHints(player);
         }
         this.playerTables[player.id] = new PlayerTable(this, player);
-        this.playerTables[player.id].displayGrid(player, this.gamedatas.grids[player.id]);
+        this.playerTables[player.id].displayGrid(player.id, this.gamedatas.grids[player.id]);
         if (this.isNotSpectator()) {
             this.setupMiniPlayerBoard(player);
             if (player.id === this.getCurrentPlayer().id)
@@ -2596,8 +2597,15 @@ var Nimalia = /** @class */ (function () {
             else {
                 log('WARNING :no possible move');
             }
+            this.updateShiftGridButtons(args.canShiftGrid[this.getCurrentPlayer().id]);
         }
         document.getElementById('score').style.display = 'none';
+    };
+    Nimalia.prototype.updateShiftGridButtons = function (canShiftGrid) {
+        dojo.toggleClass('controlGridUp', 'disabled', !canShiftGrid['up']);
+        dojo.toggleClass('controlGridDown', 'disabled', !canShiftGrid['down']);
+        dojo.toggleClass('controlGridLeft', 'disabled', !canShiftGrid['left']);
+        dojo.toggleClass('controlGridRight', 'disabled', !canShiftGrid['right']);
     };
     /**
      * Show score board.
@@ -2995,12 +3003,23 @@ var Nimalia = /** @class */ (function () {
             'rotation': $(this.clientActionData.placedCardId + '-front').dataset.rotation
         });
     };
+    /**
+     * Validates a placed card.
+     */
+    Nimalia.prototype.shiftGrid = function (direction) {
+        if (!this.checkAction('shiftGrid')) {
+            return;
+        }
+        this.takeAction('shiftGrid', {
+            'direction': direction
+        });
+    };
     Nimalia.prototype.cancelPlaceCard = function () {
         //this.playerTables[this.getCurrentPlayer().id].replaceCardsInHand(this.gamedatas.hand)
         //this.clientActionData.previousCardParentInHand.appendChild($(this.clientActionData.placedCardId))
         //log('grid', this.gamedatas.grids[this.getCurrentPlayer().id])
         /*this.playerTables[this.getCurrentPlayer().id].displayGrid(
-            this.getCurrentPlayer(),
+            this.getCurrentPlayer().id,
             this.gamedatas.grids[this.getCurrentPlayer().id]
         )*/
         var canceled = this.playerTables[this.getCurrentPlayer().id].cancelLocalMove();
@@ -3048,6 +3067,7 @@ var Nimalia = /** @class */ (function () {
             ['points', ANIMATION_MS],
             ['score', ANIMATION_MS],
             ['highlightWinnerScore', ANIMATION_MS],
+            ['gridMoved', 1],
             ['lastTurn', 1]
         ];
         notifs.forEach(function (notif) {
@@ -3085,6 +3105,13 @@ var Nimalia = /** @class */ (function () {
             this.playerTables[notif.args.playerId].replaceCardsInHand(notif.args.added);
         if (notif.args.playedCard) {
             this.playerTables[notif.args.playerId].showMove(notif.args.playerId, notif.args.playedCard);
+        }
+    };
+    Nimalia.prototype.notif_gridMoved = function (notif) {
+        this.gamedatas.grids[notif.args.playerId] = notif.args.cards;
+        this.playerTables[notif.args.playerId].displayGrid(notif.args.playerId, this.gamedatas.grids[notif.args.playerId]);
+        if (notif.args.playerId === this.getPlayerId()) {
+            this.updateShiftGridButtons(notif.args.canShiftGrid);
         }
     };
     /**
@@ -3284,8 +3311,16 @@ var PlayerTable = /** @class */ (function () {
         this.game = game;
         var isMyTable = player.id === game.getPlayerId().toString();
         var ownClass = isMyTable ? 'own' : '';
-        var html = "\n\t\t\t<div id=\"player-table-".concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n\t\t\t\t<a id=\"anchor-player-").concat(player.id, "\"></a>\n                <div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n\t\t\t\t<div class=\"nml-player-name\">").concat(player.name, "</div>\n            </div>\n        ");
+        var html = "\n\t\t\t<div id=\"player-table-".concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n\t\t\t\t<a id=\"anchor-player-").concat(player.id, "\"></a>\n\t\t\t\t<div id=\"reserve-wrapper\" class=\"reserve-wrapper\">\n                \t<div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"nml-player-name\">").concat(player.name, "</div>\n            </div>\n        ");
         dojo.place(html, 'player-tables');
+        if (isMyTable) {
+            var html_1 = "\n\t\t\t\t<div id=\"controlGridLeft\" class=\"nml-control grid-left css-icon\" data-direction=\"left\">\uD83E\uDC38</div>\n\t\t\t\t<div id=\"controlGridUp\" class=\"nml-control grid-up css-icon\" data-direction=\"up\">\uD83E\uDC39</div>\n\t\t\t\t<div id=\"controlGridDown\" class=\"nml-control grid-down css-icon\" data-direction=\"down\">\uD83E\uDC3B</div>\n\t\t\t\t<div id=\"controlGridRight\" class=\"nml-control grid-right css-icon\" data-direction=\"right\">\uD83E\uDC3A</div>\n        ";
+            dojo.place(html_1, "reserve-".concat(player.id), 'after');
+            dojo.connect($('controlGridLeft'), 'click', this, dojo.hitch(this, this.onShiftGrid));
+            dojo.connect($('controlGridUp'), 'click', this, dojo.hitch(this, this.onShiftGrid));
+            dojo.connect($('controlGridDown'), 'click', this, dojo.hitch(this, this.onShiftGrid));
+            dojo.connect($('controlGridRight'), 'click', this, dojo.hitch(this, this.onShiftGrid));
+        }
         this.setupReserve(player);
         if (isMyTable) {
             var handHtml = "\n\t\t\t<div id=\"hand-".concat(player.id, "\" class=\"nml-player-hand\"></div>\n        ");
@@ -3326,11 +3361,11 @@ var PlayerTable = /** @class */ (function () {
             }
         }
     };
-    PlayerTable.prototype.displayGrid = function (player, cards) {
+    PlayerTable.prototype.displayGrid = function (playerId, cards) {
         var _this = this;
-        dojo.query("#reserve-".concat(player.id, " .nml-square")).empty();
+        dojo.query("#reserve-".concat(playerId, " .nml-square")).empty();
         cards.forEach(function (c) {
-            _this.createCardInGrid(parseInt(player.id), c);
+            _this.createCardInGrid(playerId, c);
         });
     };
     PlayerTable.prototype.createCardInGrid = function (playerId, card, animate) {
@@ -3528,6 +3563,13 @@ var PlayerTable = /** @class */ (function () {
             return true;
         }
         return false;
+    };
+    PlayerTable.prototype.onShiftGrid = function (evt) {
+        var button = evt.target;
+        if (!button || button.classList.contains('disabled')) {
+            return;
+        }
+        this.game.shiftGrid(button.dataset.direction);
     };
     return PlayerTable;
 }());

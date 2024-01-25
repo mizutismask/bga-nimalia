@@ -90,7 +90,7 @@ $playerActionsGameStates = [
         "type" => "multipleactiveplayer",
         "args" => "argPlaceCard",
         "action" => "stMakeEveryoneActive",
-        "possibleactions" => array("placeCard", "undoPlaceCard"),
+        "possibleactions" => array("placeCard", "undoPlaceCard", "shiftGrid"),
         "transitions" => array("cardPlaced" => ST_MOVE_REVEAL)
     ),
 

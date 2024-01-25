@@ -10,9 +10,11 @@
 				width: unset !important;
 				height: 200px !important;
 			}
-			.nml-reserve {
+			.reserve-wrapper{
 				grid-column: 1 !important;
 				grid-row: 2 !important;
+			}
+			.nml-reserve {
 				margin-left: 10px; //because of horizontal hand gap
 				margin-right: 10px; //because of horizontal hand gap
 			}
@@ -26,7 +28,7 @@
 
 .current_player_is_active {
 	.nimalia-card {
-		&:not(.bga-cards_disabled-card){
+		&:not(.bga-cards_disabled-card) {
 			.nml-rotate {
 				display: block !important;
 			}
@@ -35,6 +37,47 @@
 			.nml-rotate {
 				display: block !important;
 			}
+		}
+	}
+
+	#player-tables .own .reserve-wrapper {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		justify-content: center;
+		align-items: center;
+		.nml-control {
+			font-size: xx-large;
+			display: flex;
+			background-color: white;
+			font-weight: bolder;
+			width: 20px;
+			height: 20px;
+			&.grid-up {
+				grid-column: 2;
+				grid-row: 1;
+			}
+			&.grid-down {
+				grid-column: 2;
+				grid-row: 3;
+			}
+			&.grid-left {
+				grid-column: 1;
+				grid-row: 2;
+			}
+			&.grid-right {
+				grid-column: 3;
+				grid-row: 2;
+			}
+			&.disabled {
+				background-color: gray;
+			}
+		}
+		
+		.reserve-wrapper {
+		}
+		.nml-reserve {
+			grid-column: 2;
+			grid-row: 2;
 		}
 	}
 }
@@ -73,9 +116,16 @@
 			grid-column: 2;
 			grid-row: 2;
 		}
-		.nml-reserve {
+
+		.nml-control {
+			display: none;
+		}
+
+		.reserve-wrapper{
 			grid-column: 2;
 			grid-row: 1;
+		}
+		.nml-reserve {
 			display: grid;
 			grid-template-columns: repeat(6, 1fr);
 			grid-template-rows: repeat(6, 1fr);
@@ -153,7 +203,7 @@
 		}
 
 		.front {
-			transition: rotate .2s;
+			transition: rotate 0.2s;
 			&[data-rotation='90'] {
 				rotate: 90deg;
 			}

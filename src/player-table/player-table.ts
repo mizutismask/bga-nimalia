@@ -14,11 +14,29 @@ class PlayerTable {
 		let html = `
 			<div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${ownClass}">
 				<a id="anchor-player-${player.id}"></a>
-                <div id="reserve-${player.id}" class="nml-reserve"></div>
+				<div id="reserve-wrapper" class="reserve-wrapper">
+                	<div id="reserve-${player.id}" class="nml-reserve"></div>
+				</div>
 				<div class="nml-player-name">${player.name}</div>
             </div>
         `
 		dojo.place(html, 'player-tables')
+
+		if (isMyTable) {
+			let html = `
+				<div id="controlGridLeft" class="nml-control grid-left css-icon" data-direction="left">🠸</div>
+				<div id="controlGridUp" class="nml-control grid-up css-icon" data-direction="up">🠹</div>
+				<div id="controlGridDown" class="nml-control grid-down css-icon" data-direction="down">🠻</div>
+				<div id="controlGridRight" class="nml-control grid-right css-icon" data-direction="right">🠺</div>
+        `
+			dojo.place(html, `reserve-${player.id}`, 'after')
+
+			dojo.connect($('controlGridLeft'), 'click', this, dojo.hitch(this, this.onShiftGrid))
+			dojo.connect($('controlGridUp'), 'click', this, dojo.hitch(this, this.onShiftGrid))
+			dojo.connect($('controlGridDown'), 'click', this, dojo.hitch(this, this.onShiftGrid))
+			dojo.connect($('controlGridRight'), 'click', this, dojo.hitch(this, this.onShiftGrid))
+		}
+
 		this.setupReserve(player)
 
 		if (isMyTable) {
@@ -71,10 +89,10 @@ class PlayerTable {
 		}
 	}
 
-	public displayGrid(player: NimaliaPlayer, cards: Array<NimaliaCard>) {
-		dojo.query(`#reserve-${player.id} .nml-square`).empty()
+	public displayGrid(playerId: number, cards: Array<NimaliaCard>) {
+		dojo.query(`#reserve-${playerId} .nml-square`).empty()
 		cards.forEach((c) => {
-			this.createCardInGrid(parseInt(player.id), c)
+			this.createCardInGrid(playerId, c)
 		})
 	}
 
@@ -301,5 +319,13 @@ class PlayerTable {
 			return true
 		}
 		return false
+	}
+
+	private onShiftGrid(evt: MouseEvent) {
+		const button = evt.target as HTMLElement
+		if (!button || button.classList.contains('disabled')) {
+			return
+		}
+		this.game.shiftGrid(button.dataset.direction)
 	}
 }
