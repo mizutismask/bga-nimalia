@@ -14,10 +14,6 @@
 				grid-column: 1 !important;
 				grid-row: 2 !important;
 			}
-			.nml-reserve {
-				margin-left: 10px; //because of horizontal hand gap
-				margin-right: 10px; //because of horizontal hand gap
-			}
 			.nml-player-name {
 				grid-column: 1 !important;
 				grid-row: 3 !important;
@@ -48,7 +44,8 @@
 		.nml-control {
 			font-size: xx-large;
 			display: flex;
-			background-color: white;
+			color: white;
+			background-color: #016f99;
 			font-weight: bolder;
 			width: 20px;
 			height: 20px;
@@ -69,7 +66,7 @@
 				grid-row: 2;
 			}
 			&.disabled {
-				background-color: gray;
+				color: gray;
 			}
 		}
 		
@@ -129,8 +126,6 @@
 			grid-template-rows: repeat(6, 1fr);
 			grid-gap: 0px;
 			background-color: #008abe;
-			margin-top: 10px; //because of vertical hand gap
-			margin-bottom: 10px; //because of vertical hand gap
 
 			.nml-square {
 				width: 100px;
