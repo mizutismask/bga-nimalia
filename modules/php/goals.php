@@ -10,15 +10,19 @@ trait GoalTrait {
      */
     public function selectGoals() {
         $goals = [];
+        $excluded = []; //goals are recto-verso, if you choose one side, you can’t have the other
         foreach (GOAL_COLORS as $color) {
-            $matchingGoals = array_values(array_filter($this->GOALS, fn ($g) => $g->color === $color));
+            $matchingGoals = array_values(array_filter($this->GOALS, fn ($g) => $g->color === $color && !in_array($g->id, $excluded)));
             $level  = intval($this->getGameStateValue(GOAL_LEVEL));
             if ($level != LEVEL_RANDOM) {
                 $matchingGoals = array_values(array_filter($matchingGoals, fn ($g) => $g->level === $level || $g->level === $level + 1));
             }
             $randIndex = bga_rand(0, count($matchingGoals) - 1);
-            $goals[] = $matchingGoals[$randIndex];
+            $goal = $matchingGoals[$randIndex];
+            $excluded[] = $goal->id % 2 == 1 ? $goal->id + 1 : $goal->id - 1;//odd prevents the next goal, even the previous
+            $goals[] = $goal;
         }
+        if (count($goals) != 4) throw new BgaVisibleSystemException("Impossible to setup goals correctly" . json_encode($goals), 555);
         $this->setGlobalVariable("GOALS", $goals);
     }
 
