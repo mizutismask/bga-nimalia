@@ -641,6 +641,7 @@
 }
 #player-tables .player-table .front {
   transition: rotate 0.2s;
+  -moz-transform: translateZ(-1px);
 }
 #player-tables .player-table .front[data-rotation="90"] {
   rotate: 90deg;
