@@ -373,24 +373,35 @@ class Nimalia implements NimaliaGame {
 	private onEnteringPlaceCard(args: EnteringPlaceCardArgs) {
 		if (this.isNotSpectator()) {
 			this.resetClientActionData()
-			removeClass('dropzone')
-			if (args.possibleSquares[this.getCurrentPlayer().id]) {
-				args.possibleSquares[this.getCurrentPlayer().id].forEach((droppable) => {
-					dojo.addClass(droppable, 'dropzone')
-				})
-			} else {
-				log('WARNING :no possible move')
-			}
-			this.updateShiftGridButtons(args.canShiftGrid[this.getCurrentPlayer().id])
+			this.updatePossibleSquares(args.possibleSquares[this.getCurrentPlayer().id])
+			this.updateShiftGridButtons()
 		}
 		document.getElementById('score').style.display = 'none'
 	}
 
-	private updateShiftGridButtons(canShiftGrid: { [direction: string]: Array<Boolean> }) {
-		dojo.toggleClass('controlGridUp', 'disabled', !canShiftGrid['up'])
-		dojo.toggleClass('controlGridDown', 'disabled', !canShiftGrid['down'])
-		dojo.toggleClass('controlGridLeft', 'disabled', !canShiftGrid['left'])
-		dojo.toggleClass('controlGridRight', 'disabled', !canShiftGrid['right'])
+	private updatePossibleSquares(possibleSquares: Array<string>) {
+		removeClass('dropzone')
+		if (possibleSquares) {
+			possibleSquares.forEach((droppable) => {
+				dojo.addClass(droppable, 'dropzone')
+			})
+		} else {
+			log('WARNING :no possible move')
+		}
+	}
+
+	private updateShiftGridButtons() {
+		if (this.gamedatas.gamestate.name === 'placeCard') {
+			const cancelButton = $('cancel-button')
+			const hasLocalChanges = cancelButton && !cancelButton.classList.contains('disabled')
+			const canShiftGrid: { [direction: string]: Array<Boolean> } =
+				this.gamedatas.gamestate.args.canShiftGrid[this.getCurrentPlayer().id]
+			log('hasLocalChanges', hasLocalChanges, canShiftGrid)
+			dojo.toggleClass('controlGridUp', 'disabled', hasLocalChanges || !canShiftGrid['up'])
+			dojo.toggleClass('controlGridDown', 'disabled', hasLocalChanges || !canShiftGrid['down'])
+			dojo.toggleClass('controlGridLeft', 'disabled', hasLocalChanges || !canShiftGrid['left'])
+			dojo.toggleClass('controlGridRight', 'disabled', hasLocalChanges || !canShiftGrid['right'])
+		}
 	}
 
 	/**
@@ -923,6 +934,7 @@ class Nimalia implements NimaliaGame {
 		if ($('place-card-button')) {
 			dojo.toggleClass('place-card-button', 'disabled', true)
 		}
+		this.updateShiftGridButtons()
 		return canceled
 	}
 
@@ -1011,12 +1023,14 @@ class Nimalia implements NimaliaGame {
 
 	notif_gridMoved(notif: Notif<GridMovedArgs>) {
 		this.gamedatas.grids[notif.args.playerId] = notif.args.cards
+		this.gamedatas.gamestate.args.canShiftGrid[notif.args.playerId] = notif.args.canShiftGrid
 		this.playerTables[notif.args.playerId].displayGrid(
 			notif.args.playerId,
 			this.gamedatas.grids[notif.args.playerId]
 		)
 		if (notif.args.playerId === this.getPlayerId()) {
-			this.updateShiftGridButtons(notif.args.canShiftGrid)
+			this.updateShiftGridButtons()
+			this.updatePossibleSquares(notif.args.possibleSquares)
 		}
 	}
 

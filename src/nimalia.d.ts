@@ -63,6 +63,7 @@ interface ClientActionData {
 
 interface NimaliaGame extends Game {
 	shiftGrid(direction: string): void
+	updateShiftGridButtons(): void
 	cardsManager: CardsManager
 	animationManager: AnimationManager
 	getCurrentPlayer(): NimaliaPlayer
@@ -92,6 +93,7 @@ interface CardsMoveArgs {
 }
 
 interface GridMovedArgs {
+	possibleSquares: string[]
 	playerId: number
 	cards: Array<NimaliaCard>
 	canShiftGrid: { [direction: string]: Array<Boolean> }

@@ -2588,24 +2588,33 @@ var Nimalia = /** @class */ (function () {
     Nimalia.prototype.onEnteringPlaceCard = function (args) {
         if (this.isNotSpectator()) {
             this.resetClientActionData();
-            removeClass('dropzone');
-            if (args.possibleSquares[this.getCurrentPlayer().id]) {
-                args.possibleSquares[this.getCurrentPlayer().id].forEach(function (droppable) {
-                    dojo.addClass(droppable, 'dropzone');
-                });
-            }
-            else {
-                log('WARNING :no possible move');
-            }
-            this.updateShiftGridButtons(args.canShiftGrid[this.getCurrentPlayer().id]);
+            this.updatePossibleSquares(args.possibleSquares[this.getCurrentPlayer().id]);
+            this.updateShiftGridButtons();
         }
         document.getElementById('score').style.display = 'none';
     };
-    Nimalia.prototype.updateShiftGridButtons = function (canShiftGrid) {
-        dojo.toggleClass('controlGridUp', 'disabled', !canShiftGrid['up']);
-        dojo.toggleClass('controlGridDown', 'disabled', !canShiftGrid['down']);
-        dojo.toggleClass('controlGridLeft', 'disabled', !canShiftGrid['left']);
-        dojo.toggleClass('controlGridRight', 'disabled', !canShiftGrid['right']);
+    Nimalia.prototype.updatePossibleSquares = function (possibleSquares) {
+        removeClass('dropzone');
+        if (possibleSquares) {
+            possibleSquares.forEach(function (droppable) {
+                dojo.addClass(droppable, 'dropzone');
+            });
+        }
+        else {
+            log('WARNING :no possible move');
+        }
+    };
+    Nimalia.prototype.updateShiftGridButtons = function () {
+        if (this.gamedatas.gamestate.name === 'placeCard') {
+            var cancelButton = $('cancel-button');
+            var hasLocalChanges = cancelButton && !cancelButton.classList.contains('disabled');
+            var canShiftGrid = this.gamedatas.gamestate.args.canShiftGrid[this.getCurrentPlayer().id];
+            log('hasLocalChanges', hasLocalChanges, canShiftGrid);
+            dojo.toggleClass('controlGridUp', 'disabled', hasLocalChanges || !canShiftGrid['up']);
+            dojo.toggleClass('controlGridDown', 'disabled', hasLocalChanges || !canShiftGrid['down']);
+            dojo.toggleClass('controlGridLeft', 'disabled', hasLocalChanges || !canShiftGrid['left']);
+            dojo.toggleClass('controlGridRight', 'disabled', hasLocalChanges || !canShiftGrid['right']);
+        }
     };
     /**
      * Show score board.
@@ -3030,6 +3039,7 @@ var Nimalia = /** @class */ (function () {
         if ($('place-card-button')) {
             dojo.toggleClass('place-card-button', 'disabled', true);
         }
+        this.updateShiftGridButtons();
         return canceled;
     };
     Nimalia.prototype.takeAction = function (action, data) {
@@ -3109,9 +3119,11 @@ var Nimalia = /** @class */ (function () {
     };
     Nimalia.prototype.notif_gridMoved = function (notif) {
         this.gamedatas.grids[notif.args.playerId] = notif.args.cards;
+        this.gamedatas.gamestate.args.canShiftGrid[notif.args.playerId] = notif.args.canShiftGrid;
         this.playerTables[notif.args.playerId].displayGrid(notif.args.playerId, this.gamedatas.grids[notif.args.playerId]);
         if (notif.args.playerId === this.getPlayerId()) {
-            this.updateShiftGridButtons(notif.args.canShiftGrid);
+            this.updateShiftGridButtons();
+            this.updatePossibleSquares(notif.args.possibleSquares);
         }
     };
     /**
@@ -3524,6 +3536,7 @@ var PlayerTable = /** @class */ (function () {
         }
         dojo.toggleClass('place-card-button', 'disabled', !cardId || !square);
         dojo.toggleClass('cancel-button', 'disabled', !cardId || !square);
+        this.game.updateShiftGridButtons();
     };
     PlayerTable.prototype.showMove = function (playerId, playedCard) {
         var myOwnMove = playerId == this.game.getPlayerId();
@@ -3541,6 +3554,7 @@ var PlayerTable = /** @class */ (function () {
                 log('createCardInGrid', playedCard);
                 this.createCardInGrid(playerId, playedCard);
                 this.game.resetClientActionData();
+                //this.game.updateShiftGridButtons();
             }
         }
     };

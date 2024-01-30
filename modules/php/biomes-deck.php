@@ -236,6 +236,7 @@ trait BiomesCardTrait {
             "playerId" => $playerId,
             "cards" => $this->getPlayerGridCards($playerId),
             "canShiftGrid" => $canShiftAgain,
+            "possibleSquares" => $this->getPossibleSquares()[$playerId],
         ]);
     }
 

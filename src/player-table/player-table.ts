@@ -270,6 +270,7 @@ class PlayerTable {
 		}
 		dojo.toggleClass('place-card-button', 'disabled', !cardId || !square)
 		dojo.toggleClass('cancel-button', 'disabled', !cardId || !square)
+		this.game.updateShiftGridButtons()
 	}
 
 	public showMove(playerId: number, playedCard: NimaliaCard) {
@@ -288,6 +289,7 @@ class PlayerTable {
 				log('createCardInGrid', playedCard)
 				this.createCardInGrid(playerId, playedCard)
 				this.game.resetClientActionData()
+				//this.game.updateShiftGridButtons();
 			}
 		}
 	}
