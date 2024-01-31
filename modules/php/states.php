@@ -91,8 +91,9 @@ trait StateTrait {
         $roundScores = array_fill_keys(array_keys($players), 0);
         foreach ($this->getRoundGoals() as $goal) {
             foreach ($players as $playerId => $playerDb) {
+                //self::dump('*******************calculatingGoalPoints', compact("goal", "playerId"));
                 $score = $this->calculateGoalPoints($goal, $playerId);
-                //self::dump('*******************calculateGoalPoints', compact("goal", "score","playerId"));
+                //self::dump('*******************calculatedGoalPoints', compact("goal", "score","playerId"));
                 self::incStat($score, "game_pointsRound" . $round . $goal->color, $playerId);
                 $goalColor = $goal->color;
                 $this->incPlayerScore($playerId, $score, clienttranslate('${player_name} scores ${delta} points with the ${color} goal'), ["color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId)]);

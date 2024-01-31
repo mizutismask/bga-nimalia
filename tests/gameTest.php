@@ -36,6 +36,21 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         return $grid;
     }
 
+    function testBiomesCorrectDescription() {
+        foreach ($this->BIOMES_CARDS[1] as $id => $desc) {
+            foreach ($desc->biomes as $biome) {
+                if ($biome->animal == ANIMAL_OTTER) {
+                    if ($biome->land <= 0) {
+                        throw new BgaVisibleSystemException("Biome incorrect in material, missing land : " . json_encode($desc));
+                    }
+                    if ($biome->river <= 0) {
+                        throw new BgaVisibleSystemException("Biome incorrect in material, missing river direction : " . json_encode($desc));
+                    }
+                }
+            }
+        }
+    }
+
     // class tests
     function testcalculateGoalAnimalTouchingAtLeastOneKindOfAnimal() {
         $grid = $this->initGrid();
@@ -396,6 +411,38 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
+    function testExemple() {
+        //get this typing displayPlayerGrid() in the chat, remove the last number of each line except the last one
+        $grid = $this->convertNumbersToGrid("
+            121641
+            355182
+            245716
+            974779
+            258725
+            383687
+        ");
+
+        //give more info for otters
+        $grid[2][3] = new Biome(ANIMAL_OTTER, LAND_JUNGLE, RIVER_DOWN);
+        $grid[3][1] = new Biome(ANIMAL_OTTER, LAND_SAVANNAH, RIVER_DOWN);
+        $grid[3][3] = new Biome(ANIMAL_OTTER, LAND_SAVANNAH, RIVER_UP);
+        $grid[3][4] = new Biome(ANIMAL_OTTER, LAND_JUNGLE, RIVER_DOWN);
+        $grid[4][3] = new Biome(ANIMAL_OTTER, LAND_SAVANNAH, RIVER_DOWN);
+        $grid[4][3] = new Biome(ANIMAL_OTTER, LAND_JUNGLE, RIVER_DOWN);
+
+        $result = $this->calculateGoalRiverConnectedToLand($grid, LAND_WATER);
+        
+        //test result
+        $equal = $result == 10;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testGetRotatedBiomesAndRivers() {
+        $card = new BiomeCard(['type' => 1, 'type_arg' => 36, 'id' => 1, 'location' => "toto", 'location_arg' => "squareToto"], $this->BIOMES_CARDS, ['card_rotation' => 90, 'card_order_in_grid' => 1]);
+        $rotated = $this->getRotatedBiomesAndRivers($card);
+        self::dump('*******************rotated', $rotated);
+    }
+
     function testCalculateLargestRiverOneLongContinous() {
         $grid = $this->initGrid();
 
@@ -591,7 +638,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalLineWithAllLands();
         $this->testCalculateGoalSmallestLandSquares();
         $this->testCalculateGoal2x2Squares();
-        
+
         $this->testCalculateLargestRiverOneLongContinous();
         $this->testCalculateLargestRiverOneWithLoop();
         $this->testCalculateLargestRiver3Rivers();
@@ -602,13 +649,9 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalSeveralAnimalsTouchingOtter();
         $this->testCalculateGoalRiverConnectedToLand();
         $this->testCalculateGoalRiverConnectedToLandHorizontaly();
-       /* $this->convertNumbersToGrid("
-        000000
-        000000
-        005316
-        004587
-        000000
-        000000");*/
+        $this->testBiomesCorrectDescription();
+        //$this->testGetRotatedBiomesAndRivers();
+
     }
 
     function displayResult($testName, $equal, $result) {
