@@ -88,6 +88,7 @@ trait GoalTrait {
 
     /** Calculates points for a given goal and a given player. Called at the end of each round. */
     public function calculateGoalPoints(Goal̤ $goal, $playerId) {
+        //self::dump('*******************calculateGoalPoints', $playerId);
         $grid = $this->getGrid($playerId);
         switch ($goal->id) {
             case 1:
@@ -126,7 +127,11 @@ trait GoalTrait {
             case 17:
                 return $this->calculateGoalAnimalTouchingBorder($grid, ANIMAL_PANDA, true);
             case 18:
-                return $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_GORILLA, false, 5, 2) + $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_PANDA, false, 5, 2);
+                $gorilla = $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_GORILLA, false, 5, 2);
+                $panda = $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_PANDA, false, -5, -2);
+                //self::dump('*****************gorilla**', $gorilla);
+                //self::dump('*****************panda**', $panda);
+                return $gorilla + $panda;
             case 19:
                 return $this->calculateGoalExactlyOneAnimalOfTypePerColonne($grid, ANIMAL_PINGUIN);
             case 20:
