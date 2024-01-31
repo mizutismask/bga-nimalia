@@ -554,10 +554,10 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $rows = preg_split("/\r\n|\n|\r/", trim($textGrid));
         foreach ($rows as $iRow => $row) {
             $row = trim($row);
-            self::dump('', compact("iRow", "row"));
+            //self::dump('', compact("iRow", "row"));
             for ($iCol = 0; $iCol < GRID_SIZE; $iCol++) {
                 $animal = intval($row[$iCol]);
-                self::dump('', compact("iRow", "iCol", "animal"));
+                //self::dump('', compact("iRow", "iCol", "animal"));
                 if ($animal === 0) {
                     $biome = new Biome(0, -1, 0);
                 } else if ($animal === ANIMAL_OTTER) {
@@ -570,6 +570,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
             }
         }
         $this->displayGrid($grid);
+        return $grid;
     }
 
     function testAll() {

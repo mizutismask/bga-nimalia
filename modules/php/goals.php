@@ -183,6 +183,11 @@ trait GoalTrait {
             $str .= $row . "\n";
         }
         self::dump('*******************grid', $str);
+        return $str;
+    }
+
+    function displayPlayerGrid() {
+        return $this->displayGrid($this->getGrid(self::getCurrentPlayerId()));
     }
 
     function displayRiverGrid(array $grid) {
@@ -205,7 +210,7 @@ trait GoalTrait {
             }
             $str .= $row . "\n";
         }
-        //self::dump('*******************grid', $str);
+        self::dump('*******************grid', $str);
     }
 
     function getRotatedBiomes(BiomeCard $card) {
@@ -673,14 +678,14 @@ trait GoalTrait {
             for ($col = 0; $col < count($grid[$row]); $col++) {
                 // Check if the cell has an otter
                 if ($grid[$row][$col]->animal == ANIMAL_OTTER) {
-                    // Check adjacent and diagonal cells according to river direction
+                                        // Check adjacent and diagonal cells according to river direction
                     $direction = $grid[$row][$col]->river;
                     // Define the coordinates of cells touching the river
                     $touchingCoordinates = [];
-
+                    
                     // Check if river goes up
                     if ($direction == RIVER_UP) {
-                        $touchingCoordinates = [
+                                                $touchingCoordinates = [
                             [$row + 1, $col], //down
                             [$row + 1, $col - 1], //bottom left diag
                             [$row, $col - 1], //left
@@ -691,7 +696,7 @@ trait GoalTrait {
                     }
                     // Check if river goes down
                     else if ($direction == RIVER_DOWN) {
-                        $touchingCoordinates = [
+                                                $touchingCoordinates = [
                             [$row - 1, $col],         // up
                             [$row - 1, $col - 1],     // top left diag
                             [$row, $col - 1],         // left
@@ -700,12 +705,13 @@ trait GoalTrait {
                             [$row + 1, $col]          // bottom
                         ];
                     }
-
+                    
                     // Check if any of the touching cells have the specified land type
                     if (array_reduce($touchingCoordinates, function ($carry, $coord) use ($grid, $gridSize, $landType) {
                         list($r, $c) = $coord;
-                        return $carry || ($r >= 0 && $r < $gridSize && $c >= 0 && $c < count($grid[$r]) && $grid[$r][$c]->land == $landType);
+                                                return $carry || ($r >= 0 && $r < $gridSize && $c >= 0 && $c < count($grid[$r]) && $grid[$r][$c]->land == $landType);
                     }, false)) {
+                        //self::dump('*******************found', compact("row","col"));
                         $points += 2;
                     }
                 }
