@@ -371,6 +371,31 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
+    function testCalculateGoalRiverConnectedToLandHorizontaly() {
+        $grid = $this->initGrid();
+
+        //from bug
+        $grid[0][3] = new Biome(ANIMAL_LION);
+        $grid[0][4] = new Biome(ANIMAL_GIRAFFE);
+
+        $grid[1][2] = new Biome(ANIMAL_CROCODILE);
+        $grid[1][3] = new Biome(ANIMAL_OTTER, LAND_JUNGLE, RIVER_UP);
+        $grid[1][4] = new Biome(ANIMAL_PINGUIN);
+
+        $grid[2][1] =  new Biome(ANIMAL_BEAR);
+        $grid[2][2] =  new Biome(ANIMAL_GIRAFFE);
+        $grid[2][3] = new Biome(ANIMAL_OTTER, LAND_JUNGLE, RIVER_DOWN);
+
+        $grid[3][1] =  new Biome(ANIMAL_GORILLA);
+        $grid[3][2] =  new Biome(ANIMAL_BEAR);
+
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalRiverConnectedToLand($grid, LAND_WATER);
+        $equal = $result == 4;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
     function testCalculateLargestRiverOneLongContinous() {
         $grid = $this->initGrid();
 
@@ -565,7 +590,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalLineWithAllLands();
         $this->testCalculateGoalSmallestLandSquares();
         $this->testCalculateGoal2x2Squares();
-        $this->testCalculateGoalRiverConnectedToLand();
+        
         $this->testCalculateLargestRiverOneLongContinous();
         $this->testCalculateLargestRiverOneWithLoop();
         $this->testCalculateLargestRiver3Rivers();
@@ -574,6 +599,8 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalBiggestSavannah();
         $this->testCalculateGoal2HorizontalAnimals();
         $this->testCalculateGoalSeveralAnimalsTouchingOtter();
+        $this->testCalculateGoalRiverConnectedToLand();
+        $this->testCalculateGoalRiverConnectedToLandHorizontaly();
        /* $this->convertNumbersToGrid("
         000000
         000000

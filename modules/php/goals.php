@@ -19,7 +19,7 @@ trait GoalTrait {
             }
             $randIndex = bga_rand(0, count($matchingGoals) - 1);
             $goal = $matchingGoals[$randIndex];
-            $excluded[] = $goal->id % 2 == 1 ? $goal->id + 1 : $goal->id - 1;//odd prevents the next goal, even the previous
+            $excluded[] = $goal->id % 2 == 1 ? $goal->id + 1 : $goal->id - 1; //odd prevents the next goal, even the previous
             $goals[] = $goal;
         }
         if (count($goals) != 4) throw new BgaVisibleSystemException("Impossible to setup goals correctly" . json_encode($goals), 555);
@@ -182,7 +182,7 @@ trait GoalTrait {
             }
             $str .= $row . "\n";
         }
-        //self::dump('*******************grid', $str);
+        self::dump('*******************grid', $str);
     }
 
     function displayRiverGrid(array $grid) {
@@ -671,23 +671,41 @@ trait GoalTrait {
         for ($row = 0; $row < $gridSize; $row++) {
             // Iterate through each column of the grid
             for ($col = 0; $col < count($grid[$row]); $col++) {
-                // Check if the cell has a river
+                // Check if the cell has an otter
                 if ($grid[$row][$col]->animal == ANIMAL_OTTER) {
-                    // Check diagonal cells according to river direction
+                    // Check adjacent and diagonal cells according to river direction
                     $direction = $grid[$row][$col]->river;
-                    if (
-                        $direction == (RIVER_UP &&
-                            ($row + 1 < $gridSize && $col - 1 >= 0 && $grid[$row + 1][$col - 1]->land == $landType
-                                || $row - 1 >= 0 && $col + 1 < $gridSize && $grid[$row - 1][$col + 1]->land == $landType
-                                || $row - 1 >= 0  && $col - 1 >= 0 && $grid[$row - 1][$col - 1]->land == $landType
-                                || $row + 1 < $gridSize && $grid[$row + 1][$col]->land == $landType))
-                        ||
-                        (RIVER_DOWN &&
-                            ($row - 1 >= 0 && $col - 1 >= 0 && $grid[$row - 1][$col - 1]->land == $landType
-                                || $row + 1 < $gridSize && $col + 1 < $gridSize && $grid[$row + 1][$col + 1]->land == $landType
-                                || $row + 1 < $gridSize && $grid[$row + 1][$col]->land == $landType
-                                || $row - 1 >= 0  && $grid[$row - 1][$col]->land == $landType))
-                    ) {
+                    // Define the coordinates of cells touching the river
+                    $touchingCoordinates = [];
+
+                    // Check if river goes up
+                    if ($direction == RIVER_UP) {
+                        $touchingCoordinates = [
+                            [$row + 1, $col], //down
+                            [$row + 1, $col - 1], //bottom left diag
+                            [$row, $col - 1], //left
+                            [$row - 1, $col + 1], //top right diag
+                            [$row, $col + 1], //right
+                            [$row - 1, $col], //top
+                        ];
+                    }
+                    // Check if river goes down
+                    else if ($direction == RIVER_DOWN) {
+                        $touchingCoordinates = [
+                            [$row - 1, $col],         // up
+                            [$row - 1, $col - 1],     // top left diag
+                            [$row, $col - 1],         // left
+                            [$row + 1, $col + 1],     // bottom right diag
+                            [$row, $col + 1],         // right
+                            [$row + 1, $col]          // bottom
+                        ];
+                    }
+
+                    // Check if any of the touching cells have the specified land type
+                    if (array_reduce($touchingCoordinates, function ($carry, $coord) use ($grid, $gridSize, $landType) {
+                        list($r, $c) = $coord;
+                        return $carry || ($r >= 0 && $r < $gridSize && $c >= 0 && $c < count($grid[$r]) && $grid[$r][$c]->land == $landType);
+                    }, false)) {
                         $points += 2;
                     }
                 }
