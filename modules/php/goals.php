@@ -766,6 +766,16 @@ trait GoalTrait {
         return $size;
     }
 
+    /**
+     * River length => points
+     * 0 => 0
+     * 1 => 0
+     * 2 => 1
+     * 3 => 3
+     * 4 => 6
+     * 5 => 10
+     * 6 => 15
+     */
     function calculateLargestRiver($biomes) {
         $rows = count($biomes);
         $cols = count($biomes[0]);

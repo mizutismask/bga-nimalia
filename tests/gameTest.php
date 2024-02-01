@@ -431,7 +431,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $grid[4][3] = new Biome(ANIMAL_OTTER, LAND_JUNGLE, RIVER_DOWN);
 
         $result = $this->calculateGoalRiverConnectedToLand($grid, LAND_WATER);
-        
+
         //test result
         $equal = $result == 10;
         $this->displayResult(__FUNCTION__, $equal, $result);
@@ -609,7 +609,10 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
                     $biome = new Biome(0, -1, 0);
                 } else if ($animal === ANIMAL_OTTER) {
                     $biome = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
-                    self::dump('*******************WARNING, you might have to specify manually land and river for otter in ', compact("iRow", "iCol"));
+                    self::dump(
+                        'WARNING, you might have to specify manually land and river for otter in ',
+                        implode(["[", $iRow, "]", "[", $iCol, "]"])
+                    );
                 } else {
                     $biome = new Biome($animal);
                 }
@@ -651,7 +654,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalRiverConnectedToLandHorizontaly();
         $this->testBiomesCorrectDescription();
         //$this->testGetRotatedBiomesAndRivers();
-
+        
     }
 
     function displayResult($testName, $equal, $result) {
