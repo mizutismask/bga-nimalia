@@ -624,6 +624,7 @@ function slideAnimation(animationManager, animation) {
         element.style.transform = "translate(".concat(-x, "px, ").concat(-y, "px) rotate(").concat((_d = settings === null || settings === void 0 ? void 0 : settings.rotationDelta) !== null && _d !== void 0 ? _d : 0, "deg)");
         var timeoutId = null;
         var cleanOnTransitionEnd = function () {
+            console.log("cleanOnTransitionEnd");
             element.style.zIndex = originalZIndex;
             element.style.transition = originalTransition;
             success();
@@ -636,6 +637,7 @@ function slideAnimation(animationManager, animation) {
         };
         var cleanOnTransitionCancel = function () {
             var _a;
+            console.log("cleanOnTransitionCancel");
             element.style.transition = "";
             element.offsetHeight;
             element.style.transform = (_a = settings === null || settings === void 0 ? void 0 : settings.finalTransform) !== null && _a !== void 0 ? _a : null;
@@ -3542,7 +3544,7 @@ var PlayerTable = /** @class */ (function () {
         var myOwnMove = playerId == this.game.getPlayerId();
         log('show move', playerId, playedCard, myOwnMove);
         if (!myOwnMove || isReadOnly()) {
-            var id = this.createCardInGrid(playerId, playedCard, true);
+            var id = this.createCardInGrid(playerId, playedCard, !isReadOnly());
             removeClass('last-move');
             $(id).classList.add('last-move');
         }
