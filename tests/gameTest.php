@@ -508,6 +508,45 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
+    function testCalculateLargestRiverOneLongContinousLength7() {
+        $grid = $this->initGrid();
+
+        //from rule case
+        $grid[0][4] = new Biome(
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_UP
+        );
+        $grid[1][3] = new Biome(
+                ANIMAL_OTTER,
+                LAND_SNOW,
+                RIVER_UP
+            );
+        $grid[2][2] = new Biome(
+                ANIMAL_OTTER,
+                LAND_SNOW,
+                RIVER_UP
+            );
+        $grid[3][2] = new Biome(
+                ANIMAL_OTTER,
+                LAND_SNOW,
+                RIVER_DOWN
+            );
+        $grid[3][4] = new Biome(
+                ANIMAL_OTTER,
+                LAND_SNOW,
+                RIVER_DOWN
+            );
+        $grid[4][3] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[4][4] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+
+        //$this->displayRiverGrid($grid);
+
+        $result = $this->calculateLargestRiver($grid);
+        $equal = $result == 7;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
     function testCalculateGoalLandZonesCount() {
         $grid = $this->initGrid();
 
@@ -641,7 +680,6 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalLineWithAllLands();
         $this->testCalculateGoalSmallestLandSquares();
         $this->testCalculateGoal2x2Squares();
-
         $this->testCalculateLargestRiverOneLongContinous();
         $this->testCalculateLargestRiverOneWithLoop();
         $this->testCalculateLargestRiver3Rivers();
@@ -653,8 +691,9 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalRiverConnectedToLand();
         $this->testCalculateGoalRiverConnectedToLandHorizontaly();
         $this->testBiomesCorrectDescription();
+        $this->testCalculateLargestRiverOneLongContinousLength7();
         //$this->testGetRotatedBiomesAndRivers();
-        
+
     }
 
     function displayResult($testName, $equal, $result) {

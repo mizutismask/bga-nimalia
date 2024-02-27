@@ -742,25 +742,24 @@ trait GoalTrait {
         $rivers[$i][$j]['visited'] = true;
         $size = 1;
 
+        //self::dump('***********exploreRiver********',compact("i", "j","direction"));
         // Explore the river only in the directions that are continuous
         if ($direction === RIVER_UP) {
             $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j, $rows, $cols, $direction); // Up
             $size += $this->exploreRiver($biomes, $rivers, $i, $j + 1, $rows, $cols, RIVER_DOWN); // Right
             $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j + 1, $rows, $cols, RIVER_UP); // Diagonal Up-Right
 
-            // Check if the case below contains RIVER_DOWN or the case to the left contains RIVER_DOWN or the case in diagonal left contains RIVER_UP
             $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j, $rows, $cols, RIVER_DOWN); // Down
             $size += $this->exploreRiver($biomes, $rivers, $i, $j - 1, $rows, $cols, RIVER_DOWN); // Left
             $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j - 1, $rows, $cols, RIVER_UP); // Diagonal Down-Left
         } elseif ($direction === RIVER_DOWN) {
-            $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j, $rows, $cols, $direction); // Down
-            $size += $this->exploreRiver($biomes, $rivers, $i, $j - 1, $rows, $cols, RIVER_UP); // Left
-            $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j - 1, $rows, $cols, RIVER_DOWN); // Diagonal Down-Left
+            $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j, $rows, $cols, RIVER_UP); // Down
+            $size += $this->exploreRiver($biomes, $rivers, $i, $j + 1, $rows, $cols, RIVER_UP); // Right
+            $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j + 1, $rows, $cols, RIVER_DOWN); // Diagonal Down-Right
 
-            // Check if the case above contains RIVER_DOWN or the case to the right contains RIVER_DOWN or the case in diagonal right contains RIVER_UP
-            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j, $rows, $cols, RIVER_DOWN); // Up
-            $size += $this->exploreRiver($biomes, $rivers, $i, $j + 1, $rows, $cols, RIVER_DOWN); // Right
-            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j + 1, $rows, $cols, RIVER_UP); // Diagonal Up-Right
+            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j, $rows, $cols, RIVER_UP); // Up
+            $size += $this->exploreRiver($biomes, $rivers, $i, $j - 1, $rows, $cols, RIVER_UP); // Left
+            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j - 1, $rows, $cols, RIVER_DOWN); // Diagonal Up-Left
         }
 
         return $size;
@@ -791,6 +790,7 @@ trait GoalTrait {
                 if ($biomes[$i][$j]->river !== 0 && !$rivers[$i][$j]['visited']) {
                     // Explore the river starting from the current cell in the specified direction
                     $riverSize = $this->exploreRiver($biomes, $rivers, $i, $j, $rows, $cols, $biomes[$i][$j]->river);
+                    //self::dump('***********calculateLargestRiver********',compact("i", "j","riverSize"));
 
                     // Update the maximum river size
                     $maxRiverSize = max($maxRiverSize, $riverSize);
