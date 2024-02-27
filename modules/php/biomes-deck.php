@@ -181,6 +181,7 @@ trait BiomesCardTrait {
         $this->updatePlayer($playerId, PLAYER_FIELD_LAST_PLACED_CARD, $cardId);
         $recipient = $this->getRecipientPlayer($playerId);
         $this->biomesCards->moveAllCardsInLocation('hand', 'nextchoice', $playerId, $recipient);
+        self::notifyAllPlayers('msg', clienttranslate('${player_name} places a card in square ${squareId}'), ['player_name' => $this->getPlayerName($playerId), 'squareId' => $squareId]);
     }
 
     public function undoMoveCardToReserve(int $playerId, int $cardId) {
@@ -190,7 +191,7 @@ trait BiomesCardTrait {
         $this->biomesCards->moveAllCardsInLocation('nextchoice', 'hand', $recipient, $playerId);
         $sql = "UPDATE card set card_order_in_grid = 0 where card_location='hand' and card_location_arg = '$playerId'";
         self::DbQuery($sql);
-        self::notifyPlayer($playerId, 'cardsMove', "", ["playerId" => $playerId, "added" => $this->getPlayerCards($playerId), "fromUndo" => true, "undoneCard" => $this->getCard($cardId)]);
+        self::notifyPlayer($playerId, 'cardsMove', clienttranslate('${player_name} changes his mind'), ['player_name' => $this->getPlayerName($playerId)]);
     }
 
     public function draftCards() {
