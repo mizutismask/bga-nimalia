@@ -390,18 +390,27 @@ trait GoalTrait {
         foreach ($players as $playerId) {
             $animalCount[$playerId] = $this->countAnimals($this->getGrid($playerId), $animal);
         }
+        $minCount = min($animalCount);
+        $maxCount = max($animalCount);
+        $winnerExpectedValue = $min ? $minCount : $maxCount;
+
         if (count($players) == 3 || count($players) == 4) {
             $animalCountCopy = $animalCount;
-            sort($animalCountCopy);
+            if ($min) {
+                sort($animalCountCopy);
+            } else {
+                rsort($animalCountCopy);
+            }
             if (count($animalCountCopy) > 1) {
                 $second =  $animalCount[$currentPlayerId] == $animalCountCopy[1];
             }
-            $tieForFirst = count(array_filter($animalCount, fn ($nb) => $nb == $min ? min($animalCount) : max($animalCount)));
+
+            $tieForFirst = count(array_filter($animalCount, fn ($nb) => $nb == $winnerExpectedValue)) > 1;
             if (!$tieForFirst && $second) {
                 return $secondPoints;
             }
         }
-        return ($min ? min($animalCount) : max($animalCount)) == $animalCount[$currentPlayerId] ? $winnerPoints : 0;
+        return $winnerExpectedValue == $animalCount[$currentPlayerId] ? $winnerPoints : 0;
     }
 
     function calculateGoalLongestRiverAmongPlayers($currentPlayerId, int $winnerPoints, int $secondPoints) {
