@@ -52,7 +52,7 @@ class PlayerTable {
 	}
 
 	private initHand(player: NimaliaPlayer) {
-		const smallWidth = window.matchMedia('(max-width: 830px)').matches
+		const smallWidth = window.matchMedia('(max-width: 1024px)').matches
 		var baseSettings = {
 			center: true,
 			gap: '10px'

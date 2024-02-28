@@ -3345,7 +3345,7 @@ var PlayerTable = /** @class */ (function () {
         }
     }
     PlayerTable.prototype.initHand = function (player) {
-        var smallWidth = window.matchMedia('(max-width: 830px)').matches;
+        var smallWidth = window.matchMedia('(max-width: 1024px)').matches;
         var baseSettings = {
             center: true,
             gap: '10px'
