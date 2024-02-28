@@ -576,20 +576,33 @@ trait GoalTrait {
     }
 
     function calculateGoalCompleteSquare(array $grid) {
-        $foundEmptySquare = false;
-        $squareSize = 0;
-        while (!$foundEmptySquare && $squareSize < GRID_SIZE) {
-            for ($i = GRID_SIZE - 1; $i >= GRID_SIZE - 1 - $squareSize && !$foundEmptySquare; $i--) { //row
-                for ($j = 0; $j <= $squareSize && !$foundEmptySquare; $j++) { //col
-                    $foundEmptySquare = $foundEmptySquare || $grid[$i][$j]->land == FAKE_LAND;
+        $maxSquareSize = 0;
+
+        for ($startRow = 0; $startRow < GRID_SIZE; $startRow++) {
+            for ($startCol = 0; $startCol < GRID_SIZE; $startCol++) {
+                $squareSize = 0;
+                $foundEmptySquare = false;
+    
+                while ($startRow + $squareSize < GRID_SIZE &&
+                       $startCol + $squareSize < GRID_SIZE &&
+                       !$foundEmptySquare) {
+                    for ($i = $startRow + $squareSize; $i >= $startRow && !$foundEmptySquare; $i--) {
+                        for ($j = $startCol + $squareSize; $j >= $startCol && !$foundEmptySquare; $j--) {
+                            $foundEmptySquare = $foundEmptySquare || $grid[$i][$j]->land == FAKE_LAND;
+                        }
+                    }
+    
+                    if (!$foundEmptySquare) {
+                        $squareSize++;
+                    }
                 }
-            }
-            if (!$foundEmptySquare) {
-                $squareSize++;
+    
+                $maxSquareSize = max($maxSquareSize, $squareSize);
             }
         }
+    
         $points = [0, 0, 3, 5, 8, 13, 21];
-        return $points[$squareSize];
+        return $points[$maxSquareSize];
     }
 
     function calculateGoalAnimalTouchingBorder(array $grid, int $animal, bool $touching) {

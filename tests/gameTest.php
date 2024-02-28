@@ -167,10 +167,9 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
-    function testCalculateGoalCompleteSquareNone() {
+    function testCalculateGoalCompleteSquareAnywhere() {
         $grid = $this->initGrid();
 
-        //from rule case
         $grid[5][5] = new Biome(ANIMAL_LION);
         $grid[5][4] = new Biome(ANIMAL_LION);
         $grid[4][5] = new Biome(ANIMAL_LION);
@@ -178,7 +177,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         //$this->displayGrid($grid);
 
         $result = $this->calculateGoalCompleteSquare($grid);
-        $equal = $result == 0;
+        $equal = $result == 3;
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
@@ -671,7 +670,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateLandZonesNone();
         $this->testCalculateLandZonesOne();
         $this->testCalculateLandZonesRuleCase();
-        $this->testCalculateGoalCompleteSquareNone();
+        $this->testCalculateGoalCompleteSquareAnywhere();
         $this->testCalculateGoalCompleteSquare21();
         $this->testCalculateGoalCompleteSquare4();
         $this->testCalculateGoalCompleteSquareWithHole();
