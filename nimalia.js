@@ -2665,6 +2665,7 @@ var Nimalia = /** @class */ (function () {
     //
     Nimalia.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
+        var _a;
         log('onUpdateActionButtons: ' + stateName, 'player active', this.isCurrentPlayerActive());
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
@@ -2672,7 +2673,8 @@ var Nimalia = /** @class */ (function () {
                     ;
                     this.addActionButton('place-card-button', _('Validate'), function () { return _this.placeCard(); });
                     this.addActionButton('cancel-button', _('Cancel'), function () { return _this.cancelPlaceCard(); }, null, null, 'red');
-                    var changesPending = this.clientActionData !== undefined;
+                    var changesPending = ((_a = this.clientActionData) === null || _a === void 0 ? void 0 : _a.placedCardId) !== undefined;
+                    log("changes pending", changesPending);
                     if (!changesPending) {
                         dojo.addClass('place-card-button', 'disabled');
                         dojo.addClass('cancel-button', 'disabled');
@@ -3108,6 +3110,7 @@ var Nimalia = /** @class */ (function () {
         activeGoals.forEach(function (g) { return dojo.query("#goal_".concat(g.id)).addClass('nml-active-goal'); });
     };
     Nimalia.prototype.notif_cardsMove = function (notif) {
+        log("notif_cardsMove", notif.args);
         //important order !
         if (notif.args.undoneCard)
             this.playerTables[notif.args.playerId].removeCardFromGrid(notif.args.undoneCard);

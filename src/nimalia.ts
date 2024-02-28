@@ -471,7 +471,8 @@ class Nimalia implements NimaliaGame {
 						'red'
 					)
 
-					const changesPending = this.clientActionData !== undefined
+					const changesPending = this.clientActionData?.placedCardId !== undefined
+					log("changes pending", changesPending)
 					if (!changesPending) {
 						dojo.addClass('place-card-button', 'disabled')
 						dojo.addClass('cancel-button', 'disabled')
@@ -1012,6 +1013,7 @@ class Nimalia implements NimaliaGame {
 	}
 
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
+		log("notif_cardsMove", notif.args)
 		//important order !
 		if (notif.args.undoneCard) this.playerTables[notif.args.playerId].removeCardFromGrid(notif.args.undoneCard)
 		if (notif.args.playerId == this.getPlayerId() && !notif.args.playedCard) this.cancelPlaceCard()
