@@ -128,15 +128,19 @@ trait GoalTrait {
             case 18:
                 $gorilla = $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_GORILLA, false, 5, 2);
                 $panda = $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_PANDA, false, -5, -2);
-                //self::dump('*****************gorilla**', $gorilla);
-                //self::dump('*****************panda**', $panda);
+                self::notifyAllPlayers("msg", clienttranslate('${player_name} scores ${count} points for gorillas'), ['player_name' => $this->getPlayerName($playerId), 'count' => $gorilla]);
+                self::notifyAllPlayers("msg", clienttranslate('${player_name} scores ${count} points for pandas'), ['player_name' => $this->getPlayerName($playerId), 'count' => $panda]);
                 return $gorilla + $panda;
             case 19:
                 return $this->calculateGoalExactlyOneAnimalOfTypePerColonne($grid, ANIMAL_PINGUIN);
             case 20:
                 return $this->calculateGoalLeastLions($playerId);
             case 21:
-                return $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_CROCODILE, false, 5, 2) + $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_FLAMINGO, true, 5, 2);
+                $crocodile = $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_CROCODILE, false, 5, 2);
+                $flamingo = $this->calculateGoalRelativeAnimalsCount($playerId, ANIMAL_FLAMINGO, true, 5, 2);
+                self::notifyAllPlayers("msg", clienttranslate('${player_name} scores ${count} points for crocodiles'), ['player_name' => $this->getPlayerName($playerId), 'count' => $crocodile]);
+                self::notifyAllPlayers("msg", clienttranslate('${player_name} scores ${count} points for flamingos'), ['player_name' => $this->getPlayerName($playerId), 'count' => $flamingo]);
+                return $crocodile + $flamingo;
             case 22:
                 return $this->calculateGoalAnimalTouchingAtLeastOneOtherAnimal($grid, ANIMAL_CROCODILE, ANIMAL_GIRAFFE);
 
@@ -237,10 +241,10 @@ trait GoalTrait {
                 switch ($card->rotation) {
                     case 90:
                         $this->rotateRiver($biome);
-                    break;
+                        break;
                     case 270:
                         $this->rotateRiver($biome);
-                    break;
+                        break;
                 }
         }
         return $biomes;
@@ -715,12 +719,12 @@ trait GoalTrait {
                             [$row + 1, $col]          // bottom
                         ];
                     }
-                    
+
                     // Check if any of the touching cells have the specified land type
                     if (array_reduce($touchingCoordinates, function ($carry, $coord) use ($grid, $gridSize, $landType) {
                         list($r, $c) = $coord;
                         //self::dump('*******************$coord', $coord);
-                       // self::dump('*******************res', $carry || ($r >= 0 && $r < $gridSize && $c >= 0 && $c < count($grid[$r]) && $grid[$r][$c]->land == $landType));
+                        // self::dump('*******************res', $carry || ($r >= 0 && $r < $gridSize && $c >= 0 && $c < count($grid[$r]) && $grid[$r][$c]->land == $landType));
                         return $carry || ($r >= 0 && $r < $gridSize && $c >= 0 && $c < count($grid[$r]) && $grid[$r][$c]->land == $landType);
                     }, false)) {
                         //self::dump('*******************found', compact("row", "col"));
