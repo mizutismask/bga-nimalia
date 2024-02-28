@@ -15,7 +15,10 @@ class PlayerTable {
 			<div id="player-table-${player.id}" class="player-order${player.playerNo} player-table ${ownClass}">
 				<a id="anchor-player-${player.id}"></a>
 				<div id="reserve-wrapper" class="reserve-wrapper">
-                	<div id="reserve-${player.id}" class="nml-reserve"></div>
+					<div id="reserve-squares-wrapper-${player.id}" class="nml-reserve-squares-wrapper">
+						<div id="reserve-background-${player.id}" class="nml-reserve-background"></div>
+						<div id="reserve-${player.id}" class="nml-reserve"></div>
+					</div>
 				</div>
 				<div class="nml-player-name">${player.name}</div>
             </div>
@@ -29,7 +32,7 @@ class PlayerTable {
 				<div id="controlGridDown" class="nml-control grid-down css-icon fa6 fa6-circle-chevron-down" data-direction="down"></div>
 				<div id="controlGridRight" class="nml-control grid-right css-icon fa6 fa6-circle-chevron-right" data-direction="right"></div>
         `
-			dojo.place(html, `reserve-${player.id}`, 'after')
+			dojo.place(html, `reserve-squares-wrapper-${player.id}`, 'after')
 
 			dojo.connect($('controlGridLeft'), 'click', this, dojo.hitch(this, this.onShiftGrid))
 			dojo.connect($('controlGridUp'), 'click', this, dojo.hitch(this, this.onShiftGrid))
@@ -73,14 +76,23 @@ class PlayerTable {
 
 	private setupReserve(player: NimaliaPlayer) {
 		const divId = `reserve-${player.id}`
+		const backgroundDivId = `reserve-background-${player.id}`
 		for (let i = 0; i < 36; i++) {
 			const squareId = `square-${player.id}-${i + 1}`
 			dojo.place(
 				`
-            <div id="${squareId}" class="nml-square">
+            <div id="${squareId}" class="nml-square"></div>
             `,
 				divId
 			)
+
+			dojo.place(
+				`
+            <div class="nml-square">${i + 1}</div>
+            `,
+				backgroundDivId
+			)
+
 			if (parseInt(player.id) === this.game.getPlayerId()) {
 				dojo.connect($(squareId), 'drop', this, dojo.hitch(this, this.onCardDrop))
 				dojo.connect($(squareId), 'dragover', this, dojo.hitch(this, this.onCardDropOver))

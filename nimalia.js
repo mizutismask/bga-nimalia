@@ -624,7 +624,6 @@ function slideAnimation(animationManager, animation) {
         element.style.transform = "translate(".concat(-x, "px, ").concat(-y, "px) rotate(").concat((_d = settings === null || settings === void 0 ? void 0 : settings.rotationDelta) !== null && _d !== void 0 ? _d : 0, "deg)");
         var timeoutId = null;
         var cleanOnTransitionEnd = function () {
-            console.log("cleanOnTransitionEnd");
             element.style.zIndex = originalZIndex;
             element.style.transition = originalTransition;
             success();
@@ -3328,11 +3327,11 @@ var PlayerTable = /** @class */ (function () {
         this.game = game;
         var isMyTable = player.id === game.getPlayerId().toString();
         var ownClass = isMyTable ? 'own' : '';
-        var html = "\n\t\t\t<div id=\"player-table-".concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n\t\t\t\t<a id=\"anchor-player-").concat(player.id, "\"></a>\n\t\t\t\t<div id=\"reserve-wrapper\" class=\"reserve-wrapper\">\n                \t<div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"nml-player-name\">").concat(player.name, "</div>\n            </div>\n        ");
+        var html = "\n\t\t\t<div id=\"player-table-".concat(player.id, "\" class=\"player-order").concat(player.playerNo, " player-table ").concat(ownClass, "\">\n\t\t\t\t<a id=\"anchor-player-").concat(player.id, "\"></a>\n\t\t\t\t<div id=\"reserve-wrapper\" class=\"reserve-wrapper\">\n\t\t\t\t\t<div id=\"reserve-squares-wrapper-").concat(player.id, "\" class=\"nml-reserve-squares-wrapper\">\n\t\t\t\t\t\t<div id=\"reserve-background-").concat(player.id, "\" class=\"nml-reserve-background\"></div>\n\t\t\t\t\t\t<div id=\"reserve-").concat(player.id, "\" class=\"nml-reserve\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"nml-player-name\">").concat(player.name, "</div>\n            </div>\n        ");
         dojo.place(html, 'player-tables');
         if (isMyTable) {
             var html_1 = "\n\t\t\t\t<div id=\"controlGridLeft\" class=\"nml-control grid-left css-icon fa6 fa6-circle-chevron-left\" data-direction=\"left\"></div>\n\t\t\t\t<div id=\"controlGridUp\" class=\"nml-control grid-up css-icon fa6 fa6-circle-chevron-up\" data-direction=\"up\"></div>\n\t\t\t\t<div id=\"controlGridDown\" class=\"nml-control grid-down css-icon fa6 fa6-circle-chevron-down\" data-direction=\"down\"></div>\n\t\t\t\t<div id=\"controlGridRight\" class=\"nml-control grid-right css-icon fa6 fa6-circle-chevron-right\" data-direction=\"right\"></div>\n        ";
-            dojo.place(html_1, "reserve-".concat(player.id), 'after');
+            dojo.place(html_1, "reserve-squares-wrapper-".concat(player.id), 'after');
             dojo.connect($('controlGridLeft'), 'click', this, dojo.hitch(this, this.onShiftGrid));
             dojo.connect($('controlGridUp'), 'click', this, dojo.hitch(this, this.onShiftGrid));
             dojo.connect($('controlGridDown'), 'click', this, dojo.hitch(this, this.onShiftGrid));
@@ -3368,9 +3367,11 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.setupReserve = function (player) {
         var divId = "reserve-".concat(player.id);
+        var backgroundDivId = "reserve-background-".concat(player.id);
         for (var i = 0; i < 36; i++) {
             var squareId = "square-".concat(player.id, "-").concat(i + 1);
-            dojo.place("\n            <div id=\"".concat(squareId, "\" class=\"nml-square\">\n            "), divId);
+            dojo.place("\n            <div id=\"".concat(squareId, "\" class=\"nml-square\"></div>\n            "), divId);
+            dojo.place("\n            <div class=\"nml-square\">".concat(i + 1, "</div>\n            "), backgroundDivId);
             if (parseInt(player.id) === this.game.getPlayerId()) {
                 dojo.connect($(squareId), 'drop', this, dojo.hitch(this, this.onCardDrop));
                 dojo.connect($(squareId), 'dragover', this, dojo.hitch(this, this.onCardDropOver));
