@@ -191,7 +191,7 @@ trait BiomesCardTrait {
         $this->biomesCards->moveAllCardsInLocation('nextchoice', 'hand', $recipient, $playerId);
         $sql = "UPDATE card set card_order_in_grid = 0 where card_location='hand' and card_location_arg = '$playerId'";
         self::DbQuery($sql);
-        self::notifyPlayer($playerId, 'cardsMove', clienttranslate('${player_name} changes his mind'), ['player_name' => $this->getPlayerName($playerId)]);
+        self::notifyPlayer($playerId, 'cardsMove',  clienttranslate('${player_name} changes his mind'), ["playerId" => $playerId, 'player_name' => $this->getPlayerName($playerId), "added" => $this->getPlayerCards($playerId), "fromUndo" => true, "undoneCard" => $this->getCard($cardId)]);
     }
 
     public function draftCards() {
