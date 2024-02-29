@@ -421,11 +421,11 @@ trait GoalTrait {
         }
         if (count($players) == 3 || count($players) == 4) {
             $sizeCopy = $size;
-            sort($sizeCopy);
+            rsort($sizeCopy);
             if (count($sizeCopy) > 1) {
                 $second =  $size[$currentPlayerId] == $sizeCopy[1];
             }
-            $tieForFirst = count(array_filter($size, fn ($nb) => $nb ==  max($size)));
+            $tieForFirst = count(array_filter($size, fn ($nb) => $nb ==  max($size))) > 1;
             if (!$tieForFirst && $second) {
                 return $secondPoints;
             }
@@ -761,17 +761,17 @@ trait GoalTrait {
 
     function exploreRiver($biomes, &$rivers, $i, $j, $rows, $cols, $direction) {
 
-        if ($i < 0 || $i >= $rows || $j < 0 || $j >= $cols || $rivers[$i][$j]['visited'] || $biomes[$i][$j]->animal !== ANIMAL_OTTER) {
+        if ($i < 0 || $i >= $rows || $j < 0 || $j >= $cols || $rivers[$i][$j]['visited'] || $biomes[$i][$j]->animal !== ANIMAL_OTTER || $biomes[$i][$j]->river !== $direction) {
             return 0;
         }
 
         $rivers[$i][$j]['visited'] = true;
         $size = 1;
 
-        //self::dump('***********exploreRiver********',compact("i", "j","direction"));
+        //self::dump('***********exploreRiver********', compact("i", "j", "direction"));
         // Explore the river only in the directions that are continuous
         if ($direction === RIVER_UP) {
-            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j, $rows, $cols, $direction); // Up
+            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j, $rows, $cols, RIVER_DOWN); // Up
             $size += $this->exploreRiver($biomes, $rivers, $i, $j + 1, $rows, $cols, RIVER_DOWN); // Right
             $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j + 1, $rows, $cols, RIVER_UP); // Diagonal Up-Right
 
@@ -816,7 +816,7 @@ trait GoalTrait {
                 if ($biomes[$i][$j]->river !== 0 && !$rivers[$i][$j]['visited']) {
                     // Explore the river starting from the current cell in the specified direction
                     $riverSize = $this->exploreRiver($biomes, $rivers, $i, $j, $rows, $cols, $biomes[$i][$j]->river);
-                    //self::dump('***********calculateLargestRiver********',compact("i", "j","riverSize"));
+                    //self::dump('***********calculateLargestRiver********', compact("i", "j", "riverSize"));
 
                     // Update the maximum river size
                     $maxRiverSize = max($maxRiverSize, $riverSize);

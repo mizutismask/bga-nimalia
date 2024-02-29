@@ -546,6 +546,49 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
+
+    /*
+    000000
+    000000
+    00/00\
+    00\00/
+    000//0
+    000000
+ */
+    function testCalculateLargestRiverOf2() {
+        $grid = $this->initGrid();
+
+        $grid[2][5] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[3][5] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[4][4] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[4][3] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[3][2] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[2][2] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+
+        //$this->displayRiverGrid($grid);
+
+        $result = $this->calculateLargestRiver($grid);
+        $equal = $result == 3;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateLargestSnakeRiver() {
+        $grid = $this->initGrid();
+
+        $grid[0][0] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[0][1] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[0][2] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[0][3] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+        $grid[0][4] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[0][5] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+
+        //$this->displayRiverGrid($grid);
+
+        $result = $this->calculateLargestRiver($grid);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
     function testCalculateGoalLandZonesCount() {
         $grid = $this->initGrid();
 
@@ -691,6 +734,8 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalRiverConnectedToLandHorizontaly();
         $this->testBiomesCorrectDescription();
         $this->testCalculateLargestRiverOneLongContinousLength7();
+        $this->testCalculateLargestRiverOf2();
+        $this->testCalculateLargestSnakeRiver();
         //$this->testGetRotatedBiomesAndRivers();
 
     }
