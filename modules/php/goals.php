@@ -171,6 +171,7 @@ trait GoalTrait {
             $grid[$anchorRow + 1][$anchorCol + 1] = $biomes[3];
         }
         //$this->displayGrid($grid);
+        //$this->displayRiverGrid($grid);
         return $grid;
     }
 
@@ -222,15 +223,16 @@ trait GoalTrait {
     }
 
     function getRotatedBiomes(BiomeCard $card) {
+        //90 and 270° needs to be cloned, because it will change the river direction, and we don’t want to modify the original
         switch ($card->rotation) {
             case 0:
                 return $card->biomes;
             case 90:
-                return [$card->biomes[2], $card->biomes[0], $card->biomes[3], $card->biomes[1]];
+                return [clone $card->biomes[2], clone $card->biomes[0], clone $card->biomes[3], clone $card->biomes[1]];
             case 180:
                 return [$card->biomes[3], $card->biomes[2], $card->biomes[1], $card->biomes[0]];
             case 270:
-                return [$card->biomes[1], $card->biomes[3], $card->biomes[0], $card->biomes[2]];
+                return [clone $card->biomes[1], clone $card->biomes[3], clone $card->biomes[0], clone $card->biomes[2]];
         }
     }
 
@@ -419,6 +421,7 @@ trait GoalTrait {
         foreach ($players as $playerId) {
             $size[$playerId] = $this->calculateLargestRiver($this->getGrid($playerId));
         }
+        //self::dump('*******************calculateLargestRiver', $size);
         if (count($players) == 3 || count($players) == 4) {
             $sizeCopy = $size;
             rsort($sizeCopy);
@@ -582,25 +585,27 @@ trait GoalTrait {
             for ($startCol = 0; $startCol < GRID_SIZE; $startCol++) {
                 $squareSize = 0;
                 $foundEmptySquare = false;
-    
-                while ($startRow + $squareSize < GRID_SIZE &&
-                       $startCol + $squareSize < GRID_SIZE &&
-                       !$foundEmptySquare) {
+
+                while (
+                    $startRow + $squareSize < GRID_SIZE &&
+                    $startCol + $squareSize < GRID_SIZE &&
+                    !$foundEmptySquare
+                ) {
                     for ($i = $startRow + $squareSize; $i >= $startRow && !$foundEmptySquare; $i--) {
                         for ($j = $startCol + $squareSize; $j >= $startCol && !$foundEmptySquare; $j--) {
                             $foundEmptySquare = $foundEmptySquare || $grid[$i][$j]->land == FAKE_LAND;
                         }
                     }
-    
+
                     if (!$foundEmptySquare) {
                         $squareSize++;
                     }
                 }
-    
+
                 $maxSquareSize = max($maxSquareSize, $squareSize);
             }
         }
-    
+
         $points = [0, 0, 3, 5, 8, 13, 21];
         return $points[$maxSquareSize];
     }

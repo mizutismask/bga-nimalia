@@ -1,8 +1,7 @@
 <?php
-define("APP_GAMEMODULE_PATH", "../misc/"); // include path to stubs, which defines "table.game.php" and other classes
-require_once('../nimalia.game.php');
+require_once('./gameBaseTest.php');
 
-class GoalRelativeAnimalsCountTest extends Nimalia { // this is your game class defined in ggg.game.php
+class GoalRelativeAnimalsCountTest extends GameTestBase { // this is your game class defined in ggg.game.php
     function __construct() {
         // parent::__construct();
         include '../material.inc.php'; // this is how this normally included, from constructor
@@ -48,15 +47,6 @@ class GoalRelativeAnimalsCountTest extends Nimalia { // this is your game class 
 
     function getPlayersIds() {
         return [1, 2, 3];
-    }
-
-    function initGrid() {
-        $grid = [];
-        $fakeBiome = new Biome(0, -1, 0); //to avoid null errors
-        for ($i = 0; $i < GRID_SIZE; $i++) {
-            $grid[] = array_fill(0, GRID_SIZE, $fakeBiome);
-        }
-        return $grid;
     }
 
     // class tests

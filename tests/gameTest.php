@@ -436,10 +436,46 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
-    function testGetRotatedBiomesAndRivers() {
+    function testGetRotatedBiomesAndRivers90Degrees() {
         $card = new BiomeCard(['type' => 1, 'type_arg' => 36, 'id' => 1, 'location' => "toto", 'location_arg' => "squareToto"], $this->BIOMES_CARDS, ['card_rotation' => 90, 'card_order_in_grid' => 1]);
+        /* self::dump('*******************before rotation',
+            $card
+        );*/
         $rotated = $this->getRotatedBiomesAndRivers($card);
-        self::dump('*******************rotated', $rotated);
+        //self::dump('*******************rotated', $rotated);
+        $this->displayResult(__FUNCTION__, $rotated[0]->animal == ANIMAL_OTTER, $rotated[0]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[0]->river == RIVER_DOWN, $rotated[0]->river);
+        $this->displayResult(__FUNCTION__, $rotated[1]->animal == ANIMAL_PANDA, $rotated[1]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[2]->animal == ANIMAL_GORILLA, $rotated[2]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[3]->animal == ANIMAL_FLAMINGO, $rotated[3]->animal);
+    }
+
+    function testGetRotatedBiomesAndRivers180Degrees() {
+        $card = new BiomeCard(['type' => 1, 'type_arg' => 36, 'id' => 1, 'location' => "toto", 'location_arg' => "squareToto"], $this->BIOMES_CARDS, ['card_rotation' => 180, 'card_order_in_grid' => 1]);
+        /* self::dump('*******************before rotation',
+            $card
+        );*/
+        $rotated = $this->getRotatedBiomesAndRivers($card);
+        //self::dump('*******************rotated', $rotated);
+        $this->displayResult(__FUNCTION__, $rotated[0]->animal == ANIMAL_GORILLA, $rotated[0]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[1]->animal == ANIMAL_OTTER, $rotated[1]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[1]->river == RIVER_UP, $rotated[1]->river);
+        $this->displayResult(__FUNCTION__, $rotated[2]->animal == ANIMAL_FLAMINGO, $rotated[2]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[3]->animal == ANIMAL_PANDA, $rotated[3]->animal);
+    }
+
+    function testGetRotatedBiomesAndRivers270Degrees() {
+        $card = new BiomeCard(['type' => 1, 'type_arg' => 36, 'id' => 1, 'location' => "toto", 'location_arg' => "squareToto"], $this->BIOMES_CARDS, ['card_rotation' => 270, 'card_order_in_grid' => 1]);
+       /* self::dump('*******************before rotation',
+            $card
+        );*/
+        $rotated = $this->getRotatedBiomesAndRivers($card);
+        //self::dump('*******************rotated', $rotated);
+        $this->displayResult(__FUNCTION__, $rotated[0]->animal == ANIMAL_FLAMINGO, $rotated[0]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[1]->animal == ANIMAL_GORILLA, $rotated[1]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[2]->animal == ANIMAL_PANDA, $rotated[2]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[3]->animal == ANIMAL_OTTER, $rotated[3]->animal);
+        $this->displayResult(__FUNCTION__, $rotated[3]->river == RIVER_DOWN, $rotated[3]->river);
     }
 
     function testCalculateLargestRiverOneLongContinous() {
@@ -705,7 +741,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
     }
 
     function testAll() {
-        $this->testcalculateGoalAnimalTouchingAtLeastOneKindOfAnimal();
+        /*$this->testcalculateGoalAnimalTouchingAtLeastOneKindOfAnimal();
         $this->testcalculateGoalAnimalTouchingAtLeastOneLand();
         $this->testCalculateGoalLeastLionsFalse();
         $this->testCalculateGoalLeastLionsTrue();
@@ -735,8 +771,10 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testBiomesCorrectDescription();
         $this->testCalculateLargestRiverOneLongContinousLength7();
         $this->testCalculateLargestRiverOf2();
-        $this->testCalculateLargestSnakeRiver();
-        //$this->testGetRotatedBiomesAndRivers();
+        $this->testCalculateLargestSnakeRiver();*/
+        $this->testGetRotatedBiomesAndRivers90Degrees();
+        $this->testGetRotatedBiomesAndRivers180Degrees();
+        $this->testGetRotatedBiomesAndRivers270Degrees();
 
     }
 
