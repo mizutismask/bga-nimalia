@@ -102,8 +102,8 @@ trait UtilTrait {
         if (!$dbObject || !array_key_exists('id', $dbObject)) {
             throw new BgaSystemException("BiomesCard doesn't exists " . json_encode($dbObject));
         }
-        $sql = "SELECT card_order_in_grid, card_rotation FROM card where card_id=". $dbObject['id'];
-        $additionalFields = self::getObjectFromDB( $sql );
+        $sql = "SELECT card_order_in_grid, card_rotation FROM card where card_id=" . $dbObject['id'];
+        $additionalFields = self::getObjectFromDB($sql);
         //self::dump('************type_arg*******', $dbObject["type_arg"]);
         //self::dump('*******************', $this->BIOMES_CARDS[$dbObject["type"]][$dbObject["type_arg"]]);
         //self::dump('*******************additionalFields', $additionalFields);
@@ -152,7 +152,7 @@ trait UtilTrait {
     }*/
 
     function isCardCoveringAnotherCard(int $player, BiomeCard $cardId, int $squareId) {
-        return true;//todo use getPossibleSquares
+        return true; //todo use getPossibleSquares
     }
 
     function getNonZombiePlayersIds() {
@@ -211,10 +211,10 @@ trait UtilTrait {
             'delta' => $delta,
         ] + $messageArgs);
 
-        if($this->getPlayerScore($playerId)<0){
+        if ($this->getPlayerScore($playerId) < 0) {
             self::DbQuery("UPDATE player SET `player_score` = 0 where `player_id` = $playerId");
 
-            self::notifyAllPlayers('points',clienttranslate('Score can not be negative, reset to 0 for ${player_name}'), [
+            self::notifyAllPlayers('points', clienttranslate('Score can not be negative, reset to 0 for ${player_name}'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'points' => $this->getPlayerScore($playerId),
@@ -223,8 +223,14 @@ trait UtilTrait {
         }
     }
 
-    function notifyPlayerScore(int $playerId, int $score, $message = null, $messageArgs = [], $stat=null) {
-        if($stat){
+    function notifyPlayerScore(
+        int $playerId,
+        int $score,
+        $message = null,
+        $messageArgs = [],
+        $stat = null
+    ) {
+        if ($stat) {
             self::incStat($score, $stat, $playerId);
         }
         self::notifyAllPlayers('score', $message !== null ? $message : '', [
@@ -234,14 +240,14 @@ trait UtilTrait {
         ] + $messageArgs);
     }
 
-    function getScoreType($round, $goalColor, $playerId){
+    function getScoreType($round, $goalColor, $playerId) {
         return "round-${round}-goal-${goalColor}-${playerId}";
     }
 
-    function getTotalType($round,  $playerId){
+    function getTotalType($round,  $playerId) {
         return "total-round-${round}-${playerId}";
     }
-    
+
     function updatePlayer(int $playerId, String $field, int $newValue) {
         $this->DbQuery("UPDATE player SET $field = $newValue WHERE player_id = $playerId");
     }
@@ -291,7 +297,7 @@ trait UtilTrait {
         return $length === 0 || (substr($haystack, -$length) === $needle);
     }
 
-    function getPart(string $haystack, int $i, bool $noException = false, string $separator='_'): string {
+    function getPart(string $haystack, int $i, bool $noException = false, string $separator = '_'): string {
         $parts = explode($separator, $haystack);
         $len = count($parts);
         if ($noException && $i >= $len)
@@ -336,5 +342,15 @@ trait UtilTrait {
 
     function getColoredGameStateValue($gameStateValue, $color) {
         return $this->getGameStateValue($gameStateValue . "_" . strtoupper($this->getColorName($color)));
+    }
+
+    function displayAnimalCountBySquare($animalInfo) {
+        foreach ($animalInfo as $row => $cols) {
+            for ($col = 0; $col < count($cols); $col++) {
+                foreach ($animalInfo[$row][$col] as $animal => $squares) {
+                    echo $row . "_" . $col . " -> " . count($squares) . " animals of type " . $animal . "\n";
+                }
+            }
+        }
     }
 }

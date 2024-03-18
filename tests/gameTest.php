@@ -713,6 +713,51 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
+    function testCalculateGoalSeveralAnimalsTouchingOtterComplex() {
+        $grid = $this->initGrid();
+        $grid[0][3] = new Biome(ANIMAL_GORILLA);
+        $grid[0][4] = new Biome(ANIMAL_OTTER, LAND_SNOW);
+
+        $grid[1][0] = new Biome(ANIMAL_GIRAFFE);
+        $grid[1][1] =  new Biome(ANIMAL_FLAMINGO);
+        $grid[1][2] =  new Biome(ANIMAL_GORILLA);
+        $grid[1][3] = new Biome(ANIMAL_OTTER, LAND_SNOW);
+        $grid[1][4] =  new Biome(ANIMAL_PANDA);
+        $grid[1][5] =  new Biome(ANIMAL_GORILLA);
+
+        $grid[2][0] = new Biome(ANIMAL_FLAMINGO);
+        $grid[2][1] =  new Biome(ANIMAL_LION);
+        $grid[2][2] =  new Biome(ANIMAL_PINGUIN);
+        $grid[2][3] = new Biome(ANIMAL_PANDA);
+        $grid[2][4] =  new Biome(ANIMAL_CROCODILE);
+        $grid[2][5] =  new Biome(ANIMAL_PINGUIN);
+
+        $grid[3][1] =  new Biome(ANIMAL_PANDA);
+        $grid[3][2] =  new Biome(ANIMAL_FLAMINGO);
+        $grid[3][3] = new Biome(ANIMAL_BEAR);
+        $grid[3][4] =  new Biome(ANIMAL_OTTER, LAND_SNOW);
+        $grid[3][5] =  new Biome(ANIMAL_FLAMINGO);
+
+        $grid[4][0] = new Biome(ANIMAL_PANDA);
+        $grid[4][1] =  new Biome(ANIMAL_FLAMINGO);
+        $grid[4][2] =  new Biome(ANIMAL_CROCODILE);
+        $grid[4][3] = new Biome(ANIMAL_OTTER, LAND_SNOW);
+        $grid[4][4] =  new Biome(ANIMAL_BEAR);
+        $grid[4][5] =  new Biome(ANIMAL_CROCODILE);
+
+        $grid[5][0] = new Biome(ANIMAL_GORILLA);
+        $grid[5][1] =  new Biome(ANIMAL_GIRAFFE);
+        $grid[5][2] =  new Biome(ANIMAL_FLAMINGO);
+        $grid[5][3] = new Biome(ANIMAL_GORILLA);
+        $grid[5][4] =  new Biome(ANIMAL_CROCODILE);
+        $grid[5][5] =  new Biome(ANIMAL_PANDA);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoalSeveralAnimalsTouchingOtter($grid);
+        $equal = $result == 8;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
     function convertNumbersToGrid(string $textGrid) {
         $grid = $this->initGrid();
         $rows = preg_split("/\r\n|\n|\r/", trim($textGrid));
@@ -741,7 +786,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
     }
 
     function testAll() {
-        /*$this->testcalculateGoalAnimalTouchingAtLeastOneKindOfAnimal();
+        $this->testcalculateGoalAnimalTouchingAtLeastOneKindOfAnimal();
         $this->testcalculateGoalAnimalTouchingAtLeastOneLand();
         $this->testCalculateGoalLeastLionsFalse();
         $this->testCalculateGoalLeastLionsTrue();
@@ -766,12 +811,13 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalBiggestSavannah();
         $this->testCalculateGoal2HorizontalAnimals();
         $this->testCalculateGoalSeveralAnimalsTouchingOtter();
+        $this->testCalculateGoalSeveralAnimalsTouchingOtterComplex();
         $this->testCalculateGoalRiverConnectedToLand();
         $this->testCalculateGoalRiverConnectedToLandHorizontaly();
         $this->testBiomesCorrectDescription();
         $this->testCalculateLargestRiverOneLongContinousLength7();
         $this->testCalculateLargestRiverOf2();
-        $this->testCalculateLargestSnakeRiver();*/
+        $this->testCalculateLargestSnakeRiver();
         $this->testGetRotatedBiomesAndRivers90Degrees();
         $this->testGetRotatedBiomesAndRivers180Degrees();
         $this->testGetRotatedBiomesAndRivers270Degrees();

@@ -304,51 +304,64 @@ trait GoalTrait {
         return $points;
     }
 
+    /**
+     * Return squares touching otters by animal type and then by cell
+     * [row][col][animalType][squares]
+     */
     function getSeveralAnimalsTouchingOtter(array $grid, int $otter = ANIMAL_OTTER) {
-        $animalInfo = array_fill(1, 9, array()); // Initialize the array for each animal type
+        $animalInfo = [];
         $gridSize = count($grid);
 
         // Iterate through each row of the grid
         for ($row = 0; $row < $gridSize; $row++) {
             // Iterate through each column of the grid
             for ($col = 0; $col < count($grid[$row]); $col++) {
+                $animalInfo[$row][$col] = array_fill(1, 9, array()); // Initialize the array for each animal type
                 // Check if the cell contains any animal
                 $currentAnimal = $grid[$row][$col]->animal;
                 if ($currentAnimal == $otter) {
                     // Check adjacent cells (orthogonally)
                     if ($row > 0 && $grid[$row - 1][$col]->animal !== 0) {
                         $animalType = $grid[$row - 1][$col]->animal;
-                        $animalInfo[$animalType][] = ['row' => $row - 1, 'col' => $col];
+                        $animalInfo[$row][$col][$animalType][] = ['row' => $row - 1, 'col' => $col];
                     }
 
                     if ($row < $gridSize - 1 && $grid[$row + 1][$col]->animal !== 0) {
                         $animalType = $grid[$row + 1][$col]->animal;
-                        $animalInfo[$animalType][] = ['row' => $row + 1, 'col' => $col];
+                        $animalInfo[$row][$col][$animalType][] = ['row' => $row + 1, 'col' => $col];
                     }
 
                     if ($col > 0 && $grid[$row][$col - 1]->animal !== 0) {
                         $animalType = $grid[$row][$col - 1]->animal;
-                        $animalInfo[$animalType][] = ['row' => $row, 'col' => $col - 1];
+                        $animalInfo[$row][$col][$animalType][] = ['row' => $row, 'col' => $col - 1];
                     }
 
                     if ($col < count($grid[$row]) - 1 && $grid[$row][$col + 1]->animal !== 0) {
                         $animalType = $grid[$row][$col + 1]->animal;
-                        $animalInfo[$animalType][] = ['row' => $row, 'col' => $col + 1];
+                        $animalInfo[$row][$col][$animalType][] = ['row' => $row, 'col' => $col + 1];
                     }
                 }
             }
         }
+        //$this->displayAnimalCountBySquare($animalInfo);
         return $animalInfo;
     }
 
     function calculateGoalSeveralAnimalsTouchingOtter(array $grid) {
         $squaresTouching = $this->getSeveralAnimalsTouchingOtter($grid);
-        $severalCopies = array_filter($squaresTouching, fn ($squares) => count($squares) > 1);
-        return array_reduce(
-            $severalCopies,
-            fn ($carry, $zone) => $carry + (count($zone)),
-            0
-        );
+
+        $count = 0;
+        foreach ($squaresTouching as $row => $cols) {
+            for ($col = 0; $col < count($cols); $col++) {
+                foreach ($squaresTouching[$row][$col] as $animal => $squares) {
+                    $adjIdentAnimals = count($squares);
+                    if ($adjIdentAnimals >= 2) {
+                        $count += $adjIdentAnimals;
+                    }
+                }
+            }
+        }
+        return $count;
     }
 
     function calculateGoalAnimalTouchingAtLeastOneKindOfLand(array $grid, int $animal, int $landType) {
