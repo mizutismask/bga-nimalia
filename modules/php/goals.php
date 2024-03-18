@@ -582,13 +582,34 @@ trait GoalTrait {
     }
 
     function calculateGoal2HorizontalAnimals(array $grid) {
-        $allZones = [];
-        foreach (ANIMALS as  $animal) {
-            $allZones = array_merge($allZones, array_values($this->calculateAnimalZones($grid, $animal)));
+        $count = 0;
+        $rows = count($grid);
+        $cols = count($grid[0]);
+        // Iterate through each row of the grid
+        for ($row = 0; $row < $rows; $row++) {
+            // Iterate through each column of the grid, until the second last column
+            for ($col = 0; $col < $cols - 1; $col++) {
+                // Check if the current cell contains an animal
+                if ($grid[$row][$col]->animal != 0) {
+                    // Check if the two horizontally adjacent cells contain the same type of animal
+                    if ($grid[$row][$col]->animal == $grid[$row][$col + 1]->animal) {
+                        // If the two cells are in the last two columns, they are always counted
+                        if ($col == $cols - 2) {
+                            $count++;
+                        }
+                        // Otherwise, check that the third cell does not have the same type of animal, and the previous one too
+                        elseif (
+                            $grid[$row][$col]->animal != $grid[$row][$col + 2]->animal
+                            && ($col - 1 < 0 || $grid[$row][$col]->animal != $grid[$row][$col - 1]->animal)
+                        ) {
+                            $count++;
+                        }
+                    }
+                }
+            }
         }
-        //only zones whose row number is the same
-        $matchingZones = array_filter($allZones, fn ($zone) => count(array_unique(array_map(fn ($square) => $square[0], $zone))) == 1 && count($zone) == 2);
-        return count($matchingZones) * 3;
+
+        return $count * 3;
     }
 
     function calculateGoalCompleteSquare(array $grid) {

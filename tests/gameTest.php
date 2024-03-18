@@ -466,7 +466,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
     function testGetRotatedBiomesAndRivers270Degrees() {
         $card = new BiomeCard(['type' => 1, 'type_arg' => 36, 'id' => 1, 'location' => "toto", 'location_arg' => "squareToto"], $this->BIOMES_CARDS, ['card_rotation' => 270, 'card_order_in_grid' => 1]);
-       /* self::dump('*******************before rotation',
+        /* self::dump('*******************before rotation',
             $card
         );*/
         $rotated = $this->getRotatedBiomesAndRivers($card);
@@ -553,25 +553,25 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
             RIVER_UP
         );
         $grid[1][3] = new Biome(
-                ANIMAL_OTTER,
-                LAND_SNOW,
-                RIVER_UP
-            );
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_UP
+        );
         $grid[2][2] = new Biome(
-                ANIMAL_OTTER,
-                LAND_SNOW,
-                RIVER_UP
-            );
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_UP
+        );
         $grid[3][2] = new Biome(
-                ANIMAL_OTTER,
-                LAND_SNOW,
-                RIVER_DOWN
-            );
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_DOWN
+        );
         $grid[3][4] = new Biome(
-                ANIMAL_OTTER,
-                LAND_SNOW,
-                RIVER_DOWN
-            );
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_DOWN
+        );
         $grid[4][3] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
         $grid[4][4] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
 
@@ -695,6 +695,31 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
+    function testCalculateGoal2HorizontalAnimalsWithOneUnder() {
+        $grid = $this->initGrid();
+        $grid[0][0] = new Biome(ANIMAL_BEAR);
+        $grid[0][1] = new Biome(ANIMAL_BEAR);
+        $grid[1][0] = new Biome(ANIMAL_BEAR);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoal2HorizontalAnimals($grid);
+        $equal = $result == 3;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateGoal2HorizontalAnimalsWith2OthersUnder() {
+        $grid = $this->initGrid();
+        $grid[0][0] = new Biome(ANIMAL_BEAR);
+        $grid[0][1] = new Biome(ANIMAL_BEAR);
+        $grid[1][0] = new Biome(ANIMAL_BEAR);
+        $grid[1][1] = new Biome(ANIMAL_BEAR);
+        //$this->displayGrid($grid);
+
+        $result = $this->calculateGoal2HorizontalAnimals($grid);
+        $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
     function testCalculateGoalSeveralAnimalsTouchingOtter() {
         $grid = $this->initGrid();
         //according to rule exemple
@@ -810,6 +835,9 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateGoalAnimalZonesCount();
         $this->testCalculateGoalBiggestSavannah();
         $this->testCalculateGoal2HorizontalAnimals();
+        $this->testCalculateGoal2HorizontalAnimalsWithOneUnder();
+        $this->testCalculateGoal2HorizontalAnimalsWith2OthersUnder();
+
         $this->testCalculateGoalSeveralAnimalsTouchingOtter();
         $this->testCalculateGoalSeveralAnimalsTouchingOtterComplex();
         $this->testCalculateGoalRiverConnectedToLand();
@@ -821,7 +849,6 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testGetRotatedBiomesAndRivers90Degrees();
         $this->testGetRotatedBiomesAndRivers180Degrees();
         $this->testGetRotatedBiomesAndRivers270Degrees();
-
     }
 
     function displayResult($testName, $equal, $result) {
