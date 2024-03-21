@@ -55,7 +55,8 @@ trait StateTrait {
 
     function getRoundArgs() {
         $round = intval(self::getGameStateValue(ROUND));
-        return ["round" => $round, "clockwise" => $this->isClockWisePlayerOrder(), "goals" => $this->getRoundGoals()];
+        if ($round == 0) $round = 1; //not yet initialized
+        return ["round" => $round, "clockwise" => $this->isClockWisePlayerOrder(), "goals" => $this->getRoundGoals($round)];
     }
 
     function getScoreArgs() {
