@@ -115,7 +115,7 @@ class PlayerTable {
 		if (animate) {
 			creationLocation = `overall_player_board_${playerId}`
 		}
-		log('createCardInGrid', divId, creationLocation)
+		//log('createCardInGrid', divId, creationLocation)
 
 		dojo.create(
 			'div',
@@ -145,7 +145,7 @@ class PlayerTable {
 	}
 
 	public replaceCardsInHand(cards: Array<NimaliaCard>) {
-		log('replaceCardsInHand', cards)
+		//log('replaceCardsInHand', cards)
 		this.handStock.removeAll()
 		this.handStock.addCards(cards)
 		cards.forEach((c) => this.setupCardInHand(c))
@@ -341,5 +341,16 @@ class PlayerTable {
 			return
 		}
 		this.game.shiftGrid(button.dataset.direction)
+	}
+
+	public autoSelectIfOnlyOneCard() {
+		const cards = this.handStock.getCards()
+		log('cards', cards)
+		if (cards.length == 1) {
+			this.handStock.setSelectableCards(this.handStock.getCards())
+			log('select', cards[0])
+			this.handStock.selectCard(cards[0])
+			log('selection', this.handStock.getSelection())
+		}
 	}
 }

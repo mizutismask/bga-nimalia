@@ -375,6 +375,7 @@ class Nimalia implements NimaliaGame {
 			this.resetClientActionData()
 			this.updatePossibleSquares(args.possibleSquares[this.getCurrentPlayer().id])
 			this.updateShiftGridButtons()
+			//this.playerTables[this.getPlayerId()].autoSelectIfOnlyOneCard()
 		}
 		document.getElementById('score').style.display = 'none'
 	}
@@ -396,7 +397,7 @@ class Nimalia implements NimaliaGame {
 			const hasLocalChanges = cancelButton && !cancelButton.classList.contains('disabled')
 			const canShiftGrid: { [direction: string]: Array<Boolean> } =
 				this.gamedatas.gamestate.args.canShiftGrid[this.getCurrentPlayer().id]
-			log('hasLocalChanges', hasLocalChanges, canShiftGrid)
+			log('updateShiftGridButtons hasLocalChanges', hasLocalChanges, canShiftGrid)
 			dojo.toggleClass('controlGridUp', 'disabled', hasLocalChanges || !canShiftGrid['up'])
 			dojo.toggleClass('controlGridDown', 'disabled', hasLocalChanges || !canShiftGrid['down'])
 			dojo.toggleClass('controlGridLeft', 'disabled', hasLocalChanges || !canShiftGrid['left'])
@@ -476,6 +477,7 @@ class Nimalia implements NimaliaGame {
 					if (!changesPending) {
 						dojo.addClass('place-card-button', 'disabled')
 						dojo.addClass('cancel-button', 'disabled')
+						this.playerTables[this.getPlayerId()].autoSelectIfOnlyOneCard()
 					}
 					break
 				case 'seeScore':
@@ -936,6 +938,7 @@ class Nimalia implements NimaliaGame {
 			dojo.toggleClass('place-card-button', 'disabled', true)
 		}
 		this.updateShiftGridButtons()
+		this.playerTables[this.getPlayerId()].autoSelectIfOnlyOneCard()
 		return canceled
 	}
 

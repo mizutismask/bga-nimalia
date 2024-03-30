@@ -2295,7 +2295,7 @@ var CardsManager = /** @class */ (function (_super) {
                 _this.addRotateButton(card, div, 'right');
             },
             setupFrontDiv: function (card, div) {
-                log('setupFrontDiv', card.type_arg);
+                //log('setupFrontDiv', card.type_arg)
                 _this.setFrontBackground(div, card.type_arg);
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
@@ -2591,6 +2591,7 @@ var Nimalia = /** @class */ (function () {
             this.resetClientActionData();
             this.updatePossibleSquares(args.possibleSquares[this.getCurrentPlayer().id]);
             this.updateShiftGridButtons();
+            //this.playerTables[this.getPlayerId()].autoSelectIfOnlyOneCard()
         }
         document.getElementById('score').style.display = 'none';
     };
@@ -2610,7 +2611,7 @@ var Nimalia = /** @class */ (function () {
             var cancelButton = $('cancel-button');
             var hasLocalChanges = cancelButton && !cancelButton.classList.contains('disabled');
             var canShiftGrid = this.gamedatas.gamestate.args.canShiftGrid[this.getCurrentPlayer().id];
-            log('hasLocalChanges', hasLocalChanges, canShiftGrid);
+            log('updateShiftGridButtons hasLocalChanges', hasLocalChanges, canShiftGrid);
             dojo.toggleClass('controlGridUp', 'disabled', hasLocalChanges || !canShiftGrid['up']);
             dojo.toggleClass('controlGridDown', 'disabled', hasLocalChanges || !canShiftGrid['down']);
             dojo.toggleClass('controlGridLeft', 'disabled', hasLocalChanges || !canShiftGrid['left']);
@@ -2677,6 +2678,7 @@ var Nimalia = /** @class */ (function () {
                     if (!changesPending) {
                         dojo.addClass('place-card-button', 'disabled');
                         dojo.addClass('cancel-button', 'disabled');
+                        this.playerTables[this.getPlayerId()].autoSelectIfOnlyOneCard();
                     }
                     break;
                 case 'seeScore':
@@ -3043,6 +3045,7 @@ var Nimalia = /** @class */ (function () {
             dojo.toggleClass('place-card-button', 'disabled', true);
         }
         this.updateShiftGridButtons();
+        this.playerTables[this.getPlayerId()].autoSelectIfOnlyOneCard();
         return canceled;
     };
     Nimalia.prototype.takeAction = function (action, data) {
@@ -3394,7 +3397,7 @@ var PlayerTable = /** @class */ (function () {
         if (animate) {
             creationLocation = "overall_player_board_".concat(playerId);
         }
-        log('createCardInGrid', divId, creationLocation);
+        //log('createCardInGrid', divId, creationLocation)
         dojo.create('div', {
             id: divId,
             style: getBackgroundInlineStyleForNimaliaCard(card),
@@ -3414,7 +3417,7 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.replaceCardsInHand = function (cards) {
         var _this = this;
-        log('replaceCardsInHand', cards);
+        //log('replaceCardsInHand', cards)
         this.handStock.removeAll();
         this.handStock.addCards(cards);
         cards.forEach(function (c) { return _this.setupCardInHand(c); });
@@ -3590,6 +3593,16 @@ var PlayerTable = /** @class */ (function () {
             return;
         }
         this.game.shiftGrid(button.dataset.direction);
+    };
+    PlayerTable.prototype.autoSelectIfOnlyOneCard = function () {
+        var cards = this.handStock.getCards();
+        log('cards', cards);
+        if (cards.length == 1) {
+            this.handStock.setSelectableCards(this.handStock.getCards());
+            log('select', cards[0]);
+            this.handStock.selectCard(cards[0]);
+            log('selection', this.handStock.getSelection());
+        }
     };
     return PlayerTable;
 }());
