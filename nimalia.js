@@ -2365,7 +2365,7 @@ var ANIMATION_MS = 500;
 var SCORE_MS = 1500;
 var IMAGE_ITEMS_PER_ROW = 10;
 var IMAGE_GOALS_PER_ROW = 11;
-var isDebug = window.location.host == 'studio.boardgamearena.com';
+var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var Nimalia = /** @class */ (function () {
     function Nimalia() {
@@ -2674,7 +2674,7 @@ var Nimalia = /** @class */ (function () {
                     this.addActionButton('place-card-button', _('Validate'), function () { return _this.placeCard(); });
                     this.addActionButton('cancel-button', _('Cancel'), function () { return _this.cancelPlaceCard(); }, null, null, 'red');
                     var changesPending = ((_a = this.clientActionData) === null || _a === void 0 ? void 0 : _a.placedCardId) !== undefined;
-                    log("changes pending", changesPending);
+                    log('changes pending', changesPending);
                     if (!changesPending) {
                         dojo.addClass('place-card-button', 'disabled');
                         dojo.addClass('cancel-button', 'disabled');
@@ -3112,7 +3112,7 @@ var Nimalia = /** @class */ (function () {
         activeGoals.forEach(function (g) { return dojo.query("#goal_".concat(g.id)).addClass('nml-active-goal'); });
     };
     Nimalia.prototype.notif_cardsMove = function (notif) {
-        log("notif_cardsMove", notif.args);
+        log('notif_cardsMove', notif.args);
         //important order !
         if (notif.args.undoneCard)
             this.playerTables[notif.args.playerId].removeCardFromGrid(notif.args.undoneCard);

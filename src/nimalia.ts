@@ -19,7 +19,7 @@ const SCORE_MS = 1500
 const IMAGE_ITEMS_PER_ROW = 10
 const IMAGE_GOALS_PER_ROW = 11
 
-const isDebug = window.location.host == 'studio.boardgamearena.com'
+const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1
 const log = isDebug ? console.log.bind(window.console) : function () {}
 
 class Nimalia implements NimaliaGame {
@@ -473,7 +473,7 @@ class Nimalia implements NimaliaGame {
 					)
 
 					const changesPending = this.clientActionData?.placedCardId !== undefined
-					log("changes pending", changesPending)
+					log('changes pending', changesPending)
 					if (!changesPending) {
 						dojo.addClass('place-card-button', 'disabled')
 						dojo.addClass('cancel-button', 'disabled')
@@ -1016,7 +1016,7 @@ class Nimalia implements NimaliaGame {
 	}
 
 	notif_cardsMove(notif: Notif<CardsMoveArgs>) {
-		log("notif_cardsMove", notif.args)
+		log('notif_cardsMove', notif.args)
 		//important order !
 		if (notif.args.undoneCard) this.playerTables[notif.args.playerId].removeCardFromGrid(notif.args.undoneCard)
 		if (notif.args.playerId == this.getPlayerId() && !notif.args.playedCard) this.cancelPlaceCard()
