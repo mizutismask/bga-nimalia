@@ -28,13 +28,13 @@ trait ActionTrait {
         $playerId = intval(self::getCurrentPlayerId());
         $card = $this->getCard($cardId);
         if ($card->location != 'hand' || $card->location_arg != $playerId)
-            throw new BgaUserException("You can’t place this card: " . $card->type);
+            throw new BgaUserException(self::_("You can’t place this card: ") . $card->type);
         if ($rotation % 90 != 0)
             throw new BgaVisibleSystemException("Rotation is not a correct value: " . $rotation);
         if ($squareId % GRID_SIZE > 5 || $squareId % GRID_SIZE < 1)
-            throw new BgaUserException("You can’t place a card outside of the 6x6 grid: " . $squareId);
+            throw new BgaUserException(self::_("You can’t place a card outside of the 6x6 grid: ") . $squareId);
         if (count($this->getGridCards($playerId)) != 0 && !$this->isCardCoveringAnotherCard($playerId, $card, $squareId))
-            throw new BgaUserException("You have to to cover a part of your existing animal reserve");
+            throw new BgaUserException(self::_("You have to to cover a part of your existing animal reserve"));
 
         $this->moveCardToReserve($playerId,  $cardId,  $squareId,  $rotation);
 
@@ -46,7 +46,7 @@ trait ActionTrait {
         $this->gamestate->checkPossibleAction('undoPlaceCard');
         $activePlayers = $this->getNonZombiePlayersIds();
         if (!in_array(self::getCurrentPlayerId(), $activePlayers)) {
-            throw new BgaUserException("You left the game and thus can not play");
+            throw new BgaUserException(self::_("You left the game and thus can not play"));
         }
 
         $playerId = intval(self::getCurrentPlayerId());
@@ -54,8 +54,8 @@ trait ActionTrait {
         if (!$cardId) {
             throw new BgaVisibleSystemException(self::_("Your last move was not saved, undo is not available"));
         }
-        $this->undoMoveCardToReserve($playerId,  $cardId);
         $this->gamestate->setPlayersMultiactive([$playerId], "ignored");
+        $this->undoMoveCardToReserve($playerId,  $cardId);
     }
 
     public function scoreSeen() {
@@ -83,7 +83,7 @@ trait ActionTrait {
         $playerId = intval(self::getCurrentPlayerId());
         $grid = $this->getGrid($playerId);
         if (!$this->canShiftGrid($grid, $direction)) {
-            throw new BgaUserException("You can’t shift the grid in this direction");
+            throw new BgaUserException(self::_("You can’t shift the grid in this direction"));
         }
         $this->shiftCards($playerId, $direction);
     }
