@@ -138,12 +138,15 @@ class Nimalia implements NimaliaGame {
 	public getGoalTooltip(card: Goal) {
 		let tooltip = `
 			<div class="nml-goal-tooltip">
-				${GOALS_DESC[card.id - 1]}
+				${_(GOALS_DESC[card.id - 1])}
 		    </div>`
 		return tooltip
 	}
 
 	private setupTooltips() {
+		//todo change counter names
+		this.setTooltipToClass('revealed-tokens-back-counter', _('counter1 tooltip'))
+		this.setTooltipToClass('tickets-counter', _('counter2 tooltip'))
 
 		this.setTooltipToClass('xpd-help-icon', `<div class="help-card recto"></div>`)
 		this.setTooltipToClass('xpd-help-icon-mini', `<div class="help-card verso"></div>`)
