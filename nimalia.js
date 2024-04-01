@@ -2448,8 +2448,56 @@ var Nimalia = /** @class */ (function () {
         return "\n\t\t\t<div class=\"round-tooltip\">\n\t\t\t\t<h1>".concat(round, "</h1>\n\t\t\t\t<p>").concat(draftingText, "</p>\n\t\t\t\t<p>").concat(_('You’ll score points for goals:'), "\n\t\t\t\t\t").concat(list, "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t");
     };
     Nimalia.prototype.getGoalTooltip = function (card) {
-        var tooltip = "\n\t\t\t<div class=\"nml-goal-tooltip\">\n\t\t\t\t".concat(_(GOALS_DESC[card.id - 1]), "\n\t\t    </div>");
+        var tooltip = "\n\t\t\t<div class=\"nml-goal-tooltip\">\n\t\t\t\t".concat(this.getGoalDescription(card.id - 1), "\n\t\t    </div>");
         return tooltip;
+    };
+    Nimalia.prototype.getGoalDescription = function (index) {
+        switch (index) {
+            case 0:
+                return _('1 point per identical animal if at least 2 of them are orthogonally adjacent to an otter');
+            case 1:
+                return _('2 points per otter whose river connects to a lake.');
+            case 2:
+                return _('2 points per distinct rain forest area');
+            case 3:
+                return _('2 points per gorilla orthogonally adjacent to a lake');
+            case 4:
+                return _('2 points per space of your largest savannah.');
+            case 5:
+                return _('6 points per savanna area spanning exactly 4 spaces.');
+            case 6:
+                return _('4 points per 2×2 square of ice floe (a space can be part of several squares)');
+            case 7:
+                return _('2 points per polar bear that is part of a group of bears, and - 1 per solitary bear');
+            case 8:
+                return _('2 points per space of the terrain of which you have the fewest spaces in your reserve (here it’s 2×3 = 6)');
+            case 9:
+                return _('3, 5, 8, 13 or 21 points if your reserve completely fills a 2x2, 3x3, 4x4, 5x5, or 6x6 square');
+            case 10:
+                return _('3 points per row of your reserve that contains all 4 terrain types');
+            case 11:
+                return _('3 points per strict horizontally adjacent pair of identical animals. 3 animals don’t count');
+            case 12:
+                return _('From 0 to 8 points according to how few giraffes you have (0 giraffe = 8 )');
+            case 13:
+                return _('3 points per flamingo that is not touching the edge of your reserve');
+            case 14:
+                return _('From 0 to 15 points according to how long your longest river runs. For example, a 3-space river is worth 0, +1, +2 (thus 3)');
+            case 15:
+                return _('The player with the longest river gets 5 points, 2nd gets 2 points');
+            case 16:
+                return _('3 points per panda that is touching the edge of your reserve');
+            case 17:
+                return _('The player with the most gorillas gets 5 points (2nd gets 2 points). The player with the most pandas gets - 5 points (2nd gets - 2 points)');
+            case 18:
+                return _('3 points per column of your reserve that contains exactly 1 penguin');
+            case 19:
+                return _('The player with the fewest lions gets 3 points. Everyone else gets - 2 points');
+            case 20:
+                return _('The player with the most crocodiles gets 5 points (2nd gets 2 points). The player with the fewest flamingoes gets 5 points (2nd gets 2 points)');
+            case 21:
+                return _('2 points per crocodile orthogonally adjacent to at least one giraffe');
+        }
     };
     Nimalia.prototype.setupTooltips = function () {
         //todo change counter names
@@ -3242,30 +3290,6 @@ function getBackgroundInlineStyleForGoalCard(card) {
     var yBackgroundPercent = row * 100;
     return "background-image: url('".concat(g_gamethemeurl, "img/").concat(file, "'); background-position: -").concat(xBackgroundPercent, "% -").concat(yBackgroundPercent, "%; background-size:1100%;");
 }
-var GOALS_DESC = [
-    '1 point per identical animal if at least 2 of them are orthogonally adjacent to an otter',
-    '2 points per otter whose river connects to a lake.',
-    '2 points per distinct rain forest area',
-    '2 points per gorilla orthogonally adjacent to a lake',
-    '2 points per space of your largest savannah.',
-    '6 points per savanna area spanning exactly 4 spaces.',
-    '4 points per 2×2 square of ice floe (a space can be part of several squares)',
-    '2 points per polar bear that is part of a group of bears, and - 1 per solitary bear',
-    '2 points per space of the terrain of which you have the fewest spaces in your reserve (here it’s 2×3 = 6)',
-    '3, 5, 8, 13 or 21 points if your reserve completely fills a 2x2, 3x3, 4x4, 5x5, or 6x6 square',
-    '3 points per row of your reserve that contains all 4 terrain types',
-    '3 points per strict horizontally adjacent pair of identical animals. 3 animals don’t count',
-    'From 0 to 8 points according to how few giraffes you have (0 giraffe = 8 )',
-    '3 points per flamingo that is not touching the edge of your reserve',
-    'From 0 to 15 points according to how long your longest river runs. For example, a 3-space river is worth 0, +1, +2(thus 3)',
-    'The player with the longest river gets 5 points, 2nd gets 2 points',
-    '3 points per panda that is touching the edge of your reserve',
-    'The player with the most gorillas gets 5 points (2nd gets 2 points). The player with the most pandas gets - 5 points (2nd gets - 2 points)',
-    '3 points per column of your reserve that contains exactly 1 penguin',
-    'The player with the fewest lions gets 3 points. Everyone else gets - 2 points',
-    'The player with the most crocodiles gets 5 points (2nd gets 2 points ). The player with the fewest flamingoes gets 5 points (2nd gets 2 points)',
-    '2 points per crocodile orthogonally adjacent to at least one giraffe'
-];
 function addTemporaryClass(element, className, removalDelay) {
     dojo.addClass(element, className);
     setTimeout(function () { return dojo.removeClass(element, className); }, removalDelay);
