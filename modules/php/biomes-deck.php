@@ -42,29 +42,6 @@ trait BiomesCardTrait {
     }*/
 
     /**
-     * Pick destination cards for pick destination action.
-     */
-    public function pickAdditionalDestinationCards(int $playerId) {
-        return $this->pickCards($playerId, $this->getAdditionalDestinationCardNumber());
-    }
-
-    /**
-     * Select kept destination card for pick destination action. 
-     * Unused destination cards are discarded.
-     */
-    public function keepAdditionalDestinationCards(int $playerId, int $keptDestinationsId, int $discardedDestinationId) {
-        $this->keepDestinationCards($playerId, $keptDestinationsId, $discardedDestinationId);
-    }
-
-    /**
-     * Get destination picked cards (cards player can choose).
-     */
-    public function getPickedDestinationCards(int $playerId) {
-        $cards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation("pick$playerId"));
-        return $cards;
-    }
-
-    /**
      * Get cards in player hand.
      */
     public function getPlayerCards(int $playerId) {
@@ -114,61 +91,10 @@ trait BiomesCardTrait {
     }
 
     /**
-     * move selected card to player hand, discard other selected card from the hand and empty pick$playerId.
-     */
-    private function keepDestinationCards(int $playerId, int $keptDestinationsId, int $discardedDestinationId) {
-        if ($keptDestinationsId xor $discardedDestinationId) {
-            throw new BgaUserException("You must discard a destination to take another one.");
-        }
-        $traded = $keptDestinationsId && $discardedDestinationId;
-        if ($traded) {
-            if (
-                $this->getUniqueIntValueFromDB("SELECT count(*) FROM destination WHERE `card_location` = 'pick$playerId' AND `card_id` = $keptDestinationsId") == 0
-                || $this->getUniqueIntValueFromDB("SELECT count(*) FROM destination WHERE `card_location` = 'hand' AND `card_location_arg` = '$playerId' AND `card_id` = $discardedDestinationId") == 0
-            ) {
-                throw new BgaUserException("Selected cards are not available.");
-            }
-            $this->biomesCards->moveCard($keptDestinationsId, 'hand', $playerId);
-            $this->biomesCards->moveCard($discardedDestinationId, 'discard');
-
-            $remainingCardsInPick = intval($this->biomesCards->countCardInLocation("pick$playerId"));
-            if ($remainingCardsInPick > 0) {
-                // we discard remaining cards in pick
-                $this->biomesCards->moveAllCardsInLocationKeepOrder("pick$playerId", 'discard');
-            }
-        }
-        $this->notifyAllPlayers('cardsPicked', clienttranslate('${player_name} trades ${count} destination'), [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'count' => intval($traded),
-            'number' => 0, //1-1 or 0-0
-            'remainingCardsInDeck' => $this->getRemainingCardsInDeck(),
-            '_private' => [
-                $playerId => [
-                    'biomesCards' => $this->getBiomesCardsFromDb([$this->biomesCards->getCard($keptDestinationsId)]),
-                    'discardedDestination' => $this->getBiomesCardFromDb($this->biomesCards->getCard($discardedDestinationId)),
-                ],
-            ],
-        ]);
-    }
-
-    /**
      * Move selected cards to player hand.
      */
     private function keepCards(int $playerId, array $ids) {
         $this->biomesCards->moveCards($ids, 'hand', $playerId);
-        /* $this->notifyAllPlayers('cardsPicked', clienttranslate('${player_name} gets ${count} card(s)'), [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'count' => count($ids),
-            'number' => count($ids),
-            'remainingCardsInDeck' => $this->getRemainingCardsInDeck(),
-            '_private' => [
-                $playerId => [
-                    'biomesCards' => $this->getBiomesCardsFromDb($this->biomesCards->getCards($ids)),
-                ],
-            ],
-        ]);*/
         self::notifyPlayer($playerId, 'cardsMove', "", ["playerId" => $playerId, "added" => $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId))]);
     }
 
