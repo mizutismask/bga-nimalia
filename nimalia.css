@@ -548,7 +548,7 @@
 #player-tables .player-table .reserve-wrapper .nml-square {
   width: 100px;
   height: 100px;
-  border: 1px dashed lightblue;
+  border: 1px dashed rgba(179, 194, 201, 0.3);
   box-sizing: border-box;
   display: grid;
 }
@@ -612,7 +612,7 @@
 }
 #player-tables .player-table .nml-reserve-background {
   color: white;
-  background-color: rgba(0, 138, 190, 0.6);
+  background-color: rgba(0, 138, 190, 0.3);
 }
 #player-tables .player-table .nml-reserve-background .nml-square {
   font-size: xxx-large;
