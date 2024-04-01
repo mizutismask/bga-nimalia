@@ -138,7 +138,7 @@ class Nimalia implements NimaliaGame {
 	public getGoalTooltip(card: Goal) {
 		let tooltip = `
 			<div class="nml-goal-tooltip">
-				${GOALS_DESC[card.id - 1]}
+				${_(GOALS_DESC[card.id - 1])}
 		    </div>`
 		return tooltip
 	}
@@ -391,7 +391,7 @@ class Nimalia implements NimaliaGame {
 		}
 	}
 
-	private updateShiftGridButtons() {
+	public updateShiftGridButtons() {
 		if (this.gamedatas.gamestate.name === 'placeCard') {
 			const cancelButton = $('cancel-button')
 			const hasLocalChanges = cancelButton && !cancelButton.classList.contains('disabled')

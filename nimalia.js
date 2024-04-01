@@ -2448,7 +2448,7 @@ var Nimalia = /** @class */ (function () {
         return "\n\t\t\t<div class=\"round-tooltip\">\n\t\t\t\t<h1>".concat(round, "</h1>\n\t\t\t\t<p>").concat(draftingText, "</p>\n\t\t\t\t<p>").concat(_('You’ll score points for goals:'), "\n\t\t\t\t\t").concat(list, "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t");
     };
     Nimalia.prototype.getGoalTooltip = function (card) {
-        var tooltip = "\n\t\t\t<div class=\"nml-goal-tooltip\">\n\t\t\t\t".concat(GOALS_DESC[card.id - 1], "\n\t\t    </div>");
+        var tooltip = "\n\t\t\t<div class=\"nml-goal-tooltip\">\n\t\t\t\t".concat(_(GOALS_DESC[card.id - 1]), "\n\t\t    </div>");
         return tooltip;
     };
     Nimalia.prototype.setupTooltips = function () {
