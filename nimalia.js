@@ -2300,6 +2300,7 @@ var CardsManager = /** @class */ (function (_super) {
                 //this.setDivAsCard(div as HTMLDivElement, card.type);
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
                 div.dataset.rotation = '0';
+                div.dataset.styleRotation = '0';
             },
             setupBackDiv: function (card, div) {
                 div.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/nimalia-card-background.jpg')");
@@ -2318,8 +2319,11 @@ var CardsManager = /** @class */ (function (_super) {
             if (_this.game.isCurrentPlayerActive()) {
                 evt.stopPropagation();
                 var frontDiv = document.querySelector("#".concat(cardDiv.id, " .front"));
-                var rotation = (parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360;
-                frontDiv.dataset.rotation = rotation.toString();
+                var styleRotation = parseInt(frontDiv.dataset.styleRotation) + (direction === 'right' ? 90 : -90);
+                var dataRotation = (parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360;
+                frontDiv.dataset.rotation = dataRotation.toString();
+                frontDiv.dataset.styleRotation = styleRotation.toString();
+                frontDiv.style.rotate = styleRotation + 'deg';
             }
         });
     };

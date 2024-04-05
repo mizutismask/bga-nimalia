@@ -220,15 +220,6 @@
 		.front {
 			transition: rotate 0.2s;
 			-moz-transform: translateZ(-1px); //firefox bug not displaying 180° rotated cards
-			&[data-rotation='90'] {
-				rotate: 90deg;
-			}
-			&[data-rotation='180'] {
-				rotate: 180deg;
-			}
-			&[data-rotation='270'] {
-				rotate: 270deg;
-			}
 		}
 	}
 }

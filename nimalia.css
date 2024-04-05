@@ -662,15 +662,6 @@
   transition: rotate 0.2s;
   -moz-transform: translateZ(-1px);
 }
-#player-tables .player-table .front[data-rotation="90"] {
-  rotate: 90deg;
-}
-#player-tables .player-table .front[data-rotation="180"] {
-  rotate: 180deg;
-}
-#player-tables .player-table .front[data-rotation="270"] {
-  rotate: 270deg;
-}
 
 /*
  * Controls in the top bar

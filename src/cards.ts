@@ -22,6 +22,7 @@ class CardsManager extends CardManager<NimaliaCard> {
 				//this.setDivAsCard(div as HTMLDivElement, card.type);
 				div.id = `${super.getId(card)}-front`
 				div.dataset.rotation = '0'
+				div.dataset.styleRotation = '0'
 			},
 			setupBackDiv: (card: NimaliaCard, div: HTMLElement) => {
 				div.style.backgroundImage = `url('${g_gamethemeurl}img/nimalia-card-background.jpg')`
@@ -46,9 +47,12 @@ class CardsManager extends CardManager<NimaliaCard> {
 			if ((this.game as any).isCurrentPlayerActive()) {
 				evt.stopPropagation();
 				const frontDiv = document.querySelector(`#${cardDiv.id} .front`) as HTMLElement
-				const rotation =
+				const styleRotation = parseInt(frontDiv.dataset.styleRotation) + (direction === 'right' ? 90 : -90)
+				const dataRotation =
 					(parseInt(frontDiv.dataset.rotation) + ((direction === 'right' ? 90 : -90) % 360) + 360) % 360
-				frontDiv.dataset.rotation = rotation.toString()
+				frontDiv.dataset.rotation = dataRotation.toString()
+				frontDiv.dataset.styleRotation = styleRotation.toString()
+				frontDiv.style.rotate = styleRotation + 'deg'
 			}
 		})
 	}
