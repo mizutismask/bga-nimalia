@@ -1045,6 +1045,9 @@ html {
   width: 200px;
   height: 200px;
 }
+.card .nml-target {
+  display: none;
+}
 
 .card-side.front {
   position: relative;
@@ -1054,9 +1057,6 @@ html {
   box-shadow: 0 0 8px 1px black;
   pointer-events: all;
 }
-.card-side.front .nml-target {
-  display: none;
-}
 .card-side.front.animated {
   transition: transform 0.5s;
 }
@@ -1064,15 +1064,15 @@ html {
 .bga-cards_selected-card:not(.bga-cards_disabled-card) {
   box-shadow: 0 0 5px 3px greenyellow;
 }
-.bga-cards_selected-card:not(.bga-cards_disabled-card) .card-side {
-  box-shadow: unset;
-}
-.bga-cards_selected-card:not(.bga-cards_disabled-card) .card-side .nml-target {
+.bga-cards_selected-card:not(.bga-cards_disabled-card) .nml-target {
   color: red;
   position: absolute;
   top: 21px;
   left: 6px;
   display: block;
+}
+.bga-cards_selected-card:not(.bga-cards_disabled-card) .card-side {
+  box-shadow: unset;
 }
 
 /*.round-wrapper{

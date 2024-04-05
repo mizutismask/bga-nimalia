@@ -15,15 +15,7 @@ class CardsManager extends CardManager<NimaliaCard> {
 				div.classList.add('nml-card-order-100')
 				this.addRotateButton(card, div as HTMLDivElement, 'left')
 				this.addRotateButton(card, div as HTMLDivElement, 'right')
-			},
-			setupFrontDiv: (card: NimaliaCard, div: HTMLElement) => {
-				//log('setupFrontDiv', card.type_arg)
-				this.setFrontBackground(div as HTMLDivElement, card.type_arg)
-				//this.setDivAsCard(div as HTMLDivElement, card.type);
-				div.id = `${super.getId(card)}-front`
-				div.dataset.rotation = '0'
-				div.dataset.styleRotation = '0'
-
+				
 				const targetId = div.id + "-target"
 				if (!$(targetId)) {
 					const target: HTMLDivElement = document.createElement('div')
@@ -37,6 +29,14 @@ class CardsManager extends CardManager<NimaliaCard> {
 					)
 					div.appendChild(target)
 				}
+			},
+			setupFrontDiv: (card: NimaliaCard, div: HTMLElement) => {
+				//log('setupFrontDiv', card.type_arg)
+				this.setFrontBackground(div as HTMLDivElement, card.type_arg)
+				//this.setDivAsCard(div as HTMLDivElement, card.type);
+				div.id = `${super.getId(card)}-front`
+				div.dataset.rotation = '0'
+				div.dataset.styleRotation = '0'
 			},
 			setupBackDiv: (card: NimaliaCard, div: HTMLElement) => {
 				div.style.backgroundImage = `url('${g_gamethemeurl}img/nimalia-card-background.jpg')`

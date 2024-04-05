@@ -2293,6 +2293,13 @@ var CardsManager = /** @class */ (function (_super) {
                 div.classList.add('nml-card-order-100');
                 _this.addRotateButton(card, div, 'left');
                 _this.addRotateButton(card, div, 'right');
+                var targetId = div.id + "-target";
+                if (!$(targetId)) {
+                    var target = document.createElement('div');
+                    target.id = div.id + "-target";
+                    target.classList.add('fa', 'fa-solid', "fa-dot-circle-o", 'nml-target', 'fa6-2xl');
+                    div.appendChild(target);
+                }
             },
             setupFrontDiv: function (card, div) {
                 //log('setupFrontDiv', card.type_arg)
@@ -2301,13 +2308,6 @@ var CardsManager = /** @class */ (function (_super) {
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
                 div.dataset.rotation = '0';
                 div.dataset.styleRotation = '0';
-                var targetId = div.id + "-target";
-                if (!$(targetId)) {
-                    var target = document.createElement('div');
-                    target.id = div.id + "-target";
-                    target.classList.add('fa', 'fa-solid', "fa-dot-circle-o", 'nml-target', 'fa6-2xl');
-                    div.appendChild(target);
-                }
             },
             setupBackDiv: function (card, div) {
                 div.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/nimalia-card-background.jpg')");
@@ -3435,9 +3435,10 @@ var PlayerTable = /** @class */ (function () {
         //log('createCardInGrid', divId, creationLocation)
         dojo.create('div', {
             id: divId,
-            style: getBackgroundInlineStyleForNimaliaCard(card),
+            style: getBackgroundInlineStyleForNimaliaCard(card) + "rotate:".concat(card.rotation, "deg"),
             class: 'nimalia-card card-side front nml-card-order-' + card.order,
-            'data-rotation': card.rotation
+            'data-rotation': card.rotation,
+            'data-style-rotation': card.rotation
         }, creationLocation);
         if (animate) {
             this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({
@@ -3546,21 +3547,26 @@ var PlayerTable = /** @class */ (function () {
         return square;
     };
     PlayerTable.prototype.onSquareClick = function (evt) {
+        var _a;
         if (!this.game.isCurrentPlayerActive() ||
-            this.game.clientActionData.placedCardId ||
-            this.handStock.getSelection().length !== 1 ||
+            (!this.game.clientActionData.placedCardId && this.handStock.getSelection().length == 0) ||
             !evt.target.classList.contains('dropzone')) {
             evt.preventDefault();
             evt.stopPropagation();
             return;
         }
-        this.moveCardToGrid(this.game.cardsManager.getId(this.handStock.getSelection()[0]), evt.target, true);
+        var moveAgain = this.game.clientActionData.placedCardId != undefined;
+        var card = (_a = this.game.clientActionData.placedCardId) !== null && _a !== void 0 ? _a : this.game.cardsManager.getId(this.handStock.getSelection()[0]);
+        this.moveCardToGrid(card, evt.target, true, moveAgain);
     };
-    PlayerTable.prototype.moveCardToGrid = function (cardId, square, animation) {
+    PlayerTable.prototype.moveCardToGrid = function (cardId, square, animation, moveAgain) {
         if (animation === void 0) { animation = false; }
+        if (moveAgain === void 0) { moveAgain = false; }
         log('drop', cardId, 'to', square.id);
         if (cardId && square) {
-            this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement;
+            if (!moveAgain) {
+                this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement;
+            }
             if (animation) {
                 this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({
                     element: $(cardId),

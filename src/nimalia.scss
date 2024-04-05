@@ -73,6 +73,10 @@ html {
 .card {
 	width: 200px;
 	height: 200px;
+
+	.nml-target {
+		display: none;
+	}
 }
 
 .card-side.front {
@@ -85,9 +89,7 @@ html {
 	pointer-events: all;
 	//transform-origin: top left;
 
-	.nml-target {
-		display: none;
-	}
+	
 	&.animated {
 		transition: transform 0.5s;
 	}
@@ -96,16 +98,17 @@ html {
 .bga-cards_selected-card:not(.bga-cards_disabled-card) {
 	box-shadow: 0 0 5px 3px greenyellow;
 
+	.nml-target {
+		color: red;
+		position: absolute;
+		top: 21px;
+		left: 6px;
+		display: block;
+	}
+
 	.card-side {
 		box-shadow: unset;
 
-		.nml-target {
-			color: red;
-			position: absolute;
-			top: 21px;
-			left: 6px;
-			display: block;
-		}
 	}
 }
 
