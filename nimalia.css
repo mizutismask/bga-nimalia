@@ -1054,6 +1054,9 @@ html {
   box-shadow: 0 0 8px 1px black;
   pointer-events: all;
 }
+.card-side.front .nml-target {
+  display: none;
+}
 .card-side.front.animated {
   transition: transform 0.5s;
 }
@@ -1063,6 +1066,13 @@ html {
 }
 .bga-cards_selected-card:not(.bga-cards_disabled-card) .card-side {
   box-shadow: unset;
+}
+.bga-cards_selected-card:not(.bga-cards_disabled-card) .card-side .nml-target {
+  color: red;
+  position: absolute;
+  top: 21px;
+  left: 6px;
+  display: block;
 }
 
 /*.round-wrapper{

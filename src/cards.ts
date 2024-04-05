@@ -12,7 +12,7 @@ class CardsManager extends CardManager<NimaliaCard> {
 				/*div.style.width = '200px';
                 div.style.height = '200px';
                 */
-			   	div.classList.add('nml-card-order-100')
+				div.classList.add('nml-card-order-100')
 				this.addRotateButton(card, div as HTMLDivElement, 'left')
 				this.addRotateButton(card, div as HTMLDivElement, 'right')
 			},
@@ -23,6 +23,20 @@ class CardsManager extends CardManager<NimaliaCard> {
 				div.id = `${super.getId(card)}-front`
 				div.dataset.rotation = '0'
 				div.dataset.styleRotation = '0'
+
+				const targetId = div.id + "-target"
+				if (!$(targetId)) {
+					const target: HTMLDivElement = document.createElement('div')
+					target.id = div.id + "-target"
+					target.classList.add(
+						'fa',
+						'fa-solid',
+						`fa-dot-circle-o`,
+						'nml-target',
+						'fa6-2xl'
+					)
+					div.appendChild(target)
+				}
 			},
 			setupBackDiv: (card: NimaliaCard, div: HTMLElement) => {
 				div.style.backgroundImage = `url('${g_gamethemeurl}img/nimalia-card-background.jpg')`
@@ -45,7 +59,7 @@ class CardsManager extends CardManager<NimaliaCard> {
 
 		dojo.connect(rotate, 'click', this, (evt) => {
 			if ((this.game as any).isCurrentPlayerActive()) {
-				evt.stopPropagation();
+				evt.stopPropagation()
 				const frontDiv = document.querySelector(`#${cardDiv.id} .front`) as HTMLElement
 				const styleRotation = parseInt(frontDiv.dataset.styleRotation) + (direction === 'right' ? 90 : -90)
 				const dataRotation =

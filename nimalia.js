@@ -2301,6 +2301,13 @@ var CardsManager = /** @class */ (function (_super) {
                 div.id = "".concat(_super.prototype.getId.call(_this, card), "-front");
                 div.dataset.rotation = '0';
                 div.dataset.styleRotation = '0';
+                var targetId = div.id + "-target";
+                if (!$(targetId)) {
+                    var target = document.createElement('div');
+                    target.id = div.id + "-target";
+                    target.classList.add('fa', 'fa-solid', "fa-dot-circle-o", 'nml-target', 'fa6-2xl');
+                    div.appendChild(target);
+                }
             },
             setupBackDiv: function (card, div) {
                 div.style.backgroundImage = "url('".concat(g_gamethemeurl, "img/nimalia-card-background.jpg')");
