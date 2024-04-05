@@ -294,21 +294,23 @@ class PlayerTable {
 		const myOwnMove = playerId == this.game.getPlayerId()
 		log('show move', playerId, playedCard, myOwnMove)
 
+		let cardId:string;
 		if (!myOwnMove || isReadOnly()) {
-			const id = this.createCardInGrid(playerId, playedCard, !isReadOnly())
-			removeClass('last-move')
-			$(id).classList.add('last-move')
+			cardId = this.createCardInGrid(playerId, playedCard, !isReadOnly())
 		} else {
 			log('this.game.clientActionData', this.game.clientActionData)
 			if (this.game.clientActionData.previousCardParentInHand) {
 				this.cancelLocalMove()
 				this.removeCardFromHand(playedCard.id)
 				log('createCardInGrid', playedCard)
-				this.createCardInGrid(playerId, playedCard)
+				cardId = this.createCardInGrid(playerId, playedCard)
+			
 				this.game.resetClientActionData()
 				//this.game.updateShiftGridButtons();
 			}
 		}
+		removeClass('last-move', $(`player-table-${playerId}`))
+		$(cardId).classList.add('last-move')
 	}
 
 	private removeCardFromHand(placedCardId: number) {

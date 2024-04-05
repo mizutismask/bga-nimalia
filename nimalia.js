@@ -3591,10 +3591,9 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.showMove = function (playerId, playedCard) {
         var myOwnMove = playerId == this.game.getPlayerId();
         log('show move', playerId, playedCard, myOwnMove);
+        var cardId;
         if (!myOwnMove || isReadOnly()) {
-            var id = this.createCardInGrid(playerId, playedCard, !isReadOnly());
-            removeClass('last-move');
-            $(id).classList.add('last-move');
+            cardId = this.createCardInGrid(playerId, playedCard, !isReadOnly());
         }
         else {
             log('this.game.clientActionData', this.game.clientActionData);
@@ -3602,11 +3601,13 @@ var PlayerTable = /** @class */ (function () {
                 this.cancelLocalMove();
                 this.removeCardFromHand(playedCard.id);
                 log('createCardInGrid', playedCard);
-                this.createCardInGrid(playerId, playedCard);
+                cardId = this.createCardInGrid(playerId, playedCard);
                 this.game.resetClientActionData();
                 //this.game.updateShiftGridButtons();
             }
         }
+        removeClass('last-move', $("player-table-".concat(playerId)));
+        $(cardId).classList.add('last-move');
     };
     PlayerTable.prototype.removeCardFromHand = function (placedCardId) {
         this.handStock.removeCard(this.handStock.getCards().filter(function (c) { return c.id == placedCardId; })[0]);
