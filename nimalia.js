@@ -3435,7 +3435,7 @@ var PlayerTable = /** @class */ (function () {
         //log('createCardInGrid', divId, creationLocation)
         dojo.create('div', {
             id: divId,
-            style: getBackgroundInlineStyleForNimaliaCard(card) + "rotate:".concat(card.rotation, "deg"),
+            style: getBackgroundInlineStyleForNimaliaCard(card) + "rotate:".concat(card.rotation, "deg;"),
             class: 'nimalia-card card-side front nml-card-order-' + card.order,
             'data-rotation': card.rotation,
             'data-style-rotation': card.rotation

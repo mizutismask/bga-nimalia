@@ -121,9 +121,10 @@ class PlayerTable {
 			'div',
 			{
 				id: divId,
-				style: getBackgroundInlineStyleForNimaliaCard(card),
+				style: getBackgroundInlineStyleForNimaliaCard(card) + `rotate:${card.rotation}deg;`,
 				class: 'nimalia-card card-side front nml-card-order-' + card.order,
-				'data-rotation': card.rotation
+				'data-rotation': card.rotation,
+				'data-style-rotation': card.rotation
 			},
 			creationLocation
 		)
@@ -242,25 +243,29 @@ class PlayerTable {
 	private onSquareClick(evt: MouseEvent) {
 		if (
 			!(this.game as any).isCurrentPlayerActive() ||
-			this.game.clientActionData.placedCardId ||
-			this.handStock.getSelection().length !== 1 ||
+			(!this.game.clientActionData.placedCardId && this.handStock.getSelection().length == 0) ||
 			!(evt.target as HTMLElement).classList.contains('dropzone')
 		) {
 			evt.preventDefault()
 			evt.stopPropagation()
 			return
 		}
-		this.moveCardToGrid(
-			this.game.cardsManager.getId(this.handStock.getSelection()[0]),
-			evt.target as HTMLElement,
-			true
-		)
+		const moveAgain = this.game.clientActionData.placedCardId != undefined
+		const card = this.game.clientActionData.placedCardId ?? this.game.cardsManager.getId(this.handStock.getSelection()[0])
+		this.moveCardToGrid(card, evt.target as HTMLElement, true, moveAgain)
 	}
 
-	private moveCardToGrid(cardId: string, square: HTMLElement, animation: boolean = false) {
+	private moveCardToGrid(
+		cardId: string,
+		square: HTMLElement,
+		animation: boolean = false,
+		moveAgain: boolean = false
+	) {
 		log('drop', cardId, 'to', square.id)
 		if (cardId && square) {
-			this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement
+			if (!moveAgain) {
+				this.game.clientActionData.previousCardParentInHand = $(cardId).parentElement
+			}
 			if (animation) {
 				this.game.animationManager.attachWithAnimation(
 					new BgaSlideAnimation({
