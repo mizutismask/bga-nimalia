@@ -2495,17 +2495,17 @@ var Nimalia = /** @class */ (function () {
             case 14:
                 return _('From 0 to 15 points according to how long your longest river runs. For example, a 3-space river is worth 0, +1, +2 (thus 3)');
             case 15:
-                return _('The player with the longest river gets 5 points, 2nd gets 2 points');
+                return _('The player with the longest river gets 5 points, 2nd gets 2 points in 3/4 players game');
             case 16:
                 return _('3 points per panda that is touching the edge of your reserve');
             case 17:
-                return _('The player with the most gorillas gets 5 points (2nd gets 2 points). The player with the most pandas gets -5 points (2nd gets -2 points in 3/4 players games)');
+                return _('The player with the most gorillas gets 5 points (2nd gets 2 points in 3/4 players game). <br>The player with the most pandas gets -5 points (2nd gets -2 points in 3/4 players games)');
             case 18:
                 return _('3 points per column of your reserve that contains exactly 1 penguin');
             case 19:
                 return _('The player with the fewest lions gets 3 points. Everyone else gets - 2 points');
             case 20:
-                return _('The player with the most crocodiles gets 5 points (2nd gets 2 points). The player with the fewest flamingoes gets 5 points (2nd gets 2 points in 3/4 players games)');
+                return _('The player with the most crocodiles gets 5 points (2nd gets 2 points in 3/4 players game). The player with the fewest flamingoes gets 5 points (2nd gets 2 points in 3/4 players games)');
             case 21:
                 return _('2 points per crocodile orthogonally adjacent to at least one giraffe');
         }
