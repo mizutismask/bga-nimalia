@@ -577,7 +577,7 @@ trait GoalTrait {
 
     function calculateGoalBiggestSavannah(array $grid) {
         $distinctZones = $this->calculateLandZones($grid, LAND_SAVANNAH);
-        $sizeMax = max(array_map(fn ($zone) => count($zone), $distinctZones));
+        $sizeMax =  $distinctZones ? max(array_map(fn ($zone) => count($zone), $distinctZones)) : 0;
         return $sizeMax * 2;
     }
 
