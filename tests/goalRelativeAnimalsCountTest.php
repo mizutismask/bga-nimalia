@@ -14,7 +14,7 @@ class GoalRelativeAnimalsCountTest extends GameTestBase { // this is your game c
     function getGrid($playerId = null) {
         $grid = $this->initGrid();
         //no tie
-        /* if ($playerId == 1) {
+        if ($playerId == 1) {
             $grid[0][1] = new Biome(ANIMAL_LION);
             $grid[0][2] = new Biome(ANIMAL_LION);
             $grid[1][0] = new Biome(ANIMAL_CROCODILE);
@@ -26,8 +26,8 @@ class GoalRelativeAnimalsCountTest extends GameTestBase { // this is your game c
             $grid[0][1] = new Biome(ANIMAL_PANDA);
             $grid[0][2] = new Biome(ANIMAL_GORILLA);
             $grid[1][0] = new Biome(ANIMAL_CROCODILE);
-        }*/
-
+        }
+/*
         //tie
         if ($playerId == 1) {
             $grid[0][1] = new Biome(ANIMAL_GORILLA);
@@ -41,7 +41,22 @@ class GoalRelativeAnimalsCountTest extends GameTestBase { // this is your game c
             $grid[0][1] = new Biome(ANIMAL_GORILLA);
             $grid[0][2] = new Biome(ANIMAL_GORILLA);
             $grid[1][0] = new Biome(ANIMAL_CROCODILE);
-        }
+        }*/
+/*
+        //no panda
+        if ($playerId == 1) {
+            $grid[0][1] = new Biome(ANIMAL_LION);
+            $grid[0][2] = new Biome(ANIMAL_LION);
+            $grid[1][0] = new Biome(ANIMAL_CROCODILE);
+        } else if ($playerId == 2) {
+            $grid[0][1] = new Biome(ANIMAL_GORILLA);
+            $grid[0][2] = new Biome(ANIMAL_CROCODILE);
+            $grid[1][0] = new Biome(ANIMAL_CROCODILE);
+        } else if ($playerId == 3) {
+            $grid[0][1] = new Biome(ANIMAL_GORILLA);
+            $grid[0][2] = new Biome(ANIMAL_GORILLA);
+            $grid[1][0] = new Biome(ANIMAL_CROCODILE);
+        }*/
         return $grid;
     }
 
@@ -61,6 +76,11 @@ class GoalRelativeAnimalsCountTest extends GameTestBase { // this is your game c
         //$result = $this->calculateGoalRelativeAnimalsCount(2, ANIMAL_GORILLA, false, 5, 2); //5
         //$result = $this->calculateGoalRelativeAnimalsCount(3, ANIMAL_GORILLA, false, 5, 2); //5
         //$result = $this->calculateGoalRelativeAnimalsCount(1, ANIMAL_GORILLA, false, 5, 2); //0
+
+        /**no panda */
+        //$result = $this->calculateGoalRelativeAnimalsCount(1, ANIMAL_PANDA, false, -5, -2); //0
+        //$result = $this->calculateGoalRelativeAnimalsCount(2, ANIMAL_PANDA, false, -5, -2); //0
+        //$result = $this->calculateGoalRelativeAnimalsCount(3, ANIMAL_PANDA, false, -5, -2); //0
 
         $equal = $result ==0;
 

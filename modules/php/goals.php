@@ -408,6 +408,9 @@ trait GoalTrait {
         $minCount = min($animalCount);
         $maxCount = max($animalCount);
         $winnerExpectedValue = $min ? $minCount : $maxCount;
+        if (!$min && $winnerExpectedValue == 0) {
+            return 0; //no points on ties with no value for maximum
+        }
 
         if (count($players) == 3 || count($players) == 4) {
             $animalCountCopy = $animalCount;
