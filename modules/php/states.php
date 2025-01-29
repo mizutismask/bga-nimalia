@@ -76,8 +76,12 @@ trait StateTrait {
         return $scores;
     }
 
-
     function stScore() {
+        $this->score();
+        $this->gamestate->nextState("seeScore");
+    }
+
+    function score() {
         $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ORDER BY player_no ASC";
         $players = self::getCollectionFromDb($sql);
         $round = self::getGameStateValue(ROUND);
@@ -119,13 +123,11 @@ trait StateTrait {
             //game winner
             $this->notifyWinner($totalScore, true);
         }
-
-        $this->gamestate->nextState("seeScore");
     }
 
     function notifyWinner($roundScores, bool $tie = false) {
         $bestScore = max($roundScores);
-        $winners = array_keys(array_filter($roundScores, fn ($p) => $p == $bestScore));
+        $winners = array_keys(array_filter($roundScores, fn($p) => $p == $bestScore));
         if ($tie) {
             $winners = $this->computeTie($winners);
         }
