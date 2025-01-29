@@ -146,7 +146,7 @@ class Nimalia implements NimaliaGame {
 	public getGoalDescription(index) {
 		switch (index) {
 			case 0:
-				return _('1 point per identical animal if at least 2 of them are orthogonally adjacent to an otter')
+				return _('1 point per identical animal if at least 2 of them are orthogonally adjacent to an otter (4 points max per otter)')
 			case 1:
 				return _('2 points per otter whose river connects to a lake.')
 			case 2:
@@ -176,7 +176,7 @@ class Nimalia implements NimaliaGame {
 			case 12:
 				return _('From 0 to 8 points according to how few giraffes you have (0 giraffe = 8 )')
 			case 13:
-				return _('3 points per flamingo that is not touching the edge of your reserve')
+				return _('3 points per flamingo that is not touching the edge of your reserve. Reserve is formed by your cards, not by the grid')
 			case 14:
 				return _(
 					'From 0 to 15 points according to how long your longest river runs. For example, a 3-space river is worth 0, +1, +2 (thus 3)'
@@ -184,10 +184,10 @@ class Nimalia implements NimaliaGame {
 			case 15:
 				return _('The player with the longest river gets 5 points, 2nd gets 2 points in 3/4 players game')
 			case 16:
-				return _('3 points per panda that is touching the edge of your reserve')
+				return _('3 points per panda that is touching the edge of your reserve. Reserve is formed by your cards, not by the grid')
 			case 17:
 				return _(
-					'The player with the most gorillas gets 5 points (2nd gets 2 points in 3/4 players game). <br>The player with the most pandas gets -5 points (2nd gets -2 points in 3/4 players games)'
+					'The player with the most gorillas gets 5 points (2nd gets 2 points in 3/4 players game). <br>The player with the most pandas gets -5 points (2nd gets -2 points in 3/4 players games) <br>The score of this goal is the sum of the 2 previously mentioned points.'
 				)
 			case 18:
 				return _('3 points per column of your reserve that contains exactly 1 penguin')
@@ -195,7 +195,7 @@ class Nimalia implements NimaliaGame {
 				return _('The player with the fewest lions gets 3 points. Everyone else gets - 2 points')
 			case 20:
 				return _(
-					'The player with the most crocodiles gets 5 points (2nd gets 2 points in 3/4 players game). The player with the fewest flamingoes gets 5 points (2nd gets 2 points in 3/4 players games)'
+					'The player with the most crocodiles gets 5 points (2nd gets 2 points in 3/4 players game). <br>The player with the fewest flamingoes gets 5 points (2nd gets 2 points in 3/4 players games). <br>The score of this goal is the sum of the 2 previously mentioned points.'
 				)
 			case 21:
 				return _('2 points per crocodile orthogonally adjacent to at least one giraffe')
