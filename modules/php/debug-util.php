@@ -53,6 +53,26 @@ trait DebugUtilTrait {
         die('debug data : ' . json_encode($debugData));
     }
 
+    /** To be called when the current player has placed his card but the other one has not played yet */
+    function debug_undoAndValidateAtTheSameTime() {
+        $currentPlayer = $this->getMostlyActivePlayerId();
+        $allPlayers = $this->getPlayerIdsInOrder($currentPlayer);
+        $squares = $this->getPossibleSquares();
+
+        foreach ($allPlayers as $i => $playerId) {
+            if ($i == 0) {
+                $this->notifyAllPlayers("msg", "Placing card for {$this->getPlayerName($playerId)}", []);
+                $cards = $this->getBiomesCardsFromDb($this->biomesCards->getCardsInLocation('hand', $playerId));
+                $square = reset($squares[$playerId]);
+                $squareNumber = intval($this->getPart($square, -1, false, "-"));
+                $this->placeCard(reset($cards)->id, $squareNumber, 0);
+            } elseif ($i == 1) {
+                $this->notifyAllPlayers("msg", "Undo for {$this->getPlayerName($playerId)}", []);
+                $this->undoPlaceCard();
+            }
+        }
+    }
+
     function endGame() {
         $this->gamestate->nextState("endGame");
     }

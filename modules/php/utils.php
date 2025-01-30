@@ -165,6 +165,15 @@ trait UtilTrait {
         return array_keys($this->loadPlayersBasicInfos());
     }
 
+    function getMostlyActivePlayerId() {
+        $state = $this->gamestate->state();
+        if ($state['type'] === "multipleactiveplayer") {
+            return $this->getCurrentPlayerId();
+        } else {
+            return $this->getActivePlayerId();
+        }
+    }
+
     function getPlayerIdsInOrder($starting) {
         $player_ids = $this->getPlayersIds();
         $rotate_count = array_search($starting, $player_ids);
