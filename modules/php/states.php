@@ -29,6 +29,7 @@ trait StateTrait {
                 "playedCard" =>  $lastCards[$playerId]
             ]);
             self::giveExtraTime($playerId);
+            $this->updatePlayer($playerId, PLAYER_FIELD_LAST_PLACED_CARD, 0);
         }
         $this->draftCards();
         if (count($this->getPlayerCards(array_pop($playersIds))) == 0) {

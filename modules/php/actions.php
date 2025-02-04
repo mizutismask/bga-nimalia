@@ -24,6 +24,7 @@ trait ActionTrait {
     }*/
 
     public function placeCard(int $cardId, int $squareId, int $rotation) {
+        //$this->dump('*******************before placeCard active players', json_encode($this->gamestate->getActivePlayerList()));
         self::checkAction('placeCard');
         $playerId = intval(self::getCurrentPlayerId());
         $card = $this->getCard($cardId);
@@ -38,11 +39,14 @@ trait ActionTrait {
 
         $this->moveCardToReserve($playerId,  $cardId,  $squareId,  $rotation);
 
+        
         $this->gamestate->setPlayerNonMultiactive($playerId, 'cardPlaced');
+        //$this->dump('*******************after placeCard active players', json_encode($this->gamestate->getActivePlayerList()));
     }
 
 
     public function undoPlaceCard() {
+        //$this->dump('*******************before undo active players', json_encode($this->gamestate->getActivePlayerList()));
         $this->gamestate->checkPossibleAction('undoPlaceCard');
         $activePlayers = $this->getNonZombiePlayersIds();
         if (!in_array(self::getCurrentPlayerId(), $activePlayers)) {
@@ -52,10 +56,11 @@ trait ActionTrait {
         $playerId = intval(self::getCurrentPlayerId());
         $cardId = $this->getPlayerFieldValue($playerId, PLAYER_FIELD_LAST_PLACED_CARD);
         if (!$cardId) {
-            throw new BgaVisibleSystemException(self::_("Your last move was not saved, undo is not available"));
+            throw new BgaUserException(self::_("Another player has validated his move right before you cancelled. Hence, your move was not cancelled"));
         }
         $this->gamestate->setPlayersMultiactive([$playerId], "ignored");
         $this->undoMoveCardToReserve($playerId,  $cardId);
+        //$this->dump('*******************after undo active players', json_encode($this->gamestate->getActivePlayerList()));
     }
 
     public function scoreSeen() {
