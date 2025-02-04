@@ -3110,6 +3110,7 @@ var Nimalia = /** @class */ (function () {
     Nimalia.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
+        log('takeAction', action, data);
         this.ajaxcall("/nimalia/nimalia/".concat(action, ".html"), data, this, function () { });
     };
     ///////////////////////////////////////////////////

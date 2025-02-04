@@ -1004,6 +1004,7 @@ class Nimalia implements NimaliaGame {
 	public takeAction(action: string, data?: any) {
 		data = data || {}
 		data.lock = true
+		log('takeAction', action, data)
 		;(this as any).ajaxcall(`/nimalia/nimalia/${action}.html`, data, this, () => {})
 	}
 	///////////////////////////////////////////////////
