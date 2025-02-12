@@ -438,7 +438,7 @@ trait GoalTrait {
         $players = $this->getPlayersIds();
         $sizesPerPlayer = [];
         foreach ($players as $playerId) {
-            $sizesPerPlayer[$playerId] = $this->calculateLargestRiver($this->getGrid($playerId));
+            $sizesPerPlayer[$playerId] = $this->calculateLongestContinuousRiver($this->getGrid($playerId));
         }
         self::dump('*******************calculateLargestRiver', $sizesPerPlayer);
         if (count($players) == 3 || count($players) == 4) {
@@ -846,7 +846,7 @@ trait GoalTrait {
      * 5 => 10
      * 6 => 15
      */
-    function calculateLargestRiver($biomes) {
+    function calculateLongestContinuousRiver($biomes) {
         $rows = count($biomes);
         $cols = count($biomes[0]);
 
@@ -873,7 +873,7 @@ trait GoalTrait {
     }
 
     function calculateGoalMyLongestRiver(array $grid) {
-        $size = $this->calculateLargestRiver($grid);
+        $size = $this->calculateLongestContinuousRiver($grid);
         $points = 0;
         for ($i = 0; $i < $size; $i++) {
             $points += $i;

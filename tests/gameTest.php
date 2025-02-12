@@ -493,7 +493,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         //$this->displayRiverGrid($grid);
 
-        $result = $this->calculateLargestRiver($grid);
+        $result = $this->calculateLongestContinuousRiver($grid);
         $equal = $result == 6;
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
@@ -501,13 +501,21 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
     function testCalculateLargestRiverOneWithLoop() {
         $grid = $this->initGrid();
 
-        $grid[1][1] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[1][1] = new Biome(
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_DOWN
+        );
         $grid[1][2] = new Biome(
             ANIMAL_OTTER,
             LAND_SNOW,
             RIVER_UP
         );
-        $grid[1][3] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[1][3] = new Biome(
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_DOWN
+        );
 
 
         $grid[2][1] =  new Biome(
@@ -515,13 +523,50 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
             LAND_SNOW,
             RIVER_UP
         );
-        $grid[2][2] = new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_DOWN);
+        $grid[2][2] = new Biome(
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_DOWN
+        );
         $grid[2][3] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
 
         //$this->displayRiverGrid($grid);
 
-        $result = $this->calculateLargestRiver($grid);
+        $result = $this->calculateLongestContinuousRiver($grid);
         $equal = $result == 6;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testCalculateLongestRiverWithDeadEnds() {
+        $grid = $this->initGrid();
+
+        $grid[4][1] = new Biome(ANIMAL_OTTER, LAND_SNOW,
+            RIVER_DOWN
+        );
+        $grid[4][2] = new Biome(
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_UP
+        );
+        $grid[3][2] = new Biome(ANIMAL_OTTER, LAND_SNOW,
+                RIVER_DOWN
+            );
+
+
+        $grid[3][3] =  new Biome(
+            ANIMAL_OTTER,
+            LAND_SNOW,
+            RIVER_UP
+        );
+        $grid[4][3] = new Biome(ANIMAL_OTTER, LAND_SNOW,
+                RIVER_DOWN
+            );
+        $grid[2][4] =  new Biome(ANIMAL_OTTER, LAND_SNOW, RIVER_UP);
+
+        //$this->displayRiverGrid($grid);
+
+        $result = $this->calculateLongestContinuousRiver($grid);
+        $equal = $result == 4;
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
 
@@ -538,7 +583,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         //$this->displayRiverGrid($grid);
 
-        $result = $this->calculateLargestRiver($grid);
+        $result = $this->calculateLongestContinuousRiver($grid);
         $equal = $result == 3;
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
@@ -577,7 +622,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         //$this->displayRiverGrid($grid);
 
-        $result = $this->calculateLargestRiver($grid);
+        $result = $this->calculateLongestContinuousRiver($grid);
         $equal = $result == 7;
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
@@ -603,7 +648,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         //$this->displayRiverGrid($grid);
 
-        $result = $this->calculateLargestRiver($grid);
+        $result = $this->calculateLongestContinuousRiver($grid);
         $equal = $result == 3;
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
@@ -620,7 +665,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
 
         //$this->displayRiverGrid($grid);
 
-        $result = $this->calculateLargestRiver($grid);
+        $result = $this->calculateLongestContinuousRiver($grid);
         $equal = $result == 6;
         $this->displayResult(__FUNCTION__, $equal, $result);
     }
@@ -831,6 +876,7 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
         $this->testCalculateLargestRiverOneLongContinous();
         $this->testCalculateLargestRiverOneWithLoop();
         $this->testCalculateLargestRiver3Rivers();
+        $this->testCalculateLongestRiverWithDeadEnds();
         $this->testCalculateGoalLandZonesCount();
         $this->testCalculateGoalAnimalZonesCount();
         $this->testCalculateGoalBiggestSavannah();
@@ -854,10 +900,10 @@ class GameTest extends Nimalia { // this is your game class defined in ggg.game.
     function displayResult($testName, $equal, $result) {
         echo ($testName);
         if ($equal) {
-            echo " : PASSED\n";
+            echo " : SUCCESS\n";
         } else {
-            echo " : FAILED\n";
-            echo "Found: $result\n";
+            echo " : FAILURE\n";
+            echo is_array($result) ? "Found: " . json_encode($result) : "Found: $result\n";
         }
     }
 }
