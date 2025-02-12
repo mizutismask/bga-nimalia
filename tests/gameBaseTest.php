@@ -63,12 +63,13 @@ abstract class GameTestBase extends Nimalia { // this is your game class defined
     function displayResult($testName, $equal, $result) {
         echo ($testName);
         if ($equal) {
-            echo " : PASSED\n";
+            echo " : SUCCESS\n";
         } else {
-            echo " : FAILED\n";
-            echo "Found: $result\n";
+            echo " : FAILURE\n";
+            echo is_array($result) ? "Found: " . json_encode($result) : "Found: $result\n";
         }
     }
+    
     function testExemple() {
         //get this typing displayPlayerGrid() in the chat, remove the last number of each line except the last one
         $grid = $this->convertNumbersToGrid("
