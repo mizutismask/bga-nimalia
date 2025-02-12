@@ -1,0 +1,63 @@
+<?php
+require_once('./gameBaseTest.php');
+
+class GoalRelativeAnimalsCountTestNoTie extends GameTestBase { // this is your game class defined in ggg.game.php
+    function __construct() {
+        // parent::__construct();
+        include '../material.inc.php'; // this is how this normally included, from constructor
+    }
+
+    /** Redefine some function of the game to mock data. Todo : rename getData to match your function */
+    /*
+    3 players, no tie
+    */
+    function getGrid($playerId = null) {
+        $grid = $this->initGrid();
+        if ($playerId == 1) {
+            $grid[0][1] = new Biome(ANIMAL_LION);
+            $grid[0][2] = new Biome(ANIMAL_LION);
+            $grid[1][0] = new Biome(ANIMAL_CROCODILE);
+        } else if ($playerId == 2) {
+            $grid[0][1] = new Biome(ANIMAL_PANDA);
+            $grid[0][2] = new Biome(ANIMAL_GORILLA);
+            $grid[1][0] = new Biome(ANIMAL_GORILLA);
+        } else if ($playerId == 3) {
+            $grid[0][1] = new Biome(ANIMAL_PANDA);
+            $grid[0][2] = new Biome(ANIMAL_GORILLA);
+            $grid[1][0] = new Biome(ANIMAL_CROCODILE);
+        }
+        return $grid;
+    }
+
+    function getPlayersIds() {
+        return [1, 2, 3];
+    }
+
+    // class tests
+    function testGoalRelativeAnimalsCountMaxGorillas() {
+        $result = $this->calculateGoalRelativeAnimalsCount(2, ANIMAL_GORILLA, false, 5, 2); //5
+        $equal = $result == 5;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testGoalRelativeAnimalsCountNoGorilla() {
+        $result = $this->calculateGoalRelativeAnimalsCount(1, ANIMAL_GORILLA, false, 5, 2); //0
+        $equal = $result == 0;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testGoalRelativeAnimalsCountSecondOnGorillas() {
+        $result = $this->calculateGoalRelativeAnimalsCount(3, ANIMAL_GORILLA, false, 5, 2); //2
+        $equal = $result == 2;
+        $this->displayResult(__FUNCTION__, $equal, $result);
+    }
+
+    function testAll() {
+        $this->testGoalRelativeAnimalsCountMaxGorillas();
+        $this->testGoalRelativeAnimalsCountSecondOnGorillas();
+        $this->testGoalRelativeAnimalsCountNoGorilla();
+    }
+}
+
+$test1 = new GoalRelativeAnimalsCountTestNoTie();
+$test1->testAll();

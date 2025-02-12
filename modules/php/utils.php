@@ -250,11 +250,11 @@ trait UtilTrait {
     }
 
     function getScoreType($round, $goalColor, $playerId) {
-        return "round-${round}-goal-${goalColor}-${playerId}";
+        return "round-{$round}-goal-{$goalColor}-{$playerId}";
     }
 
     function getTotalType($round,  $playerId) {
-        return "total-round-${round}-${playerId}";
+        return "total-round-{$round}-{$playerId}";
     }
 
     function updatePlayer(int $playerId, String $field, int $newValue) {

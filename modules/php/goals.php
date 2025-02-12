@@ -421,6 +421,9 @@ trait GoalTrait {
             }
             if (count($animalCountCopy) > 1) {
                 $second =  $animalCount[$currentPlayerId] == $animalCountCopy[1];
+                if (!$min && $animalCount[$currentPlayerId] == 0) {
+                    return 0; //no points if no value for maximum
+                }
             }
 
             $tieForFirst = count(array_filter($animalCount, fn ($nb) => $nb == $winnerExpectedValue)) > 1;
