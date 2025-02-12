@@ -36,6 +36,31 @@ html {
 	}
 }
 
+.touch-device .nml-goal .css-icon.card-info {
+	display: block;
+}
+
+.nml-goal {
+	position: relative;
+	.css-icon {
+		&.card-info {
+			display: none;
+			width: 15px;
+			height: 15px;
+			position: absolute;
+			/*left: 0;
+			right: 0;
+			margin-inline: auto;*/
+			top: 3px;
+			left: 3px;
+
+			color: white;
+			background-color: #016f99;
+			border: 2px solid white;
+			font-size: small;
+		}
+	}
+}
 .css-icon {
 	width: 25px;
 	height: 25px;
@@ -54,7 +79,7 @@ html {
 		width: 25px;
 		height: 25px;
 		position: relative;
-		top: 10px;
+		bottom: 10px;
 		left: 10px;
 		color: white;
 		background-color: rgb(21, 104, 134);
@@ -89,7 +114,6 @@ html {
 	pointer-events: all;
 	//transform-origin: top left;
 
-	
 	&.animated {
 		transition: transform 0.5s;
 	}
@@ -108,7 +132,6 @@ html {
 
 	.card-side {
 		box-shadow: unset;
-
 	}
 }
 

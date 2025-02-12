@@ -2443,9 +2443,11 @@ var Nimalia = /** @class */ (function () {
         dojo.empty(div);
         goals.forEach(function (g) {
             var divId = "goal_".concat(g.id);
-            var html = "<div id=\"".concat(divId, "\" class=\"nml-goal nml-goal-").concat(g.id, "\" style=\"").concat(getBackgroundInlineStyleForGoalCard(g), "\"></div>");
+            var html = "<div id=\"".concat(divId, "\" class=\"nml-goal nml-goal-").concat(g.id, "\" style=\"").concat(getBackgroundInlineStyleForGoalCard(g), "\">\n\t\t\t\t<div id=\"").concat(divId, "-help\" class=\"css-icon card-info\">?</div>\n\t\t\t</div>");
             dojo.place(html, div);
-            _this.addTooltipHtml(divId, _this.getGoalTooltip(g));
+            var tooltipContent = _this.getGoalTooltip(g);
+            _this.addTooltipHtml(divId, tooltipContent);
+            addTooltipOnClickHelpButton("".concat(divId, "-help"), tooltipContent);
         });
         this.activateGoals(this.gamedatas.round.goals);
     };
@@ -3321,6 +3323,35 @@ function isReadOnly() {
 }
 function replaceAfterLastDash(inputString, replacement) {
     return inputString.replace(/[^-]*$/, replacement);
+}
+function closeCurrentTooltip() {
+    if (this.displayedTooltip == null)
+        return;
+    else {
+        this.displayedTooltip.close();
+        this.displayedTooltip = null;
+    }
+}
+function addTooltipOnClickHelpButton(id, html, delay) {
+    var _this = this;
+    var tooltip = new dijit.Tooltip({
+        label: html,
+        showDelay: delay
+    });
+    dojo.connect($(id), 'click', function (evt) {
+        evt.stopPropagation();
+        if (tooltip.state == 'SHOWING') {
+            _this.closeCurrentTooltip();
+        }
+        else {
+            _this.closeCurrentTooltip();
+            tooltip.open($(id));
+            _this.displayedTooltip = tooltip;
+        }
+    });
+    dojo.connect($(id), 'mouseleave', function () {
+        tooltip.close();
+    });
 }
 /**
  * End score board.
