@@ -12,10 +12,10 @@ trait GoalTrait {
         $goals = [];
         $excluded = []; //goals are recto-verso, if you choose one side, you can’t have the other
         foreach (GOAL_COLORS as $color) {
-            $matchingGoals = array_values(array_filter($this->GOALS, fn ($g) => $g->color === $color && !in_array($g->id, $excluded)));
+            $matchingGoals = array_values(array_filter($this->GOALS, fn($g) => $g->color === $color && !in_array($g->id, $excluded)));
             $level  = intval($this->getGameStateValue(GOAL_LEVEL));
             if ($level != LEVEL_RANDOM) {
-                $matchingGoals = array_values(array_filter($matchingGoals, fn ($g) => $g->level === $level || $g->level === $level + 1));
+                $matchingGoals = array_values(array_filter($matchingGoals, fn($g) => $g->level === $level || $g->level === $level + 1));
             }
             $randIndex = bga_rand(0, count($matchingGoals) - 1);
             $goal = $matchingGoals[$randIndex];
@@ -76,14 +76,14 @@ trait GoalTrait {
     }
 
     private function filterColorGoals(array $goals, array $colors, $roundGoalComparator) {
-        $goals = array_map(fn ($o) => Goal̤::getCastedGoal($o), array_values(array_filter($goals, fn ($g) => in_array($g["color"], $colors))));
+        $goals = array_map(fn($o) => Goal̤::getCastedGoal($o), array_values(array_filter($goals, fn($g) => in_array($g["color"], $colors))));
         usort($goals, array($this, $roundGoalComparator));
         return $goals;
     }
 
     public function getGameGoals() {
         $goals = $this->getGlobalVariable("GOALS", true);
-        return array_map(fn ($g) => Goal̤::getCastedGoal($g), $goals);
+        return array_map(fn($g) => Goal̤::getCastedGoal($g), $goals);
     }
 
     /** Calculates points for a given goal and a given player. Called at the end of each round. */
@@ -426,7 +426,7 @@ trait GoalTrait {
                 }
             }
 
-            $tieForFirst = count(array_filter($animalCount, fn ($nb) => $nb == $winnerExpectedValue)) > 1;
+            $tieForFirst = count(array_filter($animalCount, fn($nb) => $nb == $winnerExpectedValue)) > 1;
             if (!$tieForFirst && $second) {
                 return $secondPoints;
             }
@@ -436,23 +436,23 @@ trait GoalTrait {
 
     function calculateGoalLongestRiverAmongPlayers($currentPlayerId, int $winnerPoints, int $secondPoints) {
         $players = $this->getPlayersIds();
-        $size = [];
+        $sizesPerPlayer = [];
         foreach ($players as $playerId) {
-            $size[$playerId] = $this->calculateLargestRiver($this->getGrid($playerId));
+            $sizesPerPlayer[$playerId] = $this->calculateLargestRiver($this->getGrid($playerId));
         }
-        //self::dump('*******************calculateLargestRiver', $size);
+        self::dump('*******************calculateLargestRiver', $sizesPerPlayer);
         if (count($players) == 3 || count($players) == 4) {
-            $sizeCopy = $size;
-            rsort($sizeCopy);
-            if (count($sizeCopy) > 1) {
-                $second =  $size[$currentPlayerId] == $sizeCopy[1];
+            $sizesPerPlayerCopy = $sizesPerPlayer;
+            rsort($sizesPerPlayerCopy);
+            if (count($sizesPerPlayerCopy) > 1) {
+                $second =  $sizesPerPlayer[$currentPlayerId] == $sizesPerPlayerCopy[1];
             }
-            $tieForFirst = count(array_filter($size, fn ($nb) => $nb ==  max($size))) > 1;
+            $tieForFirst = count(array_filter($sizesPerPlayer, fn($nb) => $nb ==  max($sizesPerPlayer))) > 1;
             if (!$tieForFirst && $second) {
                 return $secondPoints;
             }
         }
-        return (max($size)) == $size[$currentPlayerId] ? $winnerPoints : 0;
+        return (max($sizesPerPlayer)) == $sizesPerPlayer[$currentPlayerId] ? $winnerPoints : 0;
     }
 
     function calculateGoalExactlyOneAnimalOfTypePerColonne(array $grid, int $animal) {
@@ -576,14 +576,14 @@ trait GoalTrait {
         $distinctZones = $this->calculateAnimalZones($grid, $animal);
         return array_reduce(
             $distinctZones,
-            fn ($carry, $zone) => $carry + (count($zone) === 1 ? -1 : count($zone) * 2),
+            fn($carry, $zone) => $carry + (count($zone) === 1 ? -1 : count($zone) * 2),
             0
         );
     }
 
     function calculateGoalBiggestSavannah(array $grid) {
         $distinctZones = $this->calculateLandZones($grid, LAND_SAVANNAH);
-        $sizeMax =  $distinctZones ? max(array_map(fn ($zone) => count($zone), $distinctZones)) : 0;
+        $sizeMax =  $distinctZones ? max(array_map(fn($zone) => count($zone), $distinctZones)) : 0;
         return $sizeMax * 2;
     }
 
