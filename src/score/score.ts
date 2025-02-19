@@ -26,29 +26,39 @@ class ScoreBoard {
                     <th id="th-score-goal-blue" class="score-goal score-goal-blue"></th>
                     <th id="th-score-goal-green" class="score-goal score-goal-green"></th>
                     <th id="th-round-total" class="total-score">∑</th>
-                    <th id="th-round-score" class="round-score" title="${_("You can’t get negative points. Scores under 0 are reset to 0")}">${_("Score")}</th>
+                    <th id="th-round-score" class="round-score" title="${_(
+						'You can’t get negative points. Scores under 0 are reset to 0'
+					)}">${_('Score')}</th>
 
                     <th id="th-score-goal-green" class="score-goal score-goal-green"> </th>
                     <th id="th-score-goal-yellow" class="score-goal score-goal-yellow"> </th>
                     <th id="th-round-total" class="total-score">∑</th>
-                    <th id="th-round-score" class="round-score" title="${_("You can’t get negative points. Scores under 0 are reset to 0")}">${_("Score")}</th>
+                    <th id="th-round-score" class="round-score" title="${_(
+						'You can’t get negative points. Scores under 0 are reset to 0'
+					)}">${_('Score')}</th>
 
                     <th id="th-score-goal-blue" class="score-goal score-goal-blue"> </th>
                     <th id="th-score-goal-red" class="score-goal score-goal-red"> </th>
                     <th id="th-round-total" class="total-score">∑</th>
-                    <th id="th-round-score" class="round-score" title="${_("You can’t get negative points. Scores under 0 are reset to 0")}">${_("Score")}</th>
+                    <th id="th-round-score" class="round-score" title="${_(
+						'You can’t get negative points. Scores under 0 are reset to 0'
+					)}">${_('Score')}</th>
 
                     <th id="th-score-goal-green" class="score-goal score-goal-green"> </th>
                     <th id="th-score-goal-yellow" class="score-goal score-goal-yellow"> </th>
                     <th id="th-score-goal-red" class="score-goal score-goal-red"> </th>
                     <th id="th-round-total" class="total-score">∑</th>
-                    <th id="th-round-score" class="round-score" title="${_("You can’t get negative points. Scores under 0 are reset to 0")}">${_("Score")}</th>
+                    <th id="th-round-score" class="round-score" title="${_(
+						'You can’t get negative points. Scores under 0 are reset to 0'
+					)}">${_('Score')}</th>
 
                     <th id="th-score-goal-blue" class="score-goal score-goal-blue"> </th>
                     <th id="th-score-goal-red" class="score-goal score-goal-red"> </th>
                     <th id="th-score-goal-yellow" class="score-goal score-goal-yellow"> </th>
                     <th id="th-round-total" class="total-score">∑</th>
-                    <th id="th-round-score" class="round-score" title="${_("You can’t get negative points. Scores under 0 are reset to 0")}">${_("Score")}</th>
+                    <th id="th-round-score" class="round-score" title="${_(
+						'You can’t get negative points. Scores under 0 are reset to 0'
+					)}">${_('Score')}</th>
 
                     <th></th>
                 <thead/>
@@ -101,10 +111,14 @@ class ScoreBoard {
 		//todo highlight winners
 	}
 
-    public updateScore(playerId: number, scoreType: string, score: number) {
-        const elt = dojo.byId(scoreType)
-		elt.innerHTML = score.toString()
-		dojo.addClass(scoreType, 'animatedScore')
+	public updateScore(playerId: number, scoreType: string, score: number) {
+		const elt = dojo.byId(scoreType)
+		if (elt) {
+			elt.innerHTML = score.toString()
+			dojo.addClass(scoreType, 'animatedScore')
+		} else {
+			console.error('Score type not found: ', scoreType)
+		}
 		//(this.game as any).displayScoring("square-2333092-6", "bb5500f", 2, 10,10,10)
 	}
 
@@ -112,7 +126,7 @@ class ScoreBoard {
 	 * Add trophee icon to top score player(s)
 	 */
 	public highlightWinnerScore(playerId: number | string) {
-		document.getElementById(`total-${playerId}`).classList.add('highlight')
+		document.getElementById(`score-round-5-${playerId}`).classList.add('highlight')
 		document.getElementById(`score-winner-${playerId}`).classList.add('fa', 'fa-trophy', 'fa-lg')
 	}
 }

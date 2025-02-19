@@ -106,16 +106,20 @@ trait StateTrait {
                 //self::dump('*******************calculatedGoalPoints', compact("goal", "score","playerId"));
                 self::setStat($goalScore, "game_pointsRound" . $round . $goal->color, $playerId);
                 $goalColor = $goal->color;
-                $this->incPlayerScore($playerId, $goalScore, clienttranslate('${player_name} scores ${delta} points with the ${color} goal'), ["color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId), "i18n" => ["color"]]);
+                $this->notifyAllPlayers("points", clienttranslate('${player_name} scores ${delta} points with the ${color} goal'), ["delta" => $goalScore, "player_name" => $this->getPlayerName($playerId), "color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId), "i18n" => ["color"]]);
                 $roundScores[$playerId] += $goalScore;
                 $totalScore[$playerId] += $goalScore;
             }
         }
 
         foreach ($players as $playerId => $playerDb) {
+            $this->incPlayerScore($playerId, $roundScores[$playerId], clienttranslate('${player_name} scores a total of ${score} points for the round ${round}'), ["score" => $roundScores[$playerId], "round" => $round, "scoreType" => $this->getTotalType($round, $playerId)]);
             $endOfRoundScore = $this->getPlayerScore($playerId);
             self::setStat($endOfRoundScore, "game_scoreRound" . $round, $playerId);
-            $this->notifyPlayerScore($playerId, $roundScores[$playerId], clienttranslate('${player_name} scores a total of ${score} points for the round ${round}'), ["round" => $round, "scoreType" => $this->getTotalType($round, $playerId)]);
+        }
+        
+        foreach ($players as $playerId => $playerDb) {
+            $endOfRoundScore = $this->getPlayerScore($playerId);
             $this->notifyPlayerPoints($playerId, $endOfRoundScore, "", ["round" => $round, "scoreType" => "score-round-{$round}-{$playerId}"]);
         }
 
