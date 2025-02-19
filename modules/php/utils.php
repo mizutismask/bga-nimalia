@@ -223,11 +223,9 @@ trait UtilTrait {
         if ($this->getPlayerScore($playerId) < 0) {
             self::DbQuery("UPDATE player SET `player_score` = 0 where `player_id` = $playerId");
 
-            self::notifyAllPlayers('points', clienttranslate('Score can not be negative, reset to 0 for ${player_name}'), [
+            self::notifyAllPlayers('msg', clienttranslate('Score can not be negative, reset to 0 for ${player_name}'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
-                'points' => $this->getPlayerScore($playerId),
-                'delta' => 0,
             ] + $messageArgs);
         }
     }
@@ -246,6 +244,20 @@ trait UtilTrait {
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'score' => $score,
+        ] + $messageArgs);
+    }
+
+    function notifyPlayerPoints(
+        int $playerId,
+        int $delta,
+        $message = null,
+        $messageArgs = []
+    ) {
+        self::notifyAllPlayers('points', $message !== null ? $message : '', [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'points' => $this->getPlayerScore($playerId),
+            'delta' => $delta,
         ] + $messageArgs);
     }
 

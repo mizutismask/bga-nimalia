@@ -72,6 +72,9 @@ trait StateTrait {
                     $scores[] = ["playerId" => $playerId, "score" => $score, "scoreType" => $this->getScoreType($round, $goal->color, $playerId)];
                 }
                 $scores[] = ["playerId" => $playerId, "score" => $total, "scoreType" =>  $this->getTotalType($round, $playerId)];
+                $statName = "game_scoreRound" . $round;
+                $endOfRoundScore = self::getStat($statName, $playerId) ?? 0;
+                $scores[] = ["playerId" => $playerId, "score" => $endOfRoundScore, "scoreType" => "score-round-{$round}-{$playerId}"];
             }
         }
         return $scores;
@@ -82,6 +85,7 @@ trait StateTrait {
         $this->gamestate->nextState("seeScore");
     }
 
+    /** Called at each end of round. */
     function score() {
         $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ORDER BY player_no ASC";
         $players = self::getCollectionFromDb($sql);
@@ -98,26 +102,21 @@ trait StateTrait {
         foreach ($this->getRoundGoals() as $goal) {
             foreach ($players as $playerId => $playerDb) {
                 //self::dump('*******************calculatingGoalPoints', compact("goal", "playerId"));
-                $score = $this->calculateGoalPoints($goal, $playerId);
+                $goalScore = $this->calculateGoalPoints($goal, $playerId);
                 //self::dump('*******************calculatedGoalPoints', compact("goal", "score","playerId"));
-                self::incStat($score, "game_pointsRound" . $round . $goal->color, $playerId);
+                self::setStat($goalScore, "game_pointsRound" . $round . $goal->color, $playerId);
                 $goalColor = $goal->color;
-                $this->incPlayerScore($playerId, $score, clienttranslate('${player_name} scores ${delta} points with the ${color} goal'), ["color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId)]);
-                $roundScores[$playerId] += $score;
-                $totalScore[$playerId] += $score;
+                $this->incPlayerScore($playerId, $goalScore, clienttranslate('${player_name} scores ${delta} points with the ${color} goal'), ["color" => $this->getColorName($goal->color), "scoreType" => $this->getScoreType($round, $goalColor, $playerId), "i18n" => ["color"]]);
+                $roundScores[$playerId] += $goalScore;
+                $totalScore[$playerId] += $goalScore;
             }
         }
 
         foreach ($players as $playerId => $playerDb) {
+            $endOfRoundScore = $this->getPlayerScore($playerId);
+            self::setStat($endOfRoundScore, "game_scoreRound" . $round, $playerId);
             $this->notifyPlayerScore($playerId, $roundScores[$playerId], clienttranslate('${player_name} scores a total of ${score} points for the round ${round}'), ["round" => $round, "scoreType" => $this->getTotalType($round, $playerId)]);
-        }
-
-        //round winner
-        //$this->notifyWinner($roundScores);
-
-        //total from the beginning
-        foreach ($players as $playerId => $playerDb) {
-            $this->incPlayerScore($playerId, 0, null, ["scoreType" => "total-$playerId"]);
+            $this->notifyPlayerPoints($playerId, $endOfRoundScore, "", ["round" => $round, "scoreType" => "score-round-{$round}-{$playerId}"]);
         }
 
         if ($round == 5) {

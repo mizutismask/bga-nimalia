@@ -123,6 +123,32 @@ $stats_type = [
             "type" => "int"
         ],
 
+        "game_scoreRound1" => [
+            "id" => 32,
+            "name" => totranslate("Score at the end of the round"),
+            "type" => "int"
+        ],
+        "game_scoreRound2" => [
+            "id" => 33,
+            "name" => totranslate("Score at the end of the round"),
+            "type" => "int"
+        ],
+        "game_scoreRound3" => [
+            "id" => 34,
+            "name" => totranslate("Score at the end of the round"),
+            "type" => "int"
+        ],
+        "game_scoreRound4" => [
+            "id" => 35,
+            "name" => totranslate("Score at the end of the round"),
+            "type" => "int"
+        ],
+        "game_scoreRound5" => [
+            "id" => 36,
+            "name" => totranslate("Score at the end of the round"),
+            "type" => "int"
+        ],
+
     ],
 
 ];

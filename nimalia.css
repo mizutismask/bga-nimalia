@@ -396,6 +396,10 @@
 #score #table-wrapper table .total-score {
   background-color: gray;
 }
+#score #table-wrapper table .round-score {
+  background-color: rgb(79, 141, 209);
+  cursor: pointer;
+}
 #score .score-number {
   transition: color 0.5s ease-in-out;
 }
