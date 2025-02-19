@@ -141,12 +141,12 @@ class Nimalia extends Table {
         $result['expansion'] = EXPANSION;
         if ($isEnd) {
             if ($stateName === "seeScore") {
-                $maxScore = max(array_map(fn ($player) => intval($player['score']), $result['players']));
-                $result['winners'] = array_keys(array_filter($result['players'], fn ($player) => intval($player['score'] == $maxScore)));
+                $maxScore = max(array_map(fn($player) => intval($player['score']), $result['players']));
+                $result['winners'] = array_keys(array_filter($result['players'], fn($player) => intval($player['score'] == $maxScore)));
                 if (count($result['winners']) > 1) {
-                    $tieWinners =  array_filter($result['players'], fn ($player) => in_array($player["id"], $result['winners']));
-                    $maxScore = max(array_map(fn ($player) => intval($player['scoreAux']),$tieWinners));
-                    $result['winners'] = array_keys(array_filter($tieWinners, fn ($player) => intval($player['scoreAux'] == $maxScore )));
+                    $tieWinners =  array_filter($result['players'], fn($player) => in_array($player["id"], $result['winners']));
+                    $maxScore = max(array_map(fn($player) => intval($player['scoreAux']), $tieWinners));
+                    $result['winners'] = array_keys(array_filter($tieWinners, fn($player) => intval($player['scoreAux'] == $maxScore)));
                 }
             }
         } else {
@@ -270,8 +270,15 @@ class Nimalia extends Table {
 
     function upgradeTableDb($from_version) {
         $changes = [
-            // [2307071828, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (24, 0)"], 
+            // [2307071828, "INSERT INTO DBPREFIX_global (`global_id`, `global_value`) VALUES (24, 0)"]
         ];
+
+        //add player stats
+        foreach ([32, 33, 34, 35, 36] as $statType) {
+            foreach ($this->getPlayersIds() as $playerId) {
+                $changes[] = [2502121546, "INSERT INTO DBPREFIX_stats (`stats_player_id`, `stats_type`, `stat_value`) VALUES ($playerId, $statType, 0)"];
+            }
+        }
 
         foreach ($changes as [$version, $sql]) {
             if ($from_version <= $version) {
