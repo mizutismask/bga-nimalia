@@ -276,7 +276,7 @@ class Nimalia extends Table {
         //add player stats
         foreach ([32, 33, 34, 35, 36] as $statType) {
             foreach ($this->getPlayersIds() as $playerId) {
-                $changes[] = [2502121546, "INSERT INTO DBPREFIX_stats (`stats_player_id`, `stats_type`, `stat_value`) VALUES ($playerId, $statType, 0)"];
+                $changes[] = [2502121546, "INSERT INTO DBPREFIX_stats (`stats_player_id`, `stats_type`, `stats_value`) VALUES ($playerId, $statType, 0)"];
             }
         }
 
