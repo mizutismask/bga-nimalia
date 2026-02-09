@@ -804,47 +804,92 @@ trait GoalTrait {
         return $points;
     }
 
-    function exploreRiver($biomes, &$rivers, $i, $j, $rows, $cols, $direction) {
-
-        if ($i < 0 || $i >= $rows || $j < 0 || $j >= $cols || $rivers[$i][$j]['visited'] || $biomes[$i][$j]->animal !== ANIMAL_OTTER || $biomes[$i][$j]->river !== $direction) {
+    function exploreRiver($biomes, &$rivers, $i, $j, $rows, $cols, $direction, $pathLength = 0, &$maxPathLength = 0) {
+        // Base cases: out of bounds, visited, not an otter, or no river
+        if ($i < 0 || $i >= $rows || $j < 0 || $j >= $cols || $rivers[$i][$j]['visited'] || $biomes[$i][$j]->animal !== ANIMAL_OTTER || $biomes[$i][$j]->river === 0) {
             return 0;
         }
 
-        $rivers[$i][$j]['visited'] = true;
-        $size = 1;
-
-        //self::dump('***********exploreRiver********', compact("i", "j", "direction"));
-        // Explore the river only in the directions that are continuous
-        if ($direction === RIVER_UP) {
-            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j, $rows, $cols, RIVER_DOWN); // Up
-            $size += $this->exploreRiver($biomes, $rivers, $i, $j + 1, $rows, $cols, RIVER_DOWN); // Right
-            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j + 1, $rows, $cols, RIVER_UP); // Diagonal Up-Right
-
-            $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j, $rows, $cols, RIVER_DOWN); // Down
-            $size += $this->exploreRiver($biomes, $rivers, $i, $j - 1, $rows, $cols, RIVER_DOWN); // Left
-            $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j - 1, $rows, $cols, RIVER_UP); // Diagonal Down-Left
-        } elseif ($direction === RIVER_DOWN) {
-            $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j, $rows, $cols, RIVER_UP); // Down
-            $size += $this->exploreRiver($biomes, $rivers, $i, $j + 1, $rows, $cols, RIVER_UP); // Right
-            $size += $this->exploreRiver($biomes, $rivers, $i + 1, $j + 1, $rows, $cols, RIVER_DOWN); // Diagonal Down-Right
-
-            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j, $rows, $cols, RIVER_UP); // Up
-            $size += $this->exploreRiver($biomes, $rivers, $i, $j - 1, $rows, $cols, RIVER_UP); // Left
-            $size += $this->exploreRiver($biomes, $rivers, $i - 1, $j - 1, $rows, $cols, RIVER_DOWN); // Diagonal Up-Left
+        // Check for river continuity
+        if (!($biomes[$i][$j]->river === $direction || ($direction === RIVER_UP && $biomes[$i][$j]->river === RIVER_DOWN) || ($direction === RIVER_DOWN && $biomes[$i][$j]->river === RIVER_UP))) {
+            return 0;
         }
 
-        return $size;
+        // Mark the current cell as visited
+        $rivers[$i][$j]['visited'] = true;
+        $size = 1; // Start with the current cell
+        $branches = [];
+
+        $neighbors = [];
+        if ($biomes[$i][$j]->river === RIVER_UP) {
+            //  Up: [-1, 0, RIVER_DOWN]
+            $neighbors[] = [-1, 0, RIVER_DOWN];
+
+            //  Right: [0, 1, RIVER_DOWN];
+            $neighbors[] = [0, 1, RIVER_DOWN];
+
+            //  Up-Right: [-1, 1, RIVER_UP]
+            $neighbors[] = [-1, 1, RIVER_UP];
+
+            //  Left: [0,-1, RIVER_DOWN]
+            $neighbors[] = [0, -1, RIVER_DOWN];
+
+            //down: [1,0,RIVER_DOWN]
+            $neighbors[] = [1, 0, RIVER_DOWN];
+            // Up-Left: [-1,-1, RIVER_DOWN]
+            $neighbors[] = [-1, -1, RIVER_DOWN];
+        } elseif ($biomes[$i][$j]->river === RIVER_DOWN) {
+            //  Down: [1, 0, RIVER_UP]
+            $neighbors[] = [1, 0, RIVER_UP];
+
+            // Right: [0, 1, RIVER_UP]
+            $neighbors[] = [0, 1, RIVER_UP];
+            // Down-Right: [1, 1, RIVER_DOWN]
+            $neighbors[] = [1, 1, RIVER_DOWN];
+
+            //  Left : [0,-1, RIVER_UP]
+            $neighbors[] = [0, -1, RIVER_UP];
+            // up: [-1,0,RIVER_UP]
+            $neighbors[] = [-1, 0, RIVER_UP];
+            // Down-Left:[1,-1, RIVER_UP]
+            $neighbors[] = [1, -1, RIVER_UP];
+        }
+
+        // Explore neighbors
+        foreach ($neighbors as [$di, $dj, $neighborDirection]) {
+            $ni = $i + $di;
+            $nj = $j + $dj;
+
+            // Check bounds, river existence, and otter
+            if ($ni >= 0 && $ni < $rows && $nj >= 0 && $nj < $cols && $biomes[$ni][$nj]->river !== 0 && $biomes[$ni][$nj]->animal === ANIMAL_OTTER) {
+                // Check for river continuity
+               $branches[]= $this->exploreRiver($biomes, $rivers, $ni, $nj, $rows, $cols, $neighborDirection, $pathLength + 1, $maxPathLength);
+            }
+        }
+
+        $size += array_sum($branches);
+        $currentPathLength = 0;
+         if (!empty($branches)) {
+             $currentPathLength = max(array_map(fn ($branchSize) => $branchSize > 0 ? $branchSize : 0, $branches));
+        }
+        $maxPathLength = max($maxPathLength, $currentPathLength + 1);
+        if($pathLength + 1 < $maxPathLength){
+            return 0;
+        } else {
+            return $size;
+        }
     }
 
     /**
-     * River length => points
-     * 0 => 0
-     * 1 => 0
-     * 2 => 1
-     * 3 => 3
-     * 4 => 6
-     * 5 => 10
-     * 6 => 15
+     * Explore the grid to find the longest continuous river if any, and return its size. 
+     * Rivers have a direction, so they can only be continous if the corners of their direction are connected.
+     * For example, if a river goes up, its end points are the top right and bottom left corners. 
+     * If a river goes down, its end points are the top left and bottom right corners. 
+     * For 2 rivers to be continuous, they must share a common corner.
+     * It means that if a river goes up, possibles continous rivers can only be found on top, top-right, right, left, bottom-left, bottom.
+     * All 8 squares around the river must be checked, except the 2 corners in the opposite direction of the river’s direction.
+     * @param mixed $biomes coming from getGrid function
+     * @return int size
      */
     function calculateLongestContinuousRiver($biomes) {
         $rows = count($biomes);
@@ -858,20 +903,31 @@ trait GoalTrait {
         // Iterate through each cell to find the largest river
         for ($i = 0; $i < $rows; $i++) {
             for ($j = 0; $j < $cols; $j++) {
-                if ($biomes[$i][$j]->river !== 0 && !$rivers[$i][$j]['visited']) {
+                if ($biomes[$i][$j]->river !== 0 && !$rivers[$i][$j]['visited'] && $biomes[$i][$j]->animal === ANIMAL_OTTER) {
                     // Explore the river starting from the current cell in the specified direction
-                    $riverSize = $this->exploreRiver($biomes, $rivers, $i, $j, $rows, $cols, $biomes[$i][$j]->river);
-                    //self::dump('***********calculateLargestRiver********', compact("i", "j", "riverSize"));
-
+                     $maxPathLength=0;
+                    $riverSize = $this->exploreRiver($biomes, $rivers, $i, $j, $rows, $cols, $biomes[$i][$j]->river, 0, $maxPathLength);
+                   
                     // Update the maximum river size
                     $maxRiverSize = max($maxRiverSize, $riverSize);
+                    //reset visited state for the next iteration
+                     $rivers = array_fill(0, $rows, array_fill(0, $cols, array('visited' => false)));
                 }
             }
         }
 
         return $maxRiverSize;
     }
-
+    /**
+     * River length => points
+     * 0 => 0
+     * 1 => 0
+     * 2 => 1
+     * 3 => 3
+     * 4 => 6
+     * 5 => 10
+     * 6 => 15
+     */
     function calculateGoalMyLongestRiver(array $grid) {
         $size = $this->calculateLongestContinuousRiver($grid);
         $points = 0;

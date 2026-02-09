@@ -186,10 +186,6 @@ trait UtilTrait {
         return $player_ids;
     }
 
-    function getPlayerCount() {
-        return count($this->getPlayersIds());
-    }
-
     function getPlayerIdByOrder($playerOrder = 1) {
         return $this->getUniqueIntValueFromDB("SELECT player_id FROM player where `player_no` = $playerOrder");
     }
